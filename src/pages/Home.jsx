@@ -137,7 +137,7 @@ const SHOP_ITEMS = [
   },
 ];
 
-function PoemCard({ poem, colors }) {
+function PoemCard({ poem, colors, saved, onToggleSave }) {
   const [open, setOpen] = useState(false);
   const col = colors || C;
   return (
@@ -162,7 +162,16 @@ function PoemCard({ poem, colors }) {
           <p style={{ ...serif, fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: "600", color: col.ink, margin: "0 0 4px" }}>{poem.title}</p>
           <p style={{ ...kalam, fontSize: "13px", color: col.lightGrey, margin: 0 }}>— {poem.annotation}</p>
         </div>
-        <span style={{ ...serif, fontSize: "18px", color: col.lightGrey, marginLeft: "12px", flexShrink: 0, marginTop: "2px" }}>{open ? "−" : "+"}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginLeft: "12px", flexShrink: 0, marginTop: "2px" }}>
+          <button
+            onClick={e => { e.stopPropagation(); onToggleSave && onToggleSave(poem.id); }}
+            aria-label={saved ? "Remove from saved" : "Save poem"}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", fontSize: "16px", lineHeight: 1, color: saved ? col.thread : col.lightGrey, transition: "color 0.2s, transform 0.15s", transform: saved ? "scale(1.15)" : "scale(1)" }}
+          >
+            {saved ? "♥" : "♡"}
+          </button>
+          <span style={{ ...serif, fontSize: "18px", color: col.lightGrey }}>{open ? "−" : "+"}</span>
+        </div>
       </button>
 
       {open && (
@@ -193,6 +202,19 @@ export default function Home() {
   const [note, setNote] = useState("");
   const [noteSent, setNoteSent] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [savedIds, setSavedIds] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("bea-saved-poems") || "[]"); } catch { return []; }
+  });
+
+  const toggleSave = (id) => {
+    setSavedIds(prev => {
+      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
+      localStorage.setItem("bea-saved-poems", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const savedPoems = FREE_POEMS.filter(p => savedIds.includes(p.id));
 
   const D = darkMode ? {
     paper:    "#0f0e0c",
@@ -258,7 +280,7 @@ export default function Home() {
 
       {menuOpen && (
         <div style={{ background: D.paper, borderBottom: `1px solid ${D.inkGhost}`, padding: "20px 24px 24px", transition: "background 0.3s" }}>
-          {[["Read free poems","#reading-room"],["Buy the collection","#archive"],["The Journal","#gallery-journal"],["About","#about"]].map(([l,h]) => (
+          {[["Read free poems","#reading-room"],...(savedPoems.length > 0 ? [["Saved fragments","#saved-fragments"]] : []),["Buy the collection","#archive"],["The Journal","#gallery-journal"],["About","#about"]].map(([l,h]) => (
             <a key={l} href={h} onClick={() => setMenuOpen(false)} style={{ ...serif, display: "block", fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", color: D.ink, textDecoration: "none", padding: "12px 0", borderBottom: `1px solid ${D.inkGhost}` }}>{l}</a>
           ))}
         </div>
@@ -302,13 +324,27 @@ export default function Home() {
         <p style={{ ...serif, fontSize: "13px", color: D.lightGrey, margin: "0 0 32px", lineHeight: "1.6" }}>
           Four poems from the collection. The rest are inside.
         </p>
-        {FREE_POEMS.map(poem => <PoemCard key={poem.id} poem={poem} colors={D} />)}
+        {FREE_POEMS.map(poem => <PoemCard key={poem.id} poem={poem} colors={D} saved={savedIds.includes(poem.id)} onToggleSave={toggleSave} />)}
         <div style={{ marginTop: "24px", textAlign: "center" }}>
           <a href="#archive" style={{ ...serif, fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: D.grey, textDecoration: "none", borderBottom: `1px solid ${D.inkGhost}`, paddingBottom: "2px" }}>
             Twenty poems in the full collection →
           </a>
         </div>
       </section>
+
+      {/* SAVED FRAGMENTS */}
+      {savedPoems.length > 0 && (
+        <section id="saved-fragments" style={{ background: D.paper, padding: "56px 24px 64px", borderTop: `2px solid ${D.thread}`, transition: "background 0.3s" }}>
+          <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.thread, margin: "0 0 10px" }}>Saved Fragments · {savedPoems.length}</p>
+          <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 54px)", color: D.ink, margin: "0 0 8px", lineHeight: "1.05" }}>Your collection.</h2>
+          <p style={{ ...serif, fontSize: "13px", color: D.lightGrey, margin: "0 0 28px", lineHeight: "1.6" }}>
+            The ones you kept.
+          </p>
+          {savedPoems.map(poem => (
+            <PoemCard key={poem.id} poem={poem} colors={D} saved={true} onToggleSave={toggleSave} />
+          ))}
+        </section>
+      )}
 
       {/* ARCHIVE */}
       <section id="archive" style={{ background: D.ink, color: D.white, padding: "56px 24px 64px", transition: "background 0.3s" }}>
