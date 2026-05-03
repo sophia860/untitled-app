@@ -142,46 +142,36 @@ function DemoBlank({prompt,placeholder}) {
   );
 }
 
-// ─── CONTINUOUS LINE HERO ─────────────────────────────────────────
-// A single organic SVG path that draws itself, with poem words anchored at specific points.
-// Mouse shifts the whole composition gently.
+// ─── LINE HERO — single body-shape, one sentence inside ──────────
+// Reference: closed organic line, one italic phrase, one dot, one square, bottom tags
 function LineHero() {
-  const svgRef   = useRef(null);
-  const pathRef  = useRef(null);
-  const mouseRef = useRef({ x:0, y:0 });
-  const [drawn, setDrawn] = useState(false);
-  const [wordsVisible, setWordsVisible] = useState(false);
+  const svgRef  = useRef(null);
+  const pathRef = useRef(null);
+  const mouseRef = useRef({ x:0.5, y:0.5 });
+  const [phase, setPhase] = useState(0); // 0=hidden 1=drawing 2=text
 
-  // Word anchors: position as % of SVG viewBox (0 0 800 600), plus label offset direction
-  const ANCHORS = [
-    { word:"four times",       cx:182, cy:148, dx:-90, dy:-18,  delay:2.6 },
-    { word:"I said sorry",     cx:310, cy:108, dx: 18, dy:-28,  delay:3.0 },
-    { word:"for wanting",      cx:490, cy:155, dx: 22, dy:-20,  delay:3.4 },
-    { word:"you.",             cx:618, cy:220, dx: 22, dy: 0,   delay:3.8 },
-    { word:"you said anything",cx:500, cy:310, dx: 22, dy: 14,  delay:4.2 },
-    { word:"eleven twenty-eight", cx:310, cy:368, dx:-12, dy: 28, delay:4.6 },
-    { word:"for years",        cx:200, cy:440, dx:-72, dy: 10,  delay:5.0 },
-    { word:"and not know",     cx:380, cy:490, dx: 18, dy: 24,  delay:5.4 },
-    { word:"the difference.",  cx:550, cy:450, dx: 22, dy: 8,   delay:5.8 },
-  ];
-
-  // The single continuous organic path — handcrafted curve
+  // One large closed organic shape — like a body, a room, a held breath
+  // ViewBox: 0 0 700 860  (portrait, like the reference)
   const PATH = `
-    M 150,160
-    C 160,120 180,100 210,108
-    C 260,118 310,90  370,96
-    C 430,102 480,128 520,148
-    C 570,172 620,210 638,228
-    C 660,250 648,290 610,308
-    C 570,328 520,318 490,322
-    C 450,328 410,355 370,370
-    C 330,385 280,382 250,390
-    C 210,400 188,420 192,445
-    C 196,468 218,478 250,484
-    C 290,492 340,490 388,492
-    C 440,496 500,488 545,468
-    C 590,448 618,420 630,400
-    C 640,382 628,360 610,352
+    M 340,70
+    C 290,68 240,80 210,108
+    C 170,145 160,195 155,250
+    C 148,320 152,390 162,450
+    C 172,510 190,560 200,610
+    C 208,648 210,680 230,700
+    C 255,725 290,732 320,730
+    C 355,728 385,715 400,695
+    C 418,672 420,640 425,605
+    C 432,560 438,510 440,460
+    C 444,400 445,340 450,285
+    C 455,225 465,175 490,145
+    C 510,120 545,105 560,108
+    C 590,115 605,140 614,165
+    C 625,195 620,230 608,255
+    C 595,282 572,298 555,310
+    C 530,328 505,332 488,345
+    C 468,360 458,385 450,415
+    L 440,460
   `;
 
   useEffect(() => {
@@ -191,127 +181,146 @@ function LineHero() {
     path.style.strokeDasharray  = len;
     path.style.strokeDashoffset = len;
 
-    // trigger draw after a short pause
     const t1 = setTimeout(() => {
-      path.style.transition = `stroke-dashoffset 3.2s cubic-bezier(0.16,1,0.3,1)`;
+      path.style.transition = `stroke-dashoffset 3.8s cubic-bezier(0.25,1,0.5,1)`;
       path.style.strokeDashoffset = 0;
-      setDrawn(true);
-    }, 400);
+      setPhase(1);
+    }, 600);
+    const t2 = setTimeout(() => setPhase(2), 3800);
 
-    const t2 = setTimeout(() => setWordsVisible(true), 2200);
-
-    // subtle mouse parallax on the whole SVG
-    const move = e => {
+    const onMove = e => {
       mouseRef.current = {
-        x: (e.clientX / window.innerWidth  - 0.5) * 14,
-        y: (e.clientY / window.innerHeight - 0.5) * 10,
+        x: (e.clientX / window.innerWidth  - 0.5) * 10,
+        y: (e.clientY / window.innerHeight - 0.5) * 7,
       };
       if (svgRef.current) {
-        svgRef.current.style.transform = `translate(${mouseRef.current.x}px,${mouseRef.current.y}px)`;
+        svgRef.current.style.transform =
+          `translate(${mouseRef.current.x}px,${mouseRef.current.y}px)`;
       }
     };
-    window.addEventListener("mousemove", move);
-    return () => { clearTimeout(t1); clearTimeout(t2); window.removeEventListener("mousemove", move); };
+    window.addEventListener("mousemove", onMove);
+    return () => { clearTimeout(t1); clearTimeout(t2); window.removeEventListener("mousemove", onMove); };
   }, []);
 
   return (
     <section style={{
-      position:"relative", height:"100vh", overflow:"hidden",
-      background:"#F5F0E8", display:"flex", flexDirection:"column",
+      position:"relative", minHeight:"100vh", overflow:"hidden",
+      background:"#E8E5E0",
+      display:"flex", flexDirection:"column",
       alignItems:"center", justifyContent:"center",
     }}>
-      {/* top nav line — thin rule like the reference */}
-      <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(26,26,24,.12)"}}/>
 
-      {/* SVG composition */}
-      <div style={{position:"relative",width:"min(800px,92vw)",height:"min(600px,70vh)"}}>
+      {/* paper texture overlay */}
+      <div style={{
+        position:"absolute", inset:0, pointerEvents:"none", zIndex:1,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E")`,
+      }}/>
+
+      {/* SVG — the shape + marks */}
+      <div style={{
+        position:"relative", zIndex:2,
+        width:"min(420px,72vw)", height:"min(620px,80vh)",
+        marginTop:"2vh",
+      }}>
         <svg
           ref={svgRef}
-          viewBox="0 0 800 600"
-          style={{width:"100%",height:"100%",overflow:"visible",transition:"transform .8s cubic-bezier(.16,1,.3,1)"}}
+          viewBox="0 0 700 860"
+          style={{
+            width:"100%", height:"100%", overflow:"visible",
+            transition:"transform 1s cubic-bezier(.16,1,.3,1)",
+          }}
           aria-hidden="true">
 
-          {/* the single continuous line */}
+          {/* the body shape */}
           <path
             ref={pathRef}
             d={PATH}
             fill="none"
-            stroke="#8C8880"
-            strokeWidth="1.6"
+            stroke="#2a2a26"
+            strokeWidth="1.3"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* dot at each anchor */}
-          {ANCHORS.map((a,i) => (
-            <circle key={i} cx={a.cx} cy={a.cy} r="2.2"
-              fill="#8C8880"
-              opacity={wordsVisible ? 0.6 : 0}
-              style={{transition:`opacity .4s ease ${a.delay}s`}}/>
-          ))}
+          {/* single solid dot — inside the shape */}
+          <circle
+            cx="530" cy="300" r="5.5"
+            fill="#1a1a18"
+            opacity={phase >= 2 ? 1 : 0}
+            style={{transition:"opacity .6s ease 0.2s"}}
+          />
 
-          {/* connector ticks — small line from dot to label */}
-          {ANCHORS.map((a,i) => (
-            <line key={i}
-              x1={a.cx} y1={a.cy}
-              x2={a.cx + a.dx * 0.4} y2={a.cy + a.dy * 0.4}
-              stroke="#8C8880" strokeWidth="0.8"
-              opacity={wordsVisible ? 0.4 : 0}
-              style={{transition:`opacity .4s ease ${a.delay}s`}}/>
-          ))}
+          {/* small open square — upper right, outside shape */}
+          <rect
+            x="628" y="108" width="22" height="22"
+            fill="none" stroke="#1a1a18" strokeWidth="1.2"
+            opacity={phase >= 2 ? 1 : 0}
+            style={{transition:"opacity .5s ease 0.4s"}}
+          />
+          {/* line from path to square */}
+          <line
+            x1="615" y1="119" x2="628" y2="119"
+            stroke="#1a1a18" strokeWidth="0.9"
+            opacity={phase >= 2 ? 0.5 : 0}
+            style={{transition:"opacity .5s ease 0.4s"}}
+          />
         </svg>
 
-        {/* word labels — absolutely positioned over the SVG */}
-        {ANCHORS.map((a, i) => {
-          // convert viewBox coords to % of container
-          const left = (a.cx / 800 * 100) + "%";
-          const top  = (a.cy / 600 * 100) + "%";
-          return (
-            <div key={i} style={{
-              position:"absolute",
-              left, top,
-              transform:`translate(${a.dx}px,${a.dy}px) translateY(-50%)`,
-              fontFamily:"'Times New Roman',Times,serif",
-              fontStyle:"italic",
-              fontSize:"clamp(11px,1.4vw,16px)",
-              color:"#1a1a18",
-              whiteSpace:"nowrap",
-              opacity: wordsVisible ? 1 : 0,
-              transition:`opacity .7s ease ${a.delay}s`,
-              pointerEvents:"none",
-              userSelect:"none",
-              letterSpacing:"-.01em",
-            }}>{a.word}</div>
-          );
-        })}
+        {/* single italic sentence — centred inside the shape */}
+        <div style={{
+          position:"absolute",
+          left:"28%", top:"52%",
+          transform:"translate(-50%,-50%)",
+          fontFamily:"'Times New Roman',Times,serif",
+          fontStyle:"italic",
+          fontSize:"clamp(13px,2.2vw,20px)",
+          color:"#1a1a18",
+          letterSpacing:"-.01em",
+          lineHeight:1.5,
+          whiteSpace:"nowrap",
+          opacity: phase >= 2 ? 1 : 0,
+          transition:"opacity 1s ease 0.6s",
+          pointerEvents:"none",
+          userSelect:"none",
+        }}>
+          Four times in the same minute I said sorry.
+        </div>
       </div>
 
-      {/* title — bottom left, understated */}
+      {/* bottom text — three tags, widely spaced, small caps */}
       <div style={{
-        position:"absolute", bottom:48, left:40,
-        opacity: drawn ? 1 : 0, transition:"opacity 1s ease 2s",
+        position:"absolute", bottom:32, left:0, right:0,
+        padding:"0 36px",
+        display:"flex", justifyContent:"space-between", alignItems:"flex-end",
+        zIndex:2,
+        opacity: phase >= 2 ? 1 : 0,
+        transition:"opacity 1s ease 1s",
       }}>
-        <p style={{fontSize:11,letterSpacing:".22em",textTransform:"uppercase",color:"rgba(26,26,24,.35)",marginBottom:6}}>Bea Sophia</p>
-        <p style={{fontSize:10,letterSpacing:".16em",textTransform:"uppercase",color:"rgba(26,26,24,.2)"}}>Poet · The Page Gallery Journal · New York</p>
+        <span style={{fontSize:"clamp(8px,1vw,11px)",letterSpacing:".28em",textTransform:"uppercase",color:"rgba(26,26,24,.5)"}}>
+          Bea Sophia
+        </span>
+        <span style={{fontSize:"clamp(8px,1vw,11px)",letterSpacing:".18em",textTransform:"uppercase",color:"rgba(26,26,24,.28)",display:"flex",alignItems:"center",gap:10}}>
+          (somewhere inside)
+          <span style={{display:"inline-block",width:40,height:1,background:"rgba(26,26,24,.28)"}}/>
+        </span>
+        <span style={{fontSize:"clamp(8px,1vw,11px)",letterSpacing:".28em",textTransform:"uppercase",color:"rgba(26,26,24,.5)"}}>
+          read it.
+        </span>
       </div>
 
-      {/* nav links — bottom right */}
-      <div style={{
-        position:"absolute", bottom:48, right:40,
-        display:"flex", gap:20,
-        opacity: drawn ? 1 : 0, transition:"opacity 1s ease 2.4s",
-      }}>
-        <a href="#poems" style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",color:"rgba(26,26,24,.35)",borderBottom:"1px solid rgba(26,26,24,.2)",paddingBottom:2,transition:"color .2s"}}
-          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.8)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.35)"}>Poems</a>
-        <a href="#works" style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",color:"rgba(26,26,24,.35)",borderBottom:"1px solid rgba(26,26,24,.2)",paddingBottom:2,transition:"color .2s"}}
-          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.8)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.35)"}>Works</a>
-      </div>
+      {/* scroll cue */}
+      <a href="#poems" style={{
+        position:"absolute", bottom:70, left:"50%", transform:"translateX(-50%)",
+        fontSize:9, letterSpacing:".22em", textTransform:"uppercase",
+        color:"rgba(26,26,24,.22)", zIndex:2,
+        opacity: phase >= 2 ? 1 : 0,
+        transition:"opacity 1s ease 1.4s",
+      }}>↓</a>
 
-      {/* bottom rule */}
-      <div style={{position:"absolute",bottom:0,left:0,right:0,height:1,background:"rgba(26,26,24,.08)"}}/>
     </section>
   );
 }
+
 
 // ─── 3D ROOM CANVAS ───────────────────────────────────────────────
 function RoomCanvas({ room }) {
@@ -455,7 +464,7 @@ export default function Home() {
   },[]);
 
   return (
-    <div style={{fontFamily:"'Times New Roman',Times,Georgia,serif",overflowX:"hidden",background:"#F5F0E8",color:"#1a1a18",cursor:"none"}}>
+    <div style={{fontFamily:"'Times New Roman',Times,Georgia,serif",overflowX:"hidden",background:"#E8E5E0",color:"#1a1a18",cursor:"none"}}>
       <Cursor/>
 
       <style>{`
@@ -489,7 +498,7 @@ export default function Home() {
       <LineHero/>
 
       {/* POEMS */}
-      <div id="poems" style={{background:"#F5F0E8"}}>
+      <div id="poems" style={{background:"#E8E5E0"}}>
         {POEMS.map(poem=>(
           <PoemBlock key={poem.id} poem={poem} open={openPoem===poem.id} onToggle={()=>setOpenPoem(openPoem===poem.id?null:poem.id)}/>
         ))}
@@ -497,7 +506,7 @@ export default function Home() {
 
       {/* WORKS */}
       <div id="works">
-        <FadeIn style={{padding:"56px 32px 16px",borderTop:"1px solid rgba(26,26,24,.07)",background:"#F5F0E8"}}>
+        <FadeIn style={{padding:"56px 32px 16px",borderTop:"1px solid rgba(26,26,24,.07)",background:"#E8E5E0"}}>
           <p style={{fontSize:9,letterSpacing:".3em",textTransform:"uppercase",opacity:.22,display:"flex",alignItems:"center",gap:10}}>
             <span style={{display:"inline-block",width:4,height:4,borderRadius:"50%",background:"#1a1a18"}}/>
             The Works
@@ -575,7 +584,7 @@ export default function Home() {
               <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" required
                 style={{flex:1,minWidth:190,padding:"13px 14px",background:"rgba(245,240,232,.06)",border:"1px solid rgba(245,240,232,.15)",borderRight:"none",color:"#F5F0E8",fontSize:13,outline:"none"}}/>
               <button type="submit"
-                style={{background:"#F5F0E8",color:"#1a1a18",border:"none",padding:"13px 22px",fontSize:9,letterSpacing:".22em",textTransform:"uppercase",transition:"opacity .2s"}}
+                style={{background:"#E8E5E0",color:"#1a1a18",border:"none",padding:"13px 22px",fontSize:9,letterSpacing:".22em",textTransform:"uppercase",transition:"opacity .2s"}}
                 onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=1}>Subscribe</button>
             </form>
           )}
