@@ -1,321 +1,608 @@
 import { useState, useEffect, useRef } from "react";
 
-const poems = [
+// ── POEM DATA ─────────────────────────────────────────────────────────────────
+const POEMS = [
   {
-    id: 1,
-    title: "INBOUND",
-    excerpt: "I have one bag checked and one theory about myself\nI'm not ready to test yet.",
-    rotation: -2.1,
-    x: 8,
-    y: 12,
+    id: 1, num: "01", title: "INBOUND",
+    excerpt: ["I have one bag checked and one theory about myself", "I'm not ready to test yet."],
+    rotation: -2.3, left: "4%", top: "5%", width: "270px",
   },
   {
-    id: 2,
-    title: "INVENTORY, BROOKLYN, WEEK ONE",
-    excerpt: "a roach trap behind the fridge\nthat has been there long enough to become infrastructure.",
-    rotation: 1.4,
-    x: 55,
-    y: 28,
+    id: 2, num: "03", title: "FIRST MORNING, BROOKLYN",
+    excerpt: ["The rat has no interest in my history.", "", "I feel, for the first time in two years,", "genuinely less alone."],
+    rotation: 1.6, left: "48%", top: "2%", width: "290px",
   },
   {
-    id: 3,
-    title: "RANNOCH MOOR",
-    excerpt: "The ground is mostly not ground.\nYou walk on the skin of something\nthat has not decided to be land yet.",
-    rotation: -3.2,
-    x: 22,
-    y: 60,
+    id: 3, num: "09", title: "COCKROACH",
+    excerpt: ["something had passed through it in the night", "and not apologised", "and I was glad."],
+    rotation: -1.4, left: "24%", top: "40%", width: "255px",
   },
   {
-    id: 4,
-    title: "COCKROACH",
-    excerpt: "something had passed through it in the night\nand not apologised\nand I was glad.",
-    rotation: 2.8,
-    x: 62,
-    y: 70,
+    id: 4, num: "10", title: "BODEGA FLOWERS",
+    excerpt: ["Wrong colours. Wrong proportions.", "Alive.", "That's the whole requirement."],
+    rotation: 3.2, left: "60%", top: "46%", width: "248px",
   },
   {
-    id: 5,
-    title: "STILL HERE",
-    excerpt: "I am not monitoring.\nI am not waiting.\n\nThe tap drips.\nI let it.",
-    rotation: -1.1,
-    x: 35,
-    y: 85,
+    id: 5, num: "16", title: "WHAT THE BODY KEEPS",
+    excerpt: ["Not to feel something.", "To confirm the record is still there."],
+    rotation: -2.1, left: "6%", top: "72%", width: "260px",
+  },
+  {
+    id: 6, num: "20", title: "STILL HERE",
+    excerpt: ["I am not monitoring.", "I am not waiting.", "", "The tap drips.", "I let it."],
+    rotation: 1.1, left: "66%", top: "74%", width: "242px",
   },
 ];
 
-const COLLECTION = {
-  title: "THE ONLY LIFE",
-  tagline: "Twenty poems. Nature in New York. The body after the ward. What keeps going when the reason is unclear.",
-  price: "$18",
-  paypalLink: "#",
-};
+const SHOP_ITEMS = [
+  {
+    id: "collection",
+    type: "COLLECTION",
+    title: "The Only Life",
+    desc: "Twenty poems. Four movements: Arrival, Grotesque, Beautiful, The Only Life. Nature in New York City — the rat, the cockroach, the fig tree growing from the wall. Scotland and Yorkshire in the body. The body after the ward.",
+    price: "£12",
+    format: "Digital PDF · Instant delivery",
+    paypal: "https://paypal.me/Sophiasharkey330",
+  },
+  {
+    id: "prompts",
+    type: "PROMPT PACK",
+    title: "Write What Survives",
+    desc: "Prompts built around the same logic as The Only Life — object first, feeling never. For poets who want to write the thing without explaining it.",
+    price: "£8",
+    format: "Digital PDF · Instant delivery",
+    paypal: "https://paypal.me/Sophiasharkey330",
+  },
+  {
+    id: "intensive",
+    type: "MINI INTENSIVE",
+    title: "The Object Is the Meaning",
+    desc: "A condensed version of Bea's popular writing intensive. Video + exercises + feedback. You bring the object. We find what's inside it.",
+    price: "£45",
+    format: "Digital · Lifetime access",
+    paypal: "https://paypal.me/Sophiasharkey330",
+  },
+];
 
-export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
-  const [hoveredPoem, setHoveredPoem] = useState(null);
-  const [revealed, setRevealed] = useState(false);
-  const heroRef = useRef(null);
+// ── STYLES ────────────────────────────────────────────────────────────────────
+const CREAM = "#f7f5f1";
+const INK = "#1a1a18";
+const GREY = "#6b6b62";
+const LIGHT_GREY = "#9b9b90";
+const WHITE = "#ffffff";
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+const mono = { fontFamily: "'Georgia', 'Times New Roman', serif" };
 
-  useEffect(() => {
-    const timer = setTimeout(() => setRevealed(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+// ── COMPONENTS ────────────────────────────────────────────────────────────────
 
-  const heroOpacity = Math.max(0, 1 - scrollY / 400);
-  const heroTranslate = scrollY * 0.3;
+function Nav({ scrollY }) {
+  const solid = scrollY > 80;
+  return (
+    <nav style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 300,
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      padding: "26px 52px",
+      background: solid ? "rgba(247,245,241,0.97)" : "transparent",
+      backdropFilter: solid ? "blur(16px)" : "none",
+      borderBottom: solid ? `1px solid rgba(26,26,24,0.07)` : "none",
+      transition: "all 0.5s cubic-bezier(0.16,1,0.3,1)",
+      ...mono,
+    }}>
+      <a href="#" style={{ fontSize: "12px", letterSpacing: "0.24em", textTransform: "uppercase", color: INK, textDecoration: "none" }}>
+        Bea Sophia
+      </a>
+      <div style={{ display: "flex", gap: "44px" }}>
+        {[["Poems", "#poems"], ["Shop", "#shop"], ["About", "#about"], ["Journal", "#journal"]].map(([label, href]) => (
+          <a key={label} href={href} style={{
+            fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
+            color: LIGHT_GREY, textDecoration: "none", transition: "color 0.2s",
+          }}
+            onMouseEnter={e => e.target.style.color = INK}
+            onMouseLeave={e => e.target.style.color = LIGHT_GREY}
+          >{label}</a>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+function Hero({ scrollY }) {
+  const [in_, setIn] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setIn(true), 120); return () => clearTimeout(t); }, []);
+
+  const fade = Math.max(0, 1 - scrollY / 480);
+  const lift = scrollY * 0.22;
 
   return (
-    <div style={{ fontFamily: "'Georgia', 'Times New Roman', serif", background: "#faf9f7", minHeight: "100vh", overflowX: "hidden" }}>
+    <section style={{
+      height: "100vh", minHeight: "680px",
+      display: "flex", flexDirection: "column",
+      justifyContent: "flex-end",
+      padding: "0 52px 88px",
+      position: "relative", overflow: "hidden",
+      opacity: fade, transform: `translateY(${lift}px)`,
+      ...mono,
+    }}>
+      {/* Rule */}
+      <div style={{
+        position: "absolute", top: "50%", left: 0, right: 0,
+        height: "1px", background: `rgba(26,26,24,0.05)`,
+        transform: "translateY(-50%)",
+      }} />
 
-      {/* NAV */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        padding: "24px 48px", display: "flex", justifyContent: "space-between", alignItems: "center",
-        background: scrollY > 80 ? "rgba(250,249,247,0.95)" : "transparent",
-        backdropFilter: scrollY > 80 ? "blur(8px)" : "none",
-        borderBottom: scrollY > 80 ? "1px solid #e8e4dc" : "none",
-        transition: "all 0.4s ease",
+      {/* Content */}
+      <div style={{
+        opacity: in_ ? 1 : 0,
+        transform: in_ ? "translateY(0)" : "translateY(32px)",
+        transition: "all 1.6s cubic-bezier(0.16,1,0.3,1)",
+        maxWidth: "680px",
       }}>
-        <span style={{ fontSize: "13px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#1a1a1a", fontFamily: "Georgia, serif" }}>
-          Bea Sophia
-        </span>
-        <div style={{ display: "flex", gap: "40px" }}>
-          {["Collections", "About", "Journal", "Contact"].map(item => (
-            <a key={item} href={`#${item.toLowerCase()}`} style={{
-              fontSize: "12px", letterSpacing: "0.15em", textTransform: "uppercase",
-              color: "#4a4a4a", textDecoration: "none",
-              transition: "color 0.2s",
-            }}
-              onMouseEnter={e => e.target.style.color = "#1a1a1a"}
-              onMouseLeave={e => e.target.style.color = "#4a4a4a"}
-            >
-              {item}
-            </a>
-          ))}
+        <p style={{ fontSize: "10px", letterSpacing: "0.32em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 22px" }}>
+          A poetry collection
+        </p>
+        <h1 style={{
+          fontSize: "clamp(58px, 10vw, 118px)", fontWeight: "400",
+          lineHeight: "0.92", letterSpacing: "-0.035em",
+          color: INK, margin: "0 0 38px",
+        }}>
+          The<br />Only<br />Life.
+        </h1>
+        <p style={{
+          fontSize: "clamp(14px, 1.5vw, 17px)", color: GREY,
+          lineHeight: "1.9", maxWidth: "400px", margin: "0 0 52px",
+        }}>
+          Twenty poems. Nature in New York.
+          The body after the ward. What keeps going
+          when the reason is unclear.
+        </p>
+        <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
+          <a href="#shop" style={{
+            background: INK, color: CREAM,
+            padding: "15px 42px", textDecoration: "none",
+            fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase",
+            transition: "opacity 0.22s",
+          }}
+            onMouseEnter={e => e.target.style.opacity = "0.78"}
+            onMouseLeave={e => e.target.style.opacity = "1"}
+          >Buy — £12</a>
+          <a href="#poems" style={{
+            fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
+            color: GREY, textDecoration: "none",
+            borderBottom: `1px solid rgba(107,107,98,0.35)`, paddingBottom: "3px",
+            transition: "color 0.2s, border-color 0.2s",
+          }}
+            onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
+            onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.35)"; }}
+          >Read first</a>
         </div>
-      </nav>
+      </div>
 
-      {/* HERO — GASP SCROLL ENTRANCE */}
-      <section style={{
-        height: "100vh", display: "flex", flexDirection: "column",
-        justifyContent: "center", alignItems: "center",
-        padding: "0 48px", textAlign: "center", position: "relative",
-        opacity: heroOpacity, transform: `translateY(${heroTranslate}px)`,
+      {/* Scroll indicator */}
+      <div style={{
+        position: "absolute", bottom: "44px", right: "52px",
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "12px",
+        opacity: scrollY > 50 ? 0 : 0.35, transition: "opacity 0.4s",
       }}>
-        <div style={{
-          opacity: revealed ? 1 : 0, transform: revealed ? "translateY(0)" : "translateY(20px)",
-          transition: "all 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}>
-          <p style={{ fontSize: "11px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#9a9a8a", marginBottom: "32px", fontFamily: "Georgia, serif" }}>
-            Poetry
-          </p>
-          <h1 style={{
-            fontSize: "clamp(48px, 8vw, 96px)", fontWeight: "400", letterSpacing: "-0.02em",
-            color: "#1a1a1a", lineHeight: "1.0", margin: "0 0 24px", fontFamily: "Georgia, serif",
-          }}>
-            Bea Sophia
-          </h1>
-          <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "#6a6a5a", maxWidth: "480px", lineHeight: "1.7", margin: "0 auto 48px", fontFamily: "Georgia, serif" }}>
-            Poems. Rooms. Things that should not still be moving.
-          </p>
-          <button
-            onClick={() => document.getElementById('collections').scrollIntoView({ behavior: 'smooth' })}
-            style={{
-              background: "none", border: "1px solid #1a1a1a", color: "#1a1a1a",
-              padding: "14px 36px", fontSize: "11px", letterSpacing: "0.2em",
-              textTransform: "uppercase", cursor: "pointer", fontFamily: "Georgia, serif",
-              transition: "all 0.3s",
-            }}
-            onMouseEnter={e => { e.target.style.background = "#1a1a1a"; e.target.style.color = "#faf9f7"; }}
-            onMouseLeave={e => { e.target.style.background = "none"; e.target.style.color = "#1a1a1a"; }}
-          >
-            Enter
-          </button>
-        </div>
+        <span style={{ fontSize: "8px", letterSpacing: "0.28em", textTransform: "uppercase", color: LIGHT_GREY, writingMode: "vertical-rl" }}>Scroll</span>
+        <div style={{ width: "1px", height: "52px", background: INK, animation: "pulse 2.2s ease-in-out infinite" }} />
+      </div>
+    </section>
+  );
+}
 
-        {/* SCROLL INDICATOR */}
-        <div style={{
-          position: "absolute", bottom: "40px", left: "50%", transform: "translateX(-50%)",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
-          opacity: scrollY > 50 ? 0 : 0.5, transition: "opacity 0.3s",
-        }}>
-          <div style={{
-            width: "1px", height: "40px", background: "#1a1a1a",
-            animation: "pulse 2s ease-in-out infinite",
-          }} />
-          <p style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#4a4a4a", margin: 0 }}>Scroll</p>
-        </div>
-      </section>
+function ManuscriptsSection() {
+  const [hovered, setHovered] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
 
-      {/* MANUSCRIPTS ON THE FLOOR */}
-      <section style={{ minHeight: "100vh", position: "relative", padding: "80px 0" }}>
-        <div style={{ textAlign: "center", marginBottom: "80px" }}>
-          <p style={{ fontSize: "11px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#9a9a8a", marginBottom: "16px" }}>
-            Now Available
-          </p>
-          <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: "400", color: "#1a1a1a", margin: 0, fontFamily: "Georgia, serif" }}>
-            {COLLECTION.title}
-          </h2>
-        </div>
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.1 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
 
-        {/* SCATTERED MANUSCRIPT PAGES */}
-        <div style={{ position: "relative", minHeight: "700px", maxWidth: "900px", margin: "0 auto" }}>
-          {poems.map((poem, i) => {
-            const depth = (scrollY - 400) * 0.05;
-            const isHovered = hoveredPoem === poem.id;
-            return (
-              <div
-                key={poem.id}
-                onMouseEnter={() => setHoveredPoem(poem.id)}
-                onMouseLeave={() => setHoveredPoem(null)}
-                style={{
-                  position: "absolute",
-                  left: `${poem.x}%`,
-                  top: `${poem.y}%`,
-                  width: "280px",
-                  background: "#ffffff",
-                  padding: "32px",
-                  boxShadow: isHovered
-                    ? "0 20px 60px rgba(0,0,0,0.15)"
-                    : "0 4px 20px rgba(0,0,0,0.08)",
-                  transform: `rotate(${poem.rotation}deg) translateY(${isHovered ? -8 : 0}px)`,
-                  transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-                  cursor: "pointer",
-                  zIndex: isHovered ? 10 : i,
-                  borderTop: "3px solid #1a1a1a",
-                }}
-              >
-                <p style={{ fontSize: "9px", letterSpacing: "0.25em", textTransform: "uppercase", color: "#9a9a8a", margin: "0 0 16px" }}>
-                  {poem.id < 10 ? `0${poem.id}` : poem.id} — {COLLECTION.title}
-                </p>
-                <p style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#1a1a1a", margin: "0 0 16px", fontWeight: "600" }}>
-                  {poem.title}
-                </p>
-                <p style={{ fontSize: "13px", color: "#4a4a4a", lineHeight: "1.8", margin: 0, fontStyle: "italic", whiteSpace: "pre-line" }}>
-                  {poem.excerpt}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+  return (
+    <section id="poems" ref={ref} style={{
+      padding: "130px 52px 160px",
+      borderTop: `1px solid rgba(26,26,24,0.07)`,
+      ...mono,
+    }}>
+      <div style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+        marginBottom: "90px",
+      }}>
+        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 14px" }}>
+          From the collection
+        </p>
+        <h2 style={{ fontSize: "clamp(22px, 3.2vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>
+          Twenty poems, scattered.
+        </h2>
+      </div>
 
-        {/* COLLECTION CTA */}
-        <div id="collections" style={{ textAlign: "center", padding: "120px 48px 80px", maxWidth: "640px", margin: "0 auto" }}>
-          <p style={{ fontSize: "15px", color: "#4a4a4a", lineHeight: "1.9", marginBottom: "40px", fontFamily: "Georgia, serif" }}>
-            {COLLECTION.tagline}
-          </p>
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a
-              href={COLLECTION.paypalLink}
+      {/* The floor */}
+      <div style={{ position: "relative", height: "820px" }}>
+        {POEMS.map((poem, i) => {
+          const isHovered = hovered === poem.id;
+          return (
+            <div
+              key={poem.id}
+              onMouseEnter={() => setHovered(poem.id)}
+              onMouseLeave={() => setHovered(null)}
               style={{
-                background: "#1a1a1a", color: "#faf9f7",
-                padding: "16px 48px", fontSize: "11px", letterSpacing: "0.2em",
-                textTransform: "uppercase", textDecoration: "none", fontFamily: "Georgia, serif",
-                transition: "opacity 0.2s", display: "inline-block",
+                position: "absolute",
+                left: poem.left, top: poem.top,
+                width: poem.width,
+                background: WHITE,
+                padding: "26px 26px 30px",
+                transform: `rotate(${poem.rotation}deg) translateY(${isHovered ? -14 : 0}px) scale(${isHovered ? 1.02 : 1})`,
+                boxShadow: isHovered
+                  ? "0 28px 70px rgba(26,26,24,0.18)"
+                  : "0 2px 18px rgba(26,26,24,0.06)",
+                transition: "transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease",
+                zIndex: isHovered ? 30 : i + 1,
+                borderTop: `2px solid ${INK}`,
+                cursor: "default",
+                opacity: visible ? 1 : 0,
+                transitionDelay: `${i * 0.08}s`,
               }}
-              onMouseEnter={e => e.target.style.opacity = "0.85"}
-              onMouseLeave={e => e.target.style.opacity = "1"}
             >
-              Buy — {COLLECTION.price}
-            </a>
-            <button style={{
-              background: "none", border: "1px solid #c8c4bc", color: "#4a4a4a",
-              padding: "16px 48px", fontSize: "11px", letterSpacing: "0.2em",
-              textTransform: "uppercase", cursor: "pointer", fontFamily: "Georgia, serif",
-              transition: "all 0.2s",
-            }}
-              onMouseEnter={e => { e.target.style.borderColor = "#1a1a1a"; e.target.style.color = "#1a1a1a"; }}
-              onMouseLeave={e => { e.target.style.borderColor = "#c8c4bc"; e.target.style.color = "#4a4a4a"; }}
-            >
-              Read a poem
-            </button>
-          </div>
-        </div>
-      </section>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
+                <span style={{ fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: "#c8c5bc" }}>{poem.num}</span>
+                <span style={{ fontSize: "8px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#c8c5bc" }}>The Only Life</span>
+              </div>
+              <p style={{ fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", color: INK, margin: "0 0 14px", fontWeight: "600", lineHeight: "1.5" }}>
+                {poem.title}
+              </p>
+              <div style={{ borderTop: `1px solid rgba(26,26,24,0.07)`, paddingTop: "14px" }}>
+                {poem.excerpt.map((line, j) => (
+                  <p key={j} style={{
+                    fontSize: "13px", color: "#484840", lineHeight: "1.9",
+                    margin: 0, fontStyle: "italic",
+                    minHeight: line === "" ? "0.85em" : "auto",
+                  }}>{line}</p>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-      {/* THE PAGE GALLERY JOURNAL STRIP */}
-      <section style={{
-        background: "#1a1a1a", color: "#faf9f7", padding: "80px 48px",
-        textAlign: "center",
+      <div style={{ textAlign: "center", marginTop: "40px" }}>
+        <a href="#shop" style={{
+          fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
+          color: GREY, textDecoration: "none",
+          borderBottom: `1px solid rgba(107,107,98,0.3)`, paddingBottom: "3px",
+          transition: "color 0.2s, border-color 0.2s",
+        }}
+          onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
+          onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.3)"; }}
+        >
+          Get the full collection →
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function ShopSection() {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.08 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <section id="shop" ref={ref} style={{
+      padding: "130px 52px",
+      borderTop: `1px solid rgba(26,26,24,0.07)`,
+      background: WHITE,
+      ...mono,
+    }}>
+      <div style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: "all 0.9s cubic-bezier(0.16,1,0.3,1)",
+        marginBottom: "80px",
       }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#6a6a5a", marginBottom: "24px" }}>
+        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 14px" }}>Shop</p>
+        <h2 style={{ fontSize: "clamp(22px, 3vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>
+          Things worth buying.
+        </h2>
+      </div>
+
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        gap: "2px",
+      }}>
+        {SHOP_ITEMS.map((item, i) => (
+          <div key={item.id} style={{
+            padding: "52px 44px",
+            background: i === 0 ? INK : CREAM,
+            color: i === 0 ? CREAM : INK,
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(28px)",
+            transition: `all 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 0.1}s`,
+          }}>
+            <p style={{
+              fontSize: "9px", letterSpacing: "0.28em", textTransform: "uppercase",
+              color: i === 0 ? "rgba(247,245,241,0.45)" : LIGHT_GREY,
+              margin: "0 0 24px",
+            }}>{item.type}</p>
+            <h3 style={{ fontSize: "clamp(18px, 2vw, 26px)", fontWeight: "400", margin: "0 0 20px", letterSpacing: "-0.01em" }}>
+              {item.title}
+            </h3>
+            <p style={{
+              fontSize: "14px", lineHeight: "1.85",
+              color: i === 0 ? "rgba(247,245,241,0.7)" : GREY,
+              margin: "0 0 40px",
+            }}>{item.desc}</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px" }}>
+              <div>
+                <p style={{ fontSize: "22px", fontWeight: "400", margin: "0 0 6px" }}>{item.price}</p>
+                <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: i === 0 ? "rgba(247,245,241,0.4)" : LIGHT_GREY, margin: 0 }}>{item.format}</p>
+              </div>
+              <a href={item.paypal} style={{
+                display: "inline-block",
+                background: i === 0 ? CREAM : INK,
+                color: i === 0 ? INK : CREAM,
+                padding: "13px 32px", textDecoration: "none",
+                fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
+                transition: "opacity 0.22s",
+              }}
+                onMouseEnter={e => e.target.style.opacity = "0.78"}
+                onMouseLeave={e => e.target.style.opacity = "1"}
+              >Buy</a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function JournalBanner() {
+  return (
+    <section id="journal" style={{
+      background: INK, color: CREAM,
+      padding: "110px 52px",
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "80px",
+      alignItems: "center",
+      ...mono,
+    }}>
+      <div>
+        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(247,245,241,0.35)", margin: "0 0 20px" }}>
           Also
         </p>
-        <h3 style={{ fontSize: "clamp(20px, 3vw, 36px)", fontWeight: "400", margin: "0 0 20px", fontFamily: "Georgia, serif" }}>
-          The Page Gallery Journal
+        <h3 style={{ fontSize: "clamp(24px, 3.5vw, 48px)", fontWeight: "400", margin: "0 0 22px", lineHeight: "1.05", letterSpacing: "-0.02em" }}>
+          The Page<br />Gallery Journal
         </h3>
-        <p style={{ fontSize: "14px", color: "#9a9a8a", maxWidth: "400px", margin: "0 auto 40px", lineHeight: "1.8" }}>
+        <p style={{ fontSize: "15px", color: "rgba(247,245,241,0.55)", lineHeight: "1.85", margin: "0 0 44px", maxWidth: "380px" }}>
           A literary journal. Founded by Bea Sophia.
+          Serious work. Carefully chosen.
         </p>
         <a href="#" style={{
-          color: "#faf9f7", fontSize: "11px", letterSpacing: "0.2em",
-          textTransform: "uppercase", textDecoration: "none", borderBottom: "1px solid #6a6a5a",
-          paddingBottom: "4px", transition: "border-color 0.2s",
-        }}>
-          Visit the Journal →
-        </a>
-      </section>
+          display: "inline-block",
+          color: CREAM, textDecoration: "none",
+          fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
+          border: "1px solid rgba(247,245,241,0.2)",
+          padding: "14px 36px",
+          transition: "border-color 0.25s",
+        }}
+          onMouseEnter={e => e.target.style.borderColor = "rgba(247,245,241,0.65)"}
+          onMouseLeave={e => e.target.style.borderColor = "rgba(247,245,241,0.2)"}
+        >Visit the Journal</a>
+      </div>
 
-      {/* NEWSLETTER */}
-      <section style={{ padding: "100px 48px", textAlign: "center", maxWidth: "520px", margin: "0 auto" }}>
-        <p style={{ fontSize: "11px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#9a9a8a", marginBottom: "24px" }}>
-          Letters
+      {/* Stacked manuscript visual */}
+      <div style={{ position: "relative", height: "340px" }}>
+        {[3, 2, 1, 0].map(offset => (
+          <div key={offset} style={{
+            position: "absolute",
+            top: `${offset * 9}px`, left: `${offset * 7}px`,
+            right: `${-offset * 7}px`, bottom: 0,
+            background: offset === 0 ? "rgba(247,245,241,0.06)" : `rgba(247,245,241,0.02)`,
+            border: "1px solid rgba(247,245,241,0.08)",
+            borderTop: offset === 0 ? "2px solid rgba(247,245,241,0.3)" : "1px solid rgba(247,245,241,0.05)",
+            transform: `rotate(${(offset - 1.5) * 1.1}deg)`,
+            padding: offset === 0 ? "36px" : 0,
+          }}>
+            {offset === 0 && (
+              <>
+                <p style={{ fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(247,245,241,0.25)", margin: "0 0 24px" }}>
+                  The Page Gallery Journal
+                </p>
+                <p style={{ fontSize: "15px", fontWeight: "400", color: "rgba(247,245,241,0.7)", margin: "0 0 18px", lineHeight: "1.4", letterSpacing: "-0.01em" }}>
+                  New issue.<br />Now open.
+                </p>
+                <div style={{ width: "32px", height: "1px", background: "rgba(247,245,241,0.2)", margin: "0 0 20px" }} />
+                <p style={{ fontSize: "12px", color: "rgba(247,245,241,0.35)", lineHeight: "1.8", fontStyle: "italic", margin: 0 }}>
+                  Serious work.<br />Carefully chosen.
+                </p>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AboutSection() {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.1 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <section id="about" ref={ref} style={{
+      padding: "130px 52px",
+      borderTop: `1px solid rgba(26,26,24,0.07)`,
+      maxWidth: "720px",
+      ...mono,
+    }}>
+      <div style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+      }}>
+        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 20px" }}>About</p>
+        <h2 style={{ fontSize: "clamp(22px, 3vw, 38px)", fontWeight: "400", color: INK, margin: "0 0 36px", letterSpacing: "-0.015em", lineHeight: "1.12" }}>
+          Bea Sophia is a poet<br />based in New York City.
+        </h2>
+        <p style={{ fontSize: "16px", color: GREY, lineHeight: "1.9", margin: "0 0 20px" }}>
+          She is the founder of The Page Gallery Journal. She runs writing intensives,
+          and makes prompt packs and workbooks for poets who are serious about the work.
         </p>
-        <h3 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: "400", color: "#1a1a1a", margin: "0 0 20px", fontFamily: "Georgia, serif" }}>
+        <p style={{ fontSize: "16px", color: GREY, lineHeight: "1.9", margin: "0 0 44px" }}>
+          Her work is interested in survival — not as metaphor, but as fact.
+          The thing that kept going. The body that kept going.
+          What grows in the crack. What the crack costs.
+        </p>
+        <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer" style={{
+          fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
+          color: GREY, textDecoration: "none",
+          borderBottom: `1px solid rgba(107,107,98,0.35)`, paddingBottom: "3px",
+          transition: "color 0.2s, border-color 0.2s",
+        }}
+          onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
+          onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.35)"; }}
+        >@bsophialovesgnochi</a>
+      </div>
+    </section>
+  );
+}
+
+function NewsletterSection() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  return (
+    <section style={{
+      padding: "110px 52px",
+      borderTop: `1px solid rgba(26,26,24,0.07)`,
+      background: CREAM,
+      ...mono,
+    }}>
+      <div style={{ maxWidth: "520px" }}>
+        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 20px" }}>Letters</p>
+        <h3 style={{ fontSize: "clamp(20px, 2.8vw, 36px)", fontWeight: "400", color: INK, margin: "0 0 18px", letterSpacing: "-0.015em" }}>
           New work, when it exists.
         </h3>
-        <p style={{ fontSize: "14px", color: "#6a6a5a", lineHeight: "1.8", marginBottom: "40px" }}>
-          No frequency promised. Something worth reading when it arrives.
+        <p style={{ fontSize: "15px", color: GREY, lineHeight: "1.85", margin: "0 0 44px" }}>
+          No frequency promised. No updates, no musings.
+          Something worth reading when it arrives.
         </p>
-        <div style={{ display: "flex", gap: "0", maxWidth: "400px", margin: "0 auto" }}>
-          <input
-            type="email"
-            placeholder="Your email"
-            style={{
-              flex: 1, padding: "14px 20px", border: "1px solid #c8c4bc",
-              borderRight: "none", fontSize: "14px", fontFamily: "Georgia, serif",
-              background: "#ffffff", outline: "none", color: "#1a1a1a",
+        {submitted ? (
+          <p style={{ fontSize: "14px", color: GREY, fontStyle: "italic" }}>You're in.</p>
+        ) : (
+          <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true); }}
+            style={{ display: "flex", maxWidth: "420px" }}>
+            <input
+              type="email" required value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Your email"
+              style={{
+                flex: 1, padding: "15px 18px",
+                border: `1px solid rgba(26,26,24,0.16)`,
+                borderRight: "none", fontSize: "14px",
+                fontFamily: "Georgia, serif", background: WHITE,
+                outline: "none", color: INK,
+              }}
+            />
+            <button type="submit" style={{
+              background: INK, color: CREAM,
+              border: "none", padding: "15px 26px",
+              fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
+              cursor: "pointer", fontFamily: "Georgia, serif",
+              whiteSpace: "nowrap", transition: "opacity 0.2s",
             }}
-          />
-          <button style={{
-            background: "#1a1a1a", color: "#faf9f7", border: "none",
-            padding: "14px 24px", fontSize: "11px", letterSpacing: "0.15em",
-            textTransform: "uppercase", cursor: "pointer", fontFamily: "Georgia, serif",
-            whiteSpace: "nowrap",
-          }}>
-            Subscribe
-          </button>
-        </div>
-      </section>
+              onMouseEnter={e => e.target.style.opacity = "0.78"}
+              onMouseLeave={e => e.target.style.opacity = "1"}
+            >Subscribe</button>
+          </form>
+        )}
+      </div>
+    </section>
+  );
+}
 
-      {/* FOOTER */}
-      <footer style={{
-        padding: "40px 48px", borderTop: "1px solid #e8e4dc",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        flexWrap: "wrap", gap: "16px",
-      }}>
-        <span style={{ fontSize: "12px", color: "#9a9a8a", fontFamily: "Georgia, serif" }}>
-          © Bea Sophia
-        </span>
-        <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#6a6a5a", textDecoration: "none" }}>
-          Instagram
-        </a>
-      </footer>
+function Footer() {
+  return (
+    <footer style={{
+      padding: "36px 52px",
+      borderTop: `1px solid rgba(26,26,24,0.07)`,
+      display: "flex", justifyContent: "space-between",
+      alignItems: "center", flexWrap: "wrap", gap: "16px",
+      ...mono,
+    }}>
+      <span style={{ fontSize: "11px", color: LIGHT_GREY, letterSpacing: "0.1em" }}>© Bea Sophia</span>
+      <div style={{ display: "flex", gap: "36px" }}>
+        {[
+          ["Instagram", "https://instagram.com/bsophialovesgnochi"],
+          ["The Page Gallery Journal", "#"],
+        ].map(([label, href]) => (
+          <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined}
+            rel="noopener noreferrer"
+            style={{ fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: LIGHT_GREY, textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={e => e.target.style.color = INK}
+            onMouseLeave={e => e.target.style.color = LIGHT_GREY}
+          >{label}</a>
+        ))}
+      </div>
+    </footer>
+  );
+}
+
+// ── PAGE ──────────────────────────────────────────────────────────────────────
+export default function Home() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <div style={{ background: CREAM, color: INK, overflowX: "hidden", fontFamily: "Georgia, 'Times New Roman', serif" }}>
+      <Nav scrollY={scrollY} />
+      <Hero scrollY={scrollY} />
+      <ManuscriptsSection />
+      <ShopSection />
+      <JournalBanner />
+      <AboutSection />
+      <NewsletterSection />
+      <Footer />
 
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 0.3; transform: scaleY(1); }
-          50% { opacity: 0.8; transform: scaleY(1.1); }
-        }
-        * { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body { margin: 0; }
+        ::selection { background: rgba(26,26,24,0.1); }
+        input::placeholder { color: #b8b5ac; }
+        @keyframes pulse {
+          0%, 100% { transform: scaleY(1); opacity: 0.4; }
+          50% { transform: scaleY(1.2); opacity: 0.7; }
+        }
+        @media (max-width: 768px) {
+          nav { padding: 22px 24px !important; }
+          section { padding-left: 24px !important; padding-right: 24px !important; }
+          h1 { font-size: 52px !important; }
+          .manuscripts-floor { height: 1200px !important; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          * { transition: none !important; animation: none !important; }
+        }
       `}</style>
     </div>
   );
