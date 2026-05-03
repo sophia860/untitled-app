@@ -2,23 +2,18 @@ import { useState, useEffect, useRef } from "react";
 
 const DRAWING_WOLF    = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/5ee1557e0_whatsapp_image_1773625874009166.jpg";
 const DRAWING_FOREST  = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/3d55b220c_whatsapp_image_1375833884351215.jpg";
-const DRAWING_FIGURES = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/24cdd3ae8_whatsapp_image_855974756792686.jpg";
-const DRAWING_GALLERY = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/a2b7907fc_whatsapp_image_1446971447177747.jpg";
 
 const POEMS = [
   {
     id:1, num:"01", title:"Inbound", note:"Newark airport, gate C42",
-    drawing: DRAWING_WOLF,
     lines:["Newark airport smells like carpet cleaner","and the specific anxiety of people who are almost somewhere.","","I have one bag checked and one theory about myself","I'm not ready to test yet.","","The woman at passport control asks the purpose of my visit.","I say: to live here.","She stamps the page.","Doesn't look up."],
   },
   {
     id:2, num:"02", title:"Cockroach", note:"3am, Brooklyn, first week",
-    drawing: DRAWING_FIGURES,
     lines:["I watched one cross my kitchen floor","with such absolute certainty of direction —","not scurrying, not panicking,","just moving from one exact point to another","like it had somewhere specific to be.","","In the morning it was gone.","But something had passed through","and not apologised","and I was glad."],
   },
   {
     id:3, num:"03", title:"Still Here", note:"kitchen, Flatbush, Tuesday",
-    drawing: DRAWING_FOREST,
     lines:["The tap drips.","I have a reference number.","I believe in process.","","I stood in this kitchen once","imagining one more minute —","and I got the minute.","And the one after.","","The tap drips.","I let it."],
   },
 ];
@@ -376,25 +371,7 @@ export default function Home() {
                 </h2>
               </div>
 
-              {/* drawing — torn edge feel */}
-              <div style={{
-                height:"clamp(130px,20vw,220px)",
-                overflow:"hidden",
-                marginBottom:"36px",
-                position:"relative",
-                marginLeft: i%2===0 ? "0" : "clamp(40px,15vw,160px)",
-                marginRight: i%2===0 ? "clamp(40px,15vw,160px)" : "0",
-              }}>
-                <img src={poem.drawing} alt="" style={{
-                  width:"100%",height:"100%",objectFit:"cover",
-                  objectPosition:"center",
-                  opacity:.55,
-                  filter:"grayscale(40%) contrast(1.1)",
-                  mixBlendMode:"multiply",
-                }}/>
-                {/* sketchy overlay */}
-                <div style={{position:"absolute",inset:0,backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")",opacity:.6}}/>
-              </div>
+              
 
               {/* note */}
               <p style={{fontSize:"11px",fontStyle:"italic",opacity:.3,letterSpacing:".06em",marginBottom:"20px"}}>{poem.note}</p>
@@ -438,10 +415,7 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* full-bleed image */}
-          <div style={{height:"clamp(150px,22vw,260px)",overflow:"hidden",marginBottom:"44px",filter:"grayscale(30%) contrast(1.05)"}}>
-            <img src={DRAWING_GALLERY} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.45,mixBlendMode:"multiply"}}/>
-          </div>
+          
 
           <p style={{fontSize:"17px",lineHeight:2,opacity:.45,maxWidth:"480px",marginBottom:"12px"}}>Twenty poems. New York. The body after the ward.</p>
           <p style={{fontSize:"17px",lineHeight:2,opacity:.45,maxWidth:"480px",marginBottom:"48px"}}>Scotland in the bones. The city not yet earned. Things that survived and didn't know it yet.</p>
