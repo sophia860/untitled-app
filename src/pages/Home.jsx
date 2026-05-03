@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+const PHOTO_BEA = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/4415d70a3_whatsapp_image_1987811375197218.jpg";
+
 const DRAWING_WOLF    = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/5ee1557e0_whatsapp_image_1773625874009166.jpg";
 const DRAWING_FOREST  = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/3d55b220c_whatsapp_image_1375833884351215.jpg";
 
@@ -337,43 +339,57 @@ export default function Home() {
 
       {/* INTRO STRIP */}
       <div style={{
-        padding:"64px 32px",
         background:"#fff",
-        position:"relative",
         borderTop:"1px solid rgba(17,17,17,.06)",
         overflow:"hidden",
       }}>
-        <div style={{position:"absolute",top:"10px",right:"5%",opacity:.05}}>
-          <Scribble path={SCRIBBLES[6]} size={180} animate={false}/>
-        </div>
-        <div style={{maxWidth:"680px"}}>
-          <p style={{fontSize:"10px",letterSpacing:".25em",textTransform:"uppercase",opacity:.3,marginBottom:"20px",display:"flex",alignItems:"center",gap:"8px"}}>
-            <span style={{display:"inline-block",width:5,height:5,borderRadius:"50%",background:"#111"}}/>
-            Who I am
-          </p>
-          <p style={{fontSize:"clamp(20px,3vw,32px)",fontStyle:"italic",lineHeight:1.65,marginBottom:"20px"}}>
-            I'm Bea Sophia — poet, founder of The Page Gallery Journal.
-          </p>
-          <p style={{fontSize:"16px",lineHeight:1.9,opacity:.5,marginBottom:"16px"}}>
-            I write poems about the things people feel but don't say. The conversations that happen in the wrong order. The thoughts that die with the person who had them.
-          </p>
-          <p style={{fontSize:"16px",lineHeight:1.9,opacity:.5,marginBottom:"28px"}}>
-            When I got sick, I started writing them down. This is where they live.
-          </p>
-          <div style={{display:"flex",gap:"24px",flexWrap:"wrap"}}>
-            <a href="#poems" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.3)",paddingBottom:"3px",opacity:.6,transition:"opacity .2s"}}
-              onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.6}>
-              Read free poems
-            </a>
-            <a href="#collection" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:"3px",opacity:.35,transition:"opacity .2s"}}
-              onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>
-              Buy the collection — £12
-            </a>
-            <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-              style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",opacity:.25,transition:"opacity .2s"}}
-              onMouseEnter={e=>e.currentTarget.style.opacity=.6} onMouseLeave={e=>e.currentTarget.style.opacity=.25}>
-              Instagram ↗
-            </a>
+        {/* photo full bleed + text side by side */}
+        <div style={{display:"flex",flexWrap:"wrap",minHeight:"clamp(400px,70vh,680px)"}}>
+
+          {/* photo — left half */}
+          <div style={{flex:"0 0 clamp(200px,42%,520px)",position:"relative",overflow:"hidden",minHeight:"360px"}}>
+            <img src={PHOTO_BEA} alt="Bea Sophia" style={{
+              width:"100%",height:"100%",
+              objectFit:"cover",objectPosition:"center top",
+              display:"block",
+            }}/>
+            {/* grain overlay */}
+            <div style={{position:"absolute",inset:0,backgroundImage:"url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E")",pointerEvents:"none"}}/>
+          </div>
+
+          {/* text — right half */}
+          <div style={{flex:1,minWidth:"260px",padding:"56px 40px",display:"flex",flexDirection:"column",justifyContent:"center",position:"relative"}}>
+            <div style={{position:"absolute",top:"20px",right:"4%",opacity:.04,pointerEvents:"none"}}>
+              <Scribble path={SCRIBBLES[6]} size={160} animate={false}/>
+            </div>
+            <p style={{fontSize:"10px",letterSpacing:".25em",textTransform:"uppercase",opacity:.3,marginBottom:"20px",display:"flex",alignItems:"center",gap:"8px"}}>
+              <span style={{display:"inline-block",width:5,height:5,borderRadius:"50%",background:"#111"}}/>
+              Bea Sophia
+            </p>
+            <p style={{fontSize:"clamp(22px,3vw,34px)",fontStyle:"italic",lineHeight:1.5,marginBottom:"20px"}}>
+              Poet. Founder of<br/>The Page Gallery Journal.
+            </p>
+            <p style={{fontSize:"16px",lineHeight:1.95,opacity:.48,marginBottom:"16px"}}>
+              I write poems about the things people feel but don't say. The conversations that happen in the wrong order. The thoughts that die with the person who had them.
+            </p>
+            <p style={{fontSize:"16px",lineHeight:1.95,opacity:.38,marginBottom:"36px"}}>
+              When I got sick, I started writing them down.<br/>This is where they live.
+            </p>
+            <div style={{display:"flex",gap:"20px",flexWrap:"wrap"}}>
+              <a href="#poems" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.35)",paddingBottom:"3px",opacity:.65,transition:"opacity .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.65}>
+                Read free poems
+              </a>
+              <a href="#collection" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:"3px",opacity:.35,transition:"opacity .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>
+                Buy the collection — £12
+              </a>
+              <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
+                style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",opacity:.22,transition:"opacity .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.opacity=.55} onMouseLeave={e=>e.currentTarget.style.opacity=.22}>
+                Instagram ↗
+              </a>
+            </div>
           </div>
         </div>
       </div>
