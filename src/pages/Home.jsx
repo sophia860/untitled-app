@@ -137,17 +137,17 @@ const SHOP_ITEMS = [
   },
 ];
 
-function PoemCard({ poem }) {
+function PoemCard({ poem, colors }) {
   const [open, setOpen] = useState(false);
+  const col = colors || C;
   return (
     <div style={{
-      background: C.white,
-      borderTop: `2px solid ${open ? C.thread : C.ink}`,
-      border: "1px solid rgba(26,26,24,0.1)",
+      background: col.white,
+      border: `1px solid ${col.inkGhost}`,
       borderTopWidth: "2px",
-      borderTopColor: open ? C.thread : C.ink,
+      borderTopColor: open ? col.thread : col.ink,
       marginBottom: "12px",
-      transition: "border-color 0.3s",
+      transition: "border-color 0.3s, background 0.3s",
     }}>
       <button
         onClick={() => setOpen(o => !o)}
@@ -158,24 +158,24 @@ function PoemCard({ poem }) {
         }}
       >
         <div>
-          <p style={{ ...mono, fontSize: "9px", color: C.lightGrey, margin: "0 0 4px", letterSpacing: "0.18em" }}>{poem.num} · {poem.postmark}</p>
-          <p style={{ ...serif, fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: "600", color: C.ink, margin: "0 0 4px" }}>{poem.title}</p>
-          <p style={{ ...kalam, fontSize: "13px", color: C.lightGrey, margin: 0 }}>— {poem.annotation}</p>
+          <p style={{ ...mono, fontSize: "9px", color: col.lightGrey, margin: "0 0 4px", letterSpacing: "0.18em" }}>{poem.num} · {poem.postmark}</p>
+          <p style={{ ...serif, fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: "600", color: col.ink, margin: "0 0 4px" }}>{poem.title}</p>
+          <p style={{ ...kalam, fontSize: "13px", color: col.lightGrey, margin: 0 }}>— {poem.annotation}</p>
         </div>
-        <span style={{ ...serif, fontSize: "18px", color: C.lightGrey, marginLeft: "12px", flexShrink: 0, marginTop: "2px" }}>{open ? "−" : "+"}</span>
+        <span style={{ ...serif, fontSize: "18px", color: col.lightGrey, marginLeft: "12px", flexShrink: 0, marginTop: "2px" }}>{open ? "−" : "+"}</span>
       </button>
 
       {open && (
         <div style={{ padding: "0 22px 28px" }}>
-          <div style={{ borderTop: `1px solid ${C.inkGhost}`, paddingTop: "18px", marginBottom: "20px" }}>
+          <div style={{ borderTop: `1px solid ${col.inkGhost}`, paddingTop: "18px", marginBottom: "20px" }}>
             {poem.lines.map((line, j) => (
-              <p key={j} style={{ ...serif, fontSize: "16px", color: C.ink, lineHeight: "1.95", margin: 0, minHeight: line === "" ? "1em" : "auto" }}>{line}</p>
+              <p key={j} style={{ ...serif, fontSize: "16px", color: col.ink, lineHeight: "1.95", margin: 0, minHeight: line === "" ? "1em" : "auto" }}>{line}</p>
             ))}
           </div>
-          <div style={{ borderTop: `1px solid ${C.inkGhost}`, paddingTop: "16px" }}>
-            <p style={{ ...mono, fontSize: "8px", color: C.lightGrey, margin: "0 0 4px", letterSpacing: "0.16em" }}>TO:</p>
-            <p style={{ ...kalam, fontSize: "14px", color: C.ink, margin: "0 0 16px" }}>{poem.to}</p>
-            <a href="#archive" style={{ ...serif, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: C.ink, textDecoration: "none", borderBottom: `1px solid ${C.ink}`, paddingBottom: "2px" }}>
+          <div style={{ borderTop: `1px solid ${col.inkGhost}`, paddingTop: "16px" }}>
+            <p style={{ ...mono, fontSize: "8px", color: col.lightGrey, margin: "0 0 4px", letterSpacing: "0.16em" }}>TO:</p>
+            <p style={{ ...kalam, fontSize: "14px", color: col.ink, margin: "0 0 16px" }}>{poem.to}</p>
+            <a href="#archive" style={{ ...serif, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: col.ink, textDecoration: "none", borderBottom: `1px solid ${col.ink}`, paddingBottom: "2px" }}>
               Get the full collection →
             </a>
           </div>
@@ -192,6 +192,18 @@ export default function Home() {
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
   const [noteSent, setNoteSent] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const D = darkMode ? {
+    paper:    "#0f0e0c",
+    ink:      "#f0ebe1",
+    inkGhost: "rgba(240,235,225,0.1)",
+    thread:   "#e05a48",
+    grey:     "#a09a93",
+    lightGrey:"#6b6560",
+    white:    "#1a1916",
+    linen:    "#161410",
+  } : C;
 
   useEffect(() => {
     if (!document.getElementById("bea-fonts")) {
@@ -214,7 +226,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ background: C.paper, color: C.ink, overflowX: "hidden", minHeight: "100vh" }}>
+    <div style={{ background: D.paper, color: D.ink, overflowX: "hidden", minHeight: "100vh", transition: "background 0.3s, color 0.3s" }}>
       <style>{`
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
         html{scroll-behavior:smooth;}
@@ -225,97 +237,106 @@ export default function Home() {
       `}</style>
 
       {/* NAV */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(240,235,225,0.97)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${C.inkGhost}`, padding: "18px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <a href="#" style={{ ...caveat, fontSize: "22px", fontWeight: "700", color: C.ink, textDecoration: "none" }}>Bea Sophia</a>
-        <button onClick={() => setMenuOpen(o => !o)} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", flexDirection: "column", gap: "5px" }}>
-          {[0,1,2].map(i => (
-            <div key={i} style={{ width: "22px", height: "1.5px", background: C.ink, transition: "opacity 0.2s", opacity: menuOpen && i===1 ? 0 : 1 }} />
-          ))}
-        </button>
+      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: darkMode ? "rgba(15,14,12,0.97)" : "rgba(240,235,225,0.97)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${D.inkGhost}`, padding: "18px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "background 0.3s" }}>
+        <a href="#" style={{ ...caveat, fontSize: "22px", fontWeight: "700", color: D.ink, textDecoration: "none" }}>Bea Sophia</a>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {/* Dark mode toggle */}
+          <button onClick={() => setDarkMode(d => !d)} aria-label="Toggle dark mode"
+            style={{ display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", cursor: "pointer", padding: "4px" }}>
+            <span style={{ ...serif, fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: D.lightGrey }}>{darkMode ? "Day" : "Eve"}</span>
+            <div style={{ width: "36px", height: "20px", borderRadius: "10px", background: darkMode ? D.thread : D.inkGhost, border: `1px solid ${darkMode ? D.thread : "rgba(26,26,24,0.2)"}`, position: "relative", transition: "background 0.3s" }}>
+              <div style={{ position: "absolute", top: "3px", left: darkMode ? "17px" : "3px", width: "12px", height: "12px", borderRadius: "50%", background: darkMode ? D.ink : D.grey, transition: "left 0.3s" }} />
+            </div>
+          </button>
+          <button onClick={() => setMenuOpen(o => !o)} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", flexDirection: "column", gap: "5px" }}>
+            {[0,1,2].map(i => (
+              <div key={i} style={{ width: "22px", height: "1.5px", background: D.ink, transition: "opacity 0.2s", opacity: menuOpen && i===1 ? 0 : 1 }} />
+            ))}
+          </button>
+        </div>
       </nav>
 
       {menuOpen && (
-        <div style={{ background: C.paper, borderBottom: `1px solid ${C.inkGhost}`, padding: "20px 24px 24px" }}>
+        <div style={{ background: D.paper, borderBottom: `1px solid ${D.inkGhost}`, padding: "20px 24px 24px", transition: "background 0.3s" }}>
           {[["Read free poems","#reading-room"],["Buy the collection","#archive"],["The Journal","#gallery-journal"],["About","#about"]].map(([l,h]) => (
-            <a key={l} href={h} onClick={() => setMenuOpen(false)} style={{ ...serif, display: "block", fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", color: C.ink, textDecoration: "none", padding: "12px 0", borderBottom: `1px solid ${C.inkGhost}` }}>{l}</a>
+            <a key={l} href={h} onClick={() => setMenuOpen(false)} style={{ ...serif, display: "block", fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", color: D.ink, textDecoration: "none", padding: "12px 0", borderBottom: `1px solid ${D.inkGhost}` }}>{l}</a>
           ))}
         </div>
       )}
 
       {/* HERO */}
-      <section style={{ padding: "60px 24px 64px", position: "relative", overflow: "hidden" }}>
-        {/* Thread line decoration */}
-        <div style={{ position: "absolute", top: "80px", left: 0, right: 0, height: "1px", background: C.thread, opacity: 0.2 }} />
-        <div style={{ position: "absolute", top: 0, bottom: 0, left: "24px", width: "1px", background: C.thread, opacity: 0.12 }} />
+      <section style={{ padding: "60px 24px 64px", position: "relative", overflow: "hidden", background: D.paper, transition: "background 0.3s" }}>
+        <div style={{ position: "absolute", top: "80px", left: 0, right: 0, height: "1px", background: D.thread, opacity: 0.2 }} />
+        <div style={{ position: "absolute", top: 0, bottom: 0, left: "24px", width: "1px", background: D.thread, opacity: 0.12 }} />
 
-        <p style={{ ...serif, fontSize: "9px", letterSpacing: "0.34em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 20px" }}>
+        <p style={{ ...serif, fontSize: "9px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 20px" }}>
           The Page Gallery · A collection of minds
         </p>
-        <h1 style={{ ...caveat, fontSize: "clamp(44px, 12vw, 72px)", fontWeight: "700", lineHeight: "1.05", color: C.ink, margin: "0 0 20px" }}>
+        <h1 style={{ ...caveat, fontSize: "clamp(44px, 12vw, 72px)", fontWeight: "700", lineHeight: "1.05", color: D.ink, margin: "0 0 20px" }}>
           What happens<br />to a thought<br />when the person<br />who had it dies?
         </h1>
-        <div style={{ width: "44px", height: "1.5px", background: C.thread, margin: "0 0 20px" }} />
-        <p style={{ ...serif, fontSize: "16px", color: C.grey, lineHeight: "1.8", margin: "0 0 36px", maxWidth: "340px" }}>
+        <div style={{ width: "44px", height: "1.5px", background: D.thread, margin: "0 0 20px" }} />
+        <p style={{ ...serif, fontSize: "16px", color: D.grey, lineHeight: "1.8", margin: "0 0 36px", maxWidth: "340px" }}>
           Walk around inside someone else's mind. The poems are what we found.
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <a href="#reading-room" style={{ ...serif, display: "block", background: C.ink, color: C.white, padding: "16px 28px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", textAlign: "center" }}>
+          <a href="#reading-room" style={{ ...serif, display: "block", background: D.ink, color: D.white, padding: "16px 28px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", textAlign: "center" }}>
             Read free poems
           </a>
-          <a href="#archive" style={{ ...serif, display: "block", border: `1px solid rgba(26,26,24,0.25)`, color: C.ink, padding: "16px 28px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", textAlign: "center" }}>
+          <a href="#archive" style={{ ...serif, display: "block", border: `1px solid ${D.inkGhost}`, color: D.ink, padding: "16px 28px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", textAlign: "center" }}>
             Buy the collection — £12
           </a>
         </div>
 
-        {/* Binder rings — right edge */}
         <div aria-hidden="true" style={{ position: "absolute", right: "8px", top: "40px", bottom: "40px", display: "flex", flexDirection: "column", justifyContent: "space-evenly", alignItems: "center" }}>
           {[0,1,2,3].map(i => (
-            <div key={i} style={{ width: "14px", height: "14px", borderRadius: "50%", border: "1.5px solid rgba(26,26,24,0.16)" }} />
+            <div key={i} style={{ width: "14px", height: "14px", borderRadius: "50%", border: `1.5px solid ${D.inkGhost}` }} />
           ))}
         </div>
       </section>
 
       {/* READING ROOM */}
-      <section id="reading-room" style={{ background: C.linen, padding: "56px 24px 64px", borderTop: `1px solid ${C.inkGhost}` }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 10px" }}>Reading Room · Free</p>
-        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: C.ink, margin: "0 0 8px", lineHeight: "1.05" }}>Pick one up.</h2>
-        <p style={{ ...serif, fontSize: "13px", color: C.lightGrey, margin: "0 0 32px", lineHeight: "1.6" }}>
+      <section id="reading-room" style={{ background: D.linen, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
+        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>Reading Room · Free</p>
+        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: D.ink, margin: "0 0 8px", lineHeight: "1.05" }}>Pick one up.</h2>
+        <p style={{ ...serif, fontSize: "13px", color: D.lightGrey, margin: "0 0 32px", lineHeight: "1.6" }}>
           Four poems from the collection. The rest are inside.
         </p>
-        {FREE_POEMS.map(poem => <PoemCard key={poem.id} poem={poem} />)}
+        {FREE_POEMS.map(poem => <PoemCard key={poem.id} poem={poem} colors={D} />)}
         <div style={{ marginTop: "24px", textAlign: "center" }}>
-          <a href="#archive" style={{ ...serif, fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: C.grey, textDecoration: "none", borderBottom: "1px solid rgba(107,101,96,0.3)", paddingBottom: "2px" }}>
+          <a href="#archive" style={{ ...serif, fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: D.grey, textDecoration: "none", borderBottom: `1px solid ${D.inkGhost}`, paddingBottom: "2px" }}>
             Twenty poems in the full collection →
           </a>
         </div>
       </section>
 
       {/* ARCHIVE */}
-      <section id="archive" style={{ background: C.ink, color: C.white, padding: "56px 24px 64px" }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: "rgba(240,235,225,0.3)", margin: "0 0 10px" }}>The Archive</p>
-        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: C.white, margin: "0 0 36px", lineHeight: "1.05" }}>Things worth keeping.</h2>
-        {SHOP_ITEMS.map((item, i) => (
+      <section id="archive" style={{ background: D.ink, color: D.white, padding: "56px 24px 64px", transition: "background 0.3s" }}>
+        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>The Archive</p>
+        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: D.white, margin: "0 0 36px", lineHeight: "1.05" }}>Things worth keeping.</h2>
+        {SHOP_ITEMS.map((item) => (
           <div key={item.id} style={{
-            background: item.featured ? C.paper : "rgba(240,235,225,0.05)",
-            color: item.featured ? C.ink : C.white,
-            borderTop: item.featured ? `3px solid ${C.thread}` : "1px solid rgba(240,235,225,0.1)",
+            background: item.featured ? D.paper : "rgba(240,235,225,0.05)",
+            color: item.featured ? D.ink : D.white,
+            borderTop: item.featured ? `3px solid ${D.thread}` : `1px solid ${D.inkGhost}`,
             padding: "28px 24px",
             marginBottom: "2px",
+            transition: "background 0.3s",
           }}>
-            <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.26em", textTransform: "uppercase", color: item.featured ? C.lightGrey : "rgba(240,235,225,0.3)", margin: "0 0 10px" }}>{item.label}</p>
+            <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.26em", textTransform: "uppercase", color: item.featured ? D.lightGrey : D.lightGrey, margin: "0 0 10px" }}>{item.label}</p>
             <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(26px, 7vw, 42px)", margin: "0 0 12px", lineHeight: "1.05" }}>{item.title}</h3>
-            <p style={{ ...kalam, fontSize: "15px", color: item.featured ? C.grey : "rgba(240,235,225,0.5)", lineHeight: "1.7", margin: "0 0 14px", fontStyle: "italic" }}>{item.fragment}</p>
-            <p style={{ ...serif, fontSize: "13px", lineHeight: "1.8", color: item.featured ? C.grey : "rgba(240,235,225,0.5)", margin: "0 0 20px" }}>{item.desc}</p>
+            <p style={{ ...kalam, fontSize: "15px", color: item.featured ? D.grey : D.grey, lineHeight: "1.7", margin: "0 0 14px", fontStyle: "italic" }}>{item.fragment}</p>
+            <p style={{ ...serif, fontSize: "13px", lineHeight: "1.8", color: item.featured ? D.grey : D.grey, margin: "0 0 20px" }}>{item.desc}</p>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
               <div>
                 <p style={{ ...serif, fontSize: "22px", fontWeight: "300", margin: "0 0 2px" }}>{item.price}</p>
-                <p style={{ ...serif, fontSize: "9px", color: item.featured ? C.lightGrey : "rgba(240,235,225,0.28)", margin: 0 }}>{item.format}</p>
+                <p style={{ ...serif, fontSize: "9px", color: D.lightGrey, margin: 0 }}>{item.format}</p>
               </div>
               <a href={item.paypal} target="_blank" rel="noopener noreferrer" style={{
                 ...serif, display: "inline-block",
-                background: item.featured ? C.ink : "rgba(240,235,225,0.1)",
-                color: C.white,
-                border: item.featured ? "none" : "1px solid rgba(240,235,225,0.2)",
+                background: item.featured ? D.ink : D.inkGhost,
+                color: D.white,
+                border: item.featured ? "none" : `1px solid ${D.inkGhost}`,
                 padding: "14px 32px", textDecoration: "none", fontSize: "10px",
                 letterSpacing: "0.2em", textTransform: "uppercase",
               }}>Buy</a>
@@ -325,66 +346,65 @@ export default function Home() {
       </section>
 
       {/* JOURNAL */}
-      <section id="gallery-journal" style={{ background: C.paper, padding: "56px 24px 64px", borderTop: `1px solid ${C.inkGhost}` }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 10px" }}>The Page Gallery Journal</p>
-        <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 56px)", margin: "0 0 14px", lineHeight: "1.05" }}>
+      <section id="gallery-journal" style={{ background: D.paper, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
+        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>The Page Gallery Journal</p>
+        <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 56px)", margin: "0 0 14px", lineHeight: "1.05", color: D.ink }}>
           Nobody gets to walk around inside someone else's mind.
         </h3>
-        <div style={{ width: "36px", height: "1.5px", background: C.thread, margin: "0 0 20px" }} />
-        <p style={{ ...serif, fontSize: "15px", color: C.grey, lineHeight: "1.9", margin: "0 0 14px" }}>
+        <div style={{ width: "36px", height: "1.5px", background: D.thread, margin: "0 0 20px" }} />
+        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.9", margin: "0 0 14px" }}>
           When I got sick, I realised that when people die, all their thoughts die with them.
         </p>
-        <p style={{ ...serif, fontSize: "15px", color: C.grey, lineHeight: "1.9", margin: "0 0 28px" }}>
+        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.9", margin: "0 0 28px" }}>
           I started collecting fragments — conversations overheard, things said in the wrong order, thoughts that had nowhere to go. That became The Page Gallery Journal.
         </p>
-        {/* Fragment card */}
-        <div style={{ background: C.white, borderTop: `2px solid ${C.ink}`, padding: "24px", marginBottom: "28px" }}>
-          <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 12px" }}>Fragment — 047</p>
-          <p style={{ ...caveat, fontWeight: "600", fontSize: "22px", color: C.ink, margin: "0 0 10px", lineHeight: "1.35" }}>She said it like she was correcting a mistake.</p>
-          <p style={{ ...kalam, fontSize: "13px", color: C.lightGrey, margin: 0 }}>— overheard, Pret a Manger, Soho</p>
+        <div style={{ background: D.white, borderTop: `2px solid ${D.ink}`, padding: "24px", marginBottom: "28px", transition: "background 0.3s" }}>
+          <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 12px" }}>Fragment — 047</p>
+          <p style={{ ...caveat, fontWeight: "600", fontSize: "22px", color: D.ink, margin: "0 0 10px", lineHeight: "1.35" }}>She said it like she was correcting a mistake.</p>
+          <p style={{ ...kalam, fontSize: "13px", color: D.lightGrey, margin: 0 }}>— overheard, Pret a Manger, Soho</p>
         </div>
-        <a href="#" style={{ ...serif, display: "inline-block", border: "1px solid rgba(26,26,24,0.22)", color: C.ink, textDecoration: "none", padding: "14px 28px", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+        <a href="#" style={{ ...serif, display: "inline-block", border: `1px solid ${D.inkGhost}`, color: D.ink, textDecoration: "none", padding: "14px 28px", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase" }}>
           Visit the Journal
         </a>
       </section>
 
       {/* ABOUT */}
-      <section id="about" style={{ background: C.linen, padding: "56px 24px 64px", borderTop: `1px solid ${C.inkGhost}` }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 10px" }}>About</p>
-        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: C.ink, margin: "0 0 20px", lineHeight: "1.05" }}>
+      <section id="about" style={{ background: D.linen, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
+        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>About</p>
+        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: D.ink, margin: "0 0 20px", lineHeight: "1.05" }}>
           Bea Sophia.<br />New York City.
         </h2>
-        <p style={{ ...serif, fontSize: "15px", color: C.grey, lineHeight: "1.95", margin: "0 0 14px" }}>
+        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.95", margin: "0 0 14px" }}>
           I got sick and I started collecting. Fragments of conversation. Things people said and didn't know they'd said. Thoughts that live in one mind and die there.
         </p>
-        <p style={{ ...serif, fontSize: "15px", color: C.grey, lineHeight: "1.95", margin: "0 0 14px" }}>
+        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.95", margin: "0 0 14px" }}>
           The Page Gallery Journal was the first attempt to stop that. These poems are the second.
         </p>
-        <p style={{ ...serif, fontSize: "15px", color: C.grey, lineHeight: "1.95", margin: "0 0 28px" }}>
+        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.95", margin: "0 0 28px" }}>
           I also run writing intensives for poets who are serious about the work. I adore spaghetti.
         </p>
         <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-          style={{ ...serif, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: C.grey, textDecoration: "none", borderBottom: "1px solid rgba(107,101,96,0.28)", paddingBottom: "2px" }}>
+          style={{ ...serif, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: D.grey, textDecoration: "none", borderBottom: `1px solid ${D.inkGhost}`, paddingBottom: "2px" }}>
           @bsophialovesgnochi
         </a>
       </section>
 
       {/* NEWSLETTER */}
-      <section style={{ background: C.paper, padding: "56px 24px 64px", borderTop: `1px solid ${C.inkGhost}` }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 10px" }}>Letters</p>
-        <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 56px)", color: C.ink, margin: "0 0 14px", lineHeight: "1.05" }}>
+      <section style={{ background: D.paper, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
+        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>Letters</p>
+        <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 56px)", color: D.ink, margin: "0 0 14px", lineHeight: "1.05" }}>
           New fragments,<br />when they exist.
         </h3>
-        <p style={{ ...serif, fontSize: "15px", color: C.grey, lineHeight: "1.85", margin: "0 0 28px" }}>
+        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.85", margin: "0 0 28px" }}>
           No schedule. No newsletter voice. The thing itself when it's ready.
         </p>
         {done ? (
-          <p style={{ ...serif, fontSize: "15px", color: C.grey, fontStyle: "italic" }}>You're in.</p>
+          <p style={{ ...serif, fontSize: "15px", color: D.grey, fontStyle: "italic" }}>You're in.</p>
         ) : (
           <form onSubmit={e => { e.preventDefault(); if (email) setDone(true); }} style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "360px" }}>
             <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" aria-label="Email address"
-              style={{ ...serif, padding: "14px 16px", border: "1px solid rgba(26,26,24,0.18)", fontSize: "15px", background: C.white, outline: "none", color: C.ink }} />
-            <button type="submit" style={{ ...serif, background: C.ink, color: C.white, border: "none", padding: "15px", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer" }}>
+              style={{ ...serif, padding: "14px 16px", border: `1px solid ${D.inkGhost}`, fontSize: "15px", background: D.white, outline: "none", color: D.ink }} />
+            <button type="submit" style={{ ...serif, background: D.ink, color: D.white, border: "none", padding: "15px", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer" }}>
               Subscribe
             </button>
           </form>
@@ -392,29 +412,29 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ background: C.paper, padding: "24px", borderTop: `1px solid ${C.inkGhost}`, display: "flex", flexDirection: "column", gap: "12px" }}>
-        <span style={{ ...serif, fontSize: "11px", color: C.lightGrey }}>© Bea Sophia</span>
+      <footer style={{ background: D.paper, padding: "24px", borderTop: `1px solid ${D.inkGhost}`, display: "flex", flexDirection: "column", gap: "12px", transition: "background 0.3s" }}>
+        <span style={{ ...serif, fontSize: "11px", color: D.lightGrey }}>© Bea Sophia</span>
         <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
           {[["Instagram","https://instagram.com/bsophialovesgnochi"],["The Page Gallery Journal","#"]].map(([l,h]) => (
             <a key={l} href={h} target={h.startsWith("http")?"_blank":undefined} rel="noopener noreferrer"
-              style={{ ...serif, fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: C.lightGrey, textDecoration: "none" }}>{l}</a>
+              style={{ ...serif, fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: D.lightGrey, textDecoration: "none" }}>{l}</a>
           ))}
         </div>
       </footer>
 
       {/* FEEDBACK BUTTON */}
       <button onClick={() => setNoteOpen(o => !o)}
-        style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 999, width: "44px", height: "44px", borderRadius: "50%", background: C.ink, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 16px rgba(26,26,24,0.2)" }}>
-        <span style={{ color: C.white, fontSize: noteOpen ? "18px" : "14px" }}>{noteOpen ? "×" : "✎"}</span>
+        style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 999, width: "44px", height: "44px", borderRadius: "50%", background: D.ink, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 16px rgba(26,26,24,0.2)" }}>
+        <span style={{ color: D.white, fontSize: noteOpen ? "18px" : "14px" }}>{noteOpen ? "×" : "✎"}</span>
       </button>
       {noteOpen && (
-        <div style={{ position: "fixed", bottom: "80px", right: "20px", left: "20px", zIndex: 998, background: C.white, boxShadow: "0 8px 36px rgba(26,26,24,0.14)", borderTop: `2.5px solid ${C.ink}`, padding: "20px" }}>
-          <p style={{ ...serif, fontSize: "13px", color: C.ink, margin: "0 0 12px" }}>Leave a note. I'll action it.</p>
+        <div style={{ position: "fixed", bottom: "80px", right: "20px", left: "20px", zIndex: 998, background: D.white, boxShadow: "0 8px 36px rgba(26,26,24,0.14)", borderTop: `2.5px solid ${D.ink}`, padding: "20px", transition: "background 0.3s" }}>
+          <p style={{ ...serif, fontSize: "13px", color: D.ink, margin: "0 0 12px" }}>Leave a note. I'll action it.</p>
           <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="What needs changing…" rows={3}
-            style={{ ...serif, width: "100%", padding: "10px 12px", border: `1px solid rgba(26,26,24,0.1)`, background: C.paper, color: C.ink, fontSize: "14px", resize: "none", outline: "none", lineHeight: "1.6", boxSizing: "border-box", marginBottom: "10px" }} />
+            style={{ ...serif, width: "100%", padding: "10px 12px", border: `1px solid ${D.inkGhost}`, background: D.paper, color: D.ink, fontSize: "14px", resize: "none", outline: "none", lineHeight: "1.6", boxSizing: "border-box", marginBottom: "10px" }} />
           {noteSent
-            ? <p style={{ ...serif, fontSize: "13px", color: C.grey, fontStyle: "italic" }}>Noted ✓</p>
-            : <button onClick={sendNote} disabled={!note.trim()} style={{ ...serif, background: note.trim() ? C.ink : C.lightGrey, color: C.white, border: "none", padding: "11px 24px", fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", cursor: note.trim() ? "pointer" : "default" }}>Send</button>
+            ? <p style={{ ...serif, fontSize: "13px", color: D.grey, fontStyle: "italic" }}>Noted ✓</p>
+            : <button onClick={sendNote} disabled={!note.trim()} style={{ ...serif, background: note.trim() ? D.ink : D.lightGrey, color: D.white, border: "none", padding: "11px 24px", fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", cursor: note.trim() ? "pointer" : "default" }}>Send</button>
           }
         </div>
       )}
