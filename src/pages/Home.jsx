@@ -310,23 +310,20 @@ export default function Home() {
 
         {/* centre text */}
         <div style={{position:"relative",zIndex:2,textAlign:"center",padding:"0 32px",animation:"fadeUp 1.2s ease .4s both",pointerEvents:"none"}}>
-          <p style={{fontSize:"10px",letterSpacing:".3em",textTransform:"uppercase",opacity:.35,marginBottom:"20px"}}>
-            Bea Sophia — Poet
-          </p>
           <h1 style={{
-            fontSize:"clamp(28px,5.5vw,66px)",
+            fontSize:"clamp(32px,6vw,80px)",
             fontWeight:400,fontStyle:"italic",
-            lineHeight:1.12,maxWidth:"580px",
-            letterSpacing:"-.015em",
-            marginBottom:"24px",
+            lineHeight:1.05,maxWidth:"560px",
+            letterSpacing:"-.02em",
+            marginBottom:"20px",
           }}>
-            Poems about the thoughts<br/>people carry and never say.
+            Bea Sophia
           </h1>
-          <p style={{fontSize:"15px",opacity:.45,lineHeight:1.8,maxWidth:"380px",margin:"0 auto 28px",fontStyle:"italic"}}>
-            Read free. Buy the collection.<br/>Walk around inside someone else's mind.
+          <p style={{fontSize:"clamp(13px,1.6vw,18px)",opacity:.5,lineHeight:1.8,maxWidth:"340px",margin:"0 auto 28px",fontStyle:"italic"}}>
+            Poet. The Page Gallery Journal.<br/>New York.
           </p>
-          <p style={{fontSize:"12px",opacity:.25,letterSpacing:".06em",fontStyle:"normal"}}>
-            ↓ scroll
+          <p style={{fontSize:"11px",opacity:.22,letterSpacing:".08em"}}>
+            ↓
           </p>
         </div>
 
@@ -337,56 +334,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* INTRO STRIP */}
-      <div style={{
-        background:"#fff",
-        borderTop:"1px solid rgba(17,17,17,.06)",
-        overflow:"hidden",
-      }}>
-        {/* photo full bleed + text side by side */}
-        <div style={{display:"flex",flexWrap:"wrap",minHeight:"clamp(400px,70vh,680px)"}}>
+      {/* PHOTO SECTION — full bleed, caption underneath */}
+      <div style={{background:"#fff",borderTop:"1px solid rgba(17,17,17,.06)"}}>
 
-          {/* photo — left half */}
-          <div style={{flex:"0 0 clamp(200px,42%,520px)",position:"relative",overflow:"hidden",minHeight:"360px"}}>
-            <img src={PHOTO_BEA} alt="Bea Sophia" style={{
-              width:"100%",height:"100%",
-              objectFit:"cover",objectPosition:"center top",
-              display:"block",
-            }}/>
-            {/* grain overlay */}
-            <div style={{position:"absolute",inset:0,backgroundImage:"url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E")",pointerEvents:"none"}}/>
-          </div>
+        {/* full-bleed photo */}
+        <div style={{position:"relative",width:"100%",height:"clamp(500px,85vh,900px)",overflow:"hidden"}}>
+          <img src={PHOTO_BEA} alt="Bea Sophia" style={{
+            width:"100%",height:"100%",
+            objectFit:"cover",objectPosition:"center 15%",
+            display:"block",
+          }}/>
+          {/* subtle grain */}
+          <div style={{position:"absolute",inset:0,backgroundImage:"url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")",pointerEvents:"none"}}/>
+          {/* very faint bottom fade so caption reads cleanly */}
+          <div style={{position:"absolute",bottom:0,left:0,right:0,height:"160px",background:"linear-gradient(to bottom, transparent, rgba(255,255,255,0.6))",pointerEvents:"none"}}/>
+        </div>
 
-          {/* text — right half */}
-          <div style={{flex:1,minWidth:"260px",padding:"56px 40px",display:"flex",flexDirection:"column",justifyContent:"center",position:"relative"}}>
-            <div style={{position:"absolute",top:"20px",right:"4%",opacity:.04,pointerEvents:"none"}}>
-              <Scribble path={SCRIBBLES[6]} size={160} animate={false}/>
+        {/* caption block */}
+        <div style={{padding:"36px 32px 56px",borderBottom:"1px solid rgba(17,17,17,.06)"}}>
+          <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"flex-start",gap:"24px",maxWidth:"900px"}}>
+            <div>
+              <p style={{fontSize:"clamp(22px,3.5vw,38px)",fontStyle:"italic",fontWeight:400,lineHeight:1.3,marginBottom:"10px"}}>
+                Bea Sophia — poet, founder of<br/>The Page Gallery Journal.
+              </p>
+              <p style={{fontSize:"15px",lineHeight:1.9,opacity:.42,maxWidth:"480px"}}>
+                I write poems about the things people feel but don't say. When I got sick I started writing them down. This is where they live.
+              </p>
             </div>
-            <p style={{fontSize:"10px",letterSpacing:".25em",textTransform:"uppercase",opacity:.3,marginBottom:"20px",display:"flex",alignItems:"center",gap:"8px"}}>
-              <span style={{display:"inline-block",width:5,height:5,borderRadius:"50%",background:"#111"}}/>
-              Bea Sophia
-            </p>
-            <p style={{fontSize:"clamp(22px,3vw,34px)",fontStyle:"italic",lineHeight:1.5,marginBottom:"20px"}}>
-              Poet. Founder of<br/>The Page Gallery Journal.
-            </p>
-            <p style={{fontSize:"16px",lineHeight:1.95,opacity:.48,marginBottom:"16px"}}>
-              I write poems about the things people feel but don't say. The conversations that happen in the wrong order. The thoughts that die with the person who had them.
-            </p>
-            <p style={{fontSize:"16px",lineHeight:1.95,opacity:.38,marginBottom:"36px"}}>
-              When I got sick, I started writing them down.<br/>This is where they live.
-            </p>
-            <div style={{display:"flex",gap:"20px",flexWrap:"wrap"}}>
-              <a href="#poems" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.35)",paddingBottom:"3px",opacity:.65,transition:"opacity .2s"}}
-                onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.65}>
+            <div style={{display:"flex",flexDirection:"column",gap:"14px",paddingTop:"4px"}}>
+              <a href="#poems" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.3)",paddingBottom:"3px",opacity:.6,whiteSpace:"nowrap",transition:"opacity .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.6}>
                 Read free poems
               </a>
-              <a href="#collection" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:"3px",opacity:.35,transition:"opacity .2s"}}
+              <a href="#collection" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:"3px",opacity:.35,whiteSpace:"nowrap",transition:"opacity .2s"}}
                 onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>
                 Buy the collection — £12
               </a>
               <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-                style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",opacity:.22,transition:"opacity .2s"}}
-                onMouseEnter={e=>e.currentTarget.style.opacity=.55} onMouseLeave={e=>e.currentTarget.style.opacity=.22}>
+                style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",opacity:.2,whiteSpace:"nowrap",transition:"opacity .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.opacity=.5} onMouseLeave={e=>e.currentTarget.style.opacity=.2}>
                 Instagram ↗
               </a>
             </div>
