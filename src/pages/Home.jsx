@@ -145,253 +145,191 @@ function DemoBlank({prompt,placeholder}) {
 // ─── LINE HERO — single body-shape, one sentence inside ──────────
 // Reference: closed organic line, one italic phrase, one dot, one square, bottom tags
 function LineHero() {
-  const svgRef   = useRef(null);
-  const pathRef  = useRef(null);
   const stampRef = useRef(null);
-  const mouseRef = useRef({ x:0.5, y:0.5 });
-  const [phase, setPhase] = useState(0); // 0=hidden 1=drawing 2=text
+  const [visible, setVisible] = useState(false);
 
-  // Large closed organic shape — portrait, like a body or a room
-  const PATH = `
-    M 340,70
-    C 290,68 240,80 210,108
-    C 170,145 160,195 155,250
-    C 148,320 152,390 162,450
-    C 172,510 190,560 200,610
-    C 208,648 210,680 230,700
-    C 255,725 290,732 320,730
-    C 355,728 385,715 400,695
-    C 418,672 420,640 425,605
-    C 432,560 438,510 440,460
-    C 444,400 445,340 450,285
-    C 455,225 465,175 490,145
-    C 510,120 545,105 560,108
-    C 590,115 605,140 614,165
-    C 625,195 620,230 608,255
-    C 595,282 572,298 555,310
-    C 530,328 505,332 488,345
-    C 468,360 458,385 450,415
-    L 440,460
-  `;
+  // Stamp text — two rings like the reference
+  // Outer ring
+  const OUTER_TEXT = "FOUR TIMES IN THE SAME MINUTE I SAID SORRY · FOR WANTING YOU · ";
+  // Inner ring — runs the other direction, slightly smaller
+  const INNER_TEXT = "AND NOT KNOW THE DIFFERENCE · FOR YEARS · YOU SAID ANYTHING · ";
 
-  // Stamp text — runs around a circle, slightly imperfect
-  const STAMP_TEXT = "FOR WANTING YOU · AND NOT KNOW THE DIFFERENCE · FOR YEARS · ";
-  const STAMP_R    = 72;   // radius of text circle
-  const STAMP_CX   = 350;  // centre x in viewBox
-  const STAMP_CY   = 480;  // centre y in viewBox
+  const OUTER_R  = 118;
+  const INNER_R  = 76;
+  const CX = 300;
+  const CY = 300;
 
-  // Build character positions around the circle
-  const stampChars = (() => {
-    const chars = STAMP_TEXT.split("");
+  const makeRing = (text, r, clockwise=true) => {
+    const chars = text.split("");
     const total = chars.length;
     return chars.map((ch, i) => {
-      const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
-      // slight hand-pressed wobble per character
-      const wobble = (Math.sin(i * 1.7) * 1.8);
-      const r = STAMP_R + wobble;
+      const frac = i / total;
+      const angle = frac * Math.PI * 2 - Math.PI / 2;
+      const dir = clockwise ? 1 : -1;
+      const wobbleR = r + Math.sin(i * 1.9 + r) * 2.2;
+      const wobbleA = angle * dir + Math.sin(i * 3.1) * 0.018;
       return {
         ch,
-        x: STAMP_CX + Math.cos(angle) * r,
-        y: STAMP_CY + Math.sin(angle) * r,
-        rot: (angle * 180 / Math.PI) + 90 + (Math.sin(i * 2.3) * 1.5),
-        // ink fade — simulate uneven stamp press
-        opacity: 0.72 + Math.sin(i * 0.9) * 0.22,
+        x: CX + Math.cos(wobbleA) * wobbleR,
+        y: CY + Math.sin(wobbleA) * wobbleR,
+        rot: (wobbleA * 180 / Math.PI) + (clockwise ? 90 : -90),
+        // uneven ink — some letters heavier, some almost faded
+        opacity: Math.max(0.28, 0.68 + Math.sin(i * 1.3 + r * 0.04) * 0.32),
+        // slight size variation — stamp imperfection
+        size: 13.5 + Math.sin(i * 0.7) * 1.2,
       };
     });
-  })();
+  };
+
+  const outerChars = makeRing(OUTER_TEXT, OUTER_R, true);
+  const innerChars = makeRing(INNER_TEXT, INNER_R, false);
 
   useEffect(() => {
-    const path = pathRef.current;
-    if (!path) return;
-    const len = path.getTotalLength();
-    path.style.strokeDasharray  = len;
-    path.style.strokeDashoffset = len;
+    // fade in after a moment
+    const t = setTimeout(() => setVisible(true), 300);
 
-    const t1 = setTimeout(() => {
-      path.style.transition = `stroke-dashoffset 3.8s cubic-bezier(0.25,1,0.5,1)`;
-      path.style.strokeDashoffset = 0;
-      setPhase(1);
-    }, 600);
-    const t2 = setTimeout(() => setPhase(2), 3600);
-
-    // stamp slow rotation via RAF
+    // very slow counter-rotation of inner ring relative to outer
     let angle = 0, raf;
-    const spinStamp = () => {
-      angle += 0.12;
+    const spin = () => {
+      angle += 0.04;
       if (stampRef.current) {
-        stampRef.current.style.transform = `rotate(${angle}deg)`;
+        // outer ring stays fixed, inner ring rotates via CSS on a sub-group
+        const inner = stampRef.current.querySelector(".inner-ring");
+        if (inner) inner.style.transform = `rotate(${angle}deg)`;
       }
-      raf = requestAnimationFrame(spinStamp);
+      raf = requestAnimationFrame(spin);
     };
-    const t3 = setTimeout(() => { spinStamp(); }, 4200);
+    const t2 = setTimeout(() => spin(), 1200);
 
-    const onMove = e => {
-      mouseRef.current = {
-        x: (e.clientX / window.innerWidth  - 0.5) * 10,
-        y: (e.clientY / window.innerHeight - 0.5) * 7,
-      };
-      if (svgRef.current) {
-        svgRef.current.style.transform =
-          `translate(${mouseRef.current.x}px,${mouseRef.current.y}px)`;
-      }
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => {
-      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
-      cancelAnimationFrame(raf);
-      window.removeEventListener("mousemove", onMove);
-    };
+    return () => { clearTimeout(t); clearTimeout(t2); cancelAnimationFrame(raf); };
   }, []);
 
   return (
     <section style={{
-      position:"relative", minHeight:"100vh", overflow:"hidden",
-      background:"#E8E5E0",
-      display:"flex", flexDirection:"column",
-      alignItems:"center", justifyContent:"center",
+      position:"relative",
+      minHeight:"100vh",
+      overflow:"hidden",
+      background:"#ECEAE5",
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"center",
     }}>
 
-      {/* paper grain overlay */}
+      {/* heavy paper grain — layered */}
       <div style={{
         position:"absolute", inset:0, pointerEvents:"none", zIndex:1,
-        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E")`,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.68' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E")`,
+      }}/>
+      {/* second grain pass — finer */}
+      <div style={{
+        position:"absolute", inset:0, pointerEvents:"none", zIndex:1,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n2)' opacity='0.045'/%3E%3C/svg%3E")`,
       }}/>
 
-      {/* SVG composition */}
+      {/* stamp SVG — centred */}
       <div style={{
         position:"relative", zIndex:2,
-        width:"min(420px,72vw)", height:"min(660px,82vh)",
-        marginTop:"1vh",
+        opacity: visible ? 1 : 0,
+        transition:"opacity 1.4s ease",
+        width:"min(480px,80vw)", height:"min(480px,80vw)",
       }}>
         <svg
-          ref={svgRef}
-          viewBox="0 0 700 860"
-          style={{
-            width:"100%", height:"100%", overflow:"visible",
-            transition:"transform 1s cubic-bezier(.16,1,.3,1)",
-          }}
+          ref={stampRef}
+          viewBox="0 0 600 600"
+          style={{width:"100%",height:"100%",overflow:"visible"}}
           aria-hidden="true">
 
-          {/* body shape */}
-          <path
-            ref={pathRef}
-            d={PATH}
-            fill="none"
-            stroke="#2a2a26"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* solid dot */}
+          {/* outer imperfect ring guide — broken dashes */}
           <circle
-            cx="530" cy="300" r="5.5"
-            fill="#1a1a18"
-            opacity={phase >= 2 ? 1 : 0}
-            style={{transition:"opacity .6s ease 0.2s"}}
+            cx={CX} cy={CY} r={OUTER_R + 14}
+            fill="none" stroke="#1a1a18" strokeWidth="0.7"
+            strokeDasharray="6 4"
+            opacity="0.12"
+          />
+          {/* inner imperfect ring guide */}
+          <circle
+            cx={CX} cy={CY} r={INNER_R - 12}
+            fill="none" stroke="#1a1a18" strokeWidth="0.6"
+            strokeDasharray="4 5"
+            opacity="0.08"
           />
 
-          {/* open square + hairline */}
-          <rect
-            x="628" y="108" width="22" height="22"
-            fill="none" stroke="#1a1a18" strokeWidth="1.2"
-            opacity={phase >= 2 ? 1 : 0}
-            style={{transition:"opacity .5s ease 0.4s"}}
-          />
-          <line
-            x1="615" y1="119" x2="628" y2="119"
-            stroke="#1a1a18" strokeWidth="0.8"
-            opacity={phase >= 2 ? 0.45 : 0}
-            style={{transition:"opacity .5s ease 0.4s"}}
-          />
-
-          {/* stamp — rotates slowly after phase 2 */}
-          <g
-            ref={stampRef}
-            style={{
-              transformOrigin:`${STAMP_CX}px ${STAMP_CY}px`,
-              opacity: phase >= 2 ? 1 : 0,
-              transition:"opacity 1.2s ease 1.4s",
-            }}>
-            {/* imperfect circle outline — slightly thick, slightly broken */}
-            <circle
-              cx={STAMP_CX} cy={STAMP_CY} r={STAMP_R - 10}
-              fill="none"
-              stroke="#1a1a18"
-              strokeWidth="0.9"
-              strokeDasharray="8 3.5"
-              opacity="0.18"
-            />
-            {/* character-by-character text around the circle */}
-            {stampChars.map((c, i) => (
+          {/* outer ring text — fixed */}
+          <g className="outer-ring">
+            {outerChars.map((c, i) => (
               <text
                 key={i}
                 x={c.x} y={c.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 transform={`rotate(${c.rot},${c.x},${c.y})`}
-                fontSize="11"
+                fontSize={c.size}
                 fontFamily="'Times New Roman',Times,serif"
                 fontWeight="700"
-                letterSpacing="0.5"
                 fill="#1a1a18"
                 opacity={c.opacity}
-                style={{userSelect:"none"}}
+                style={{userSelect:"none",letterSpacing:"0.03em"}}
               >{c.ch}</text>
             ))}
           </g>
-        </svg>
 
-        {/* italic sentence inside the shape */}
-        <div style={{
-          position:"absolute",
-          left:"50%", top:"44%",
-          transform:"translate(-50%,-50%)",
-          fontFamily:"'Times New Roman',Times,serif",
-          fontStyle:"italic",
-          fontSize:"clamp(12px,2vw,18px)",
-          color:"#1a1a18",
-          letterSpacing:"-.01em",
-          lineHeight:1.5,
-          textAlign:"center",
-          opacity: phase >= 2 ? 1 : 0,
-          transition:"opacity 1s ease 0.6s",
-          pointerEvents:"none",
-          userSelect:"none",
-          maxWidth:"55%",
-        }}>
-          Four times in the same minute<br/>I said sorry for wanting you.
-        </div>
+          {/* inner ring text — rotates slowly */}
+          <g
+            className="inner-ring"
+            style={{transformOrigin:`${CX}px ${CY}px`}}>
+            {innerChars.map((c, i) => (
+              <text
+                key={i}
+                x={c.x} y={c.y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                transform={`rotate(${c.rot},${c.x},${c.y})`}
+                fontSize={c.size - 1}
+                fontFamily="'Times New Roman',Times,serif"
+                fontWeight="700"
+                fill="#1a1a18"
+                opacity={c.opacity * 0.85}
+                style={{userSelect:"none",letterSpacing:"0.03em"}}
+              >{c.ch}</text>
+            ))}
+          </g>
+
+          {/* single solid dot — centre */}
+          <circle cx={CX} cy={CY} r="5" fill="#1a1a18" opacity="0.88"/>
+
+          {/* faint cross-hair at centre — like a worn stamp registration */}
+          <line x1={CX-10} y1={CY} x2={CX+10} y2={CY} stroke="#1a1a18" strokeWidth="0.5" opacity="0.15"/>
+          <line x1={CX} y1={CY-10} x2={CX} y2={CY+10} stroke="#1a1a18" strokeWidth="0.5" opacity="0.15"/>
+
+        </svg>
       </div>
 
-      {/* bottom tags — three, widely spaced */}
+      {/* bottom tags */}
       <div style={{
         position:"absolute", bottom:32, left:0, right:0,
-        padding:"0 36px",
-        display:"flex", justifyContent:"space-between", alignItems:"flex-end",
+        padding:"0 40px",
+        display:"flex", justifyContent:"space-between", alignItems:"center",
         zIndex:2,
-        opacity: phase >= 2 ? 1 : 0,
-        transition:"opacity 1s ease 1s",
+        opacity: visible ? 1 : 0,
+        transition:"opacity 1.8s ease .6s",
       }}>
-        <span style={{fontSize:"clamp(8px,1vw,10px)",letterSpacing:".3em",textTransform:"uppercase",color:"rgba(26,26,24,.48)"}}>
+        <span style={{fontSize:"clamp(8px,.9vw,10px)",letterSpacing:".32em",textTransform:"uppercase",color:"rgba(26,26,24,.45)"}}>
           Bea Sophia
         </span>
-        <span style={{fontSize:"clamp(8px,1vw,10px)",letterSpacing:".18em",textTransform:"uppercase",color:"rgba(26,26,24,.28)",display:"flex",alignItems:"center",gap:10}}>
-          (somewhere inside)
-          <span style={{display:"inline-block",width:38,height:1,background:"rgba(26,26,24,.25)"}}/>
-        </span>
-        <span style={{fontSize:"clamp(8px,1vw,10px)",letterSpacing:".3em",textTransform:"uppercase",color:"rgba(26,26,24,.48)"}}>
+        <a href="#poems" style={{
+          fontSize:"clamp(8px,.9vw,10px)",letterSpacing:".2em",textTransform:"uppercase",
+          color:"rgba(26,26,24,.3)",display:"flex",alignItems:"center",gap:10,
+          transition:"color .2s",
+        }}
+          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.7)"}
+          onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.3)"}>
+          <span style={{display:"inline-block",width:32,height:1,background:"currentColor"}}/>
           read it.
+        </a>
+        <span style={{fontSize:"clamp(8px,.9vw,10px)",letterSpacing:".32em",textTransform:"uppercase",color:"rgba(26,26,24,.45)"}}>
+          The Page Gallery
         </span>
       </div>
-
-      <a href="#poems" style={{
-        position:"absolute", bottom:68, left:"50%", transform:"translateX(-50%)",
-        fontSize:9, letterSpacing:".22em", textTransform:"uppercase",
-        color:"rgba(26,26,24,.2)", zIndex:2,
-        opacity: phase >= 2 ? 1 : 0,
-        transition:"opacity 1s ease 1.5s",
-      }}>↓</a>
 
     </section>
   );
