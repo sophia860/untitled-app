@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { SiteNote } from "@/api/entities";
 
 // ── POEM DATA ─────────────────────────────────────────────────────────────────
 const POEMS = [
@@ -64,17 +65,152 @@ const SHOP_ITEMS = [
   },
 ];
 
+const SECTIONS = ["Hero", "Poems / Manuscripts", "Shop", "Journal", "About", "Newsletter", "Other"];
+
 // ── STYLES ────────────────────────────────────────────────────────────────────
 const CREAM = "#f7f5f1";
 const INK = "#1a1a18";
 const GREY = "#6b6b62";
 const LIGHT_GREY = "#9b9b90";
 const WHITE = "#ffffff";
-
 const mono = { fontFamily: "'Georgia', 'Times New Roman', serif" };
 
-// ── COMPONENTS ────────────────────────────────────────────────────────────────
+// ── FEEDBACK WIDGET ───────────────────────────────────────────────────────────
+function FeedbackWidget() {
+  const [open, setOpen] = useState(false);
+  const [section, setSection] = useState("Hero");
+  const [note, setNote] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | saving | saved | error
 
+  const submit = async () => {
+    if (!note.trim()) return;
+    setStatus("saving");
+    try {
+      await SiteNote.create({ section, note: note.trim(), status: "new", url: window.location.href });
+      setStatus("saved");
+      setNote("");
+      setTimeout(() => { setStatus("idle"); setOpen(false); }, 1800);
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  return (
+    <>
+      {/* Floating button */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        title="Leave a note for the site"
+        style={{
+          position: "fixed", bottom: "32px", right: "32px", zIndex: 9999,
+          width: "48px", height: "48px", borderRadius: "50%",
+          background: INK, border: "none", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 24px rgba(26,26,24,0.22)",
+          transition: "transform 0.25s, opacity 0.25s",
+          opacity: open ? 0.7 : 1,
+          transform: open ? "rotate(45deg)" : "rotate(0deg)",
+        }}
+        onMouseEnter={e => e.currentTarget.style.transform = open ? "rotate(45deg) scale(1.08)" : "scale(1.08)"}
+        onMouseLeave={e => e.currentTarget.style.transform = open ? "rotate(45deg)" : "rotate(0deg)"}
+      >
+        {open
+          ? <span style={{ color: CREAM, fontSize: "22px", lineHeight: 1 }}>×</span>
+          : <span style={{ color: CREAM, fontSize: "18px", lineHeight: 1 }}>✎</span>
+        }
+      </button>
+
+      {/* Panel */}
+      {open && (
+        <div style={{
+          position: "fixed", bottom: "92px", right: "32px", zIndex: 9998,
+          width: "320px",
+          background: WHITE,
+          boxShadow: "0 12px 52px rgba(26,26,24,0.16)",
+          borderTop: `3px solid ${INK}`,
+          ...mono,
+          animation: "slideUp 0.3s cubic-bezier(0.16,1,0.3,1)",
+        }}>
+          <div style={{ padding: "24px 24px 0" }}>
+            <p style={{ fontSize: "9px", letterSpacing: "0.24em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 4px" }}>
+              Site notes
+            </p>
+            <p style={{ fontSize: "14px", color: INK, margin: "0 0 20px", lineHeight: "1.4" }}>
+              Leave a note. I'll action it.
+            </p>
+
+            {/* Section selector */}
+            <label style={{ fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: LIGHT_GREY, display: "block", marginBottom: "6px" }}>
+              Section
+            </label>
+            <select
+              value={section}
+              onChange={e => setSection(e.target.value)}
+              style={{
+                width: "100%", padding: "10px 12px",
+                border: `1px solid rgba(26,26,24,0.14)`,
+                background: CREAM, color: INK,
+                fontSize: "13px", fontFamily: "Georgia, serif",
+                marginBottom: "16px", outline: "none",
+                appearance: "none",
+              }}
+            >
+              {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+
+            {/* Note */}
+            <label style={{ fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: LIGHT_GREY, display: "block", marginBottom: "6px" }}>
+              Note
+            </label>
+            <textarea
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              placeholder="Change the hero type size, move the shop up, the manuscripts feel too crowded…"
+              rows={4}
+              style={{
+                width: "100%", padding: "10px 12px",
+                border: `1px solid rgba(26,26,24,0.14)`,
+                background: CREAM, color: INK,
+                fontSize: "13px", fontFamily: "Georgia, serif",
+                resize: "vertical", outline: "none",
+                lineHeight: "1.7", boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <div style={{ padding: "16px 24px 24px", display: "flex", justifyContent: "flex-end" }}>
+            {status === "saved" ? (
+              <span style={{ fontSize: "12px", color: GREY, fontStyle: "italic" }}>Noted ✓</span>
+            ) : (
+              <button
+                onClick={submit}
+                disabled={status === "saving" || !note.trim()}
+                style={{
+                  background: note.trim() ? INK : "rgba(26,26,24,0.2)",
+                  color: CREAM, border: "none",
+                  padding: "12px 28px", cursor: note.trim() ? "pointer" : "default",
+                  fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase",
+                  fontFamily: "Georgia, serif", transition: "opacity 0.2s",
+                }}
+              >
+                {status === "saving" ? "Saving…" : "Send note"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </>
+  );
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
 function Nav({ scrollY }) {
   const solid = scrollY > 80;
   return (
@@ -106,10 +242,10 @@ function Nav({ scrollY }) {
   );
 }
 
+// ── HERO ──────────────────────────────────────────────────────────────────────
 function Hero({ scrollY }) {
   const [in_, setIn] = useState(false);
   useEffect(() => { const t = setTimeout(() => setIn(true), 120); return () => clearTimeout(t); }, []);
-
   const fade = Math.max(0, 1 - scrollY / 480);
   const lift = scrollY * 0.22;
 
@@ -123,14 +259,7 @@ function Hero({ scrollY }) {
       opacity: fade, transform: `translateY(${lift}px)`,
       ...mono,
     }}>
-      {/* Rule */}
-      <div style={{
-        position: "absolute", top: "50%", left: 0, right: 0,
-        height: "1px", background: `rgba(26,26,24,0.05)`,
-        transform: "translateY(-50%)",
-      }} />
-
-      {/* Content */}
+      <div style={{ position: "absolute", top: "50%", left: 0, right: 0, height: "1px", background: "rgba(26,26,24,0.05)", transform: "translateY(-50%)" }} />
       <div style={{
         opacity: in_ ? 1 : 0,
         transform: in_ ? "translateY(0)" : "translateY(32px)",
@@ -140,49 +269,26 @@ function Hero({ scrollY }) {
         <p style={{ fontSize: "10px", letterSpacing: "0.32em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 22px" }}>
           A poetry collection
         </p>
-        <h1 style={{
-          fontSize: "clamp(58px, 10vw, 118px)", fontWeight: "400",
-          lineHeight: "0.92", letterSpacing: "-0.035em",
-          color: INK, margin: "0 0 38px",
-        }}>
+        <h1 style={{ fontSize: "clamp(58px, 10vw, 118px)", fontWeight: "400", lineHeight: "0.92", letterSpacing: "-0.035em", color: INK, margin: "0 0 38px" }}>
           The<br />Only<br />Life.
         </h1>
-        <p style={{
-          fontSize: "clamp(14px, 1.5vw, 17px)", color: GREY,
-          lineHeight: "1.9", maxWidth: "400px", margin: "0 0 52px",
-        }}>
+        <p style={{ fontSize: "clamp(14px, 1.5vw, 17px)", color: GREY, lineHeight: "1.9", maxWidth: "400px", margin: "0 0 52px" }}>
           Twenty poems. Nature in New York.
           The body after the ward. What keeps going
           when the reason is unclear.
         </p>
         <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
-          <a href="#shop" style={{
-            background: INK, color: CREAM,
-            padding: "15px 42px", textDecoration: "none",
-            fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase",
-            transition: "opacity 0.22s",
-          }}
+          <a href="#shop" style={{ background: INK, color: CREAM, padding: "15px 42px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", transition: "opacity 0.22s" }}
             onMouseEnter={e => e.target.style.opacity = "0.78"}
             onMouseLeave={e => e.target.style.opacity = "1"}
           >Buy — £12</a>
-          <a href="#poems" style={{
-            fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
-            color: GREY, textDecoration: "none",
-            borderBottom: `1px solid rgba(107,107,98,0.35)`, paddingBottom: "3px",
-            transition: "color 0.2s, border-color 0.2s",
-          }}
+          <a href="#poems" style={{ fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: GREY, textDecoration: "none", borderBottom: "1px solid rgba(107,107,98,0.35)", paddingBottom: "3px", transition: "color 0.2s, border-color 0.2s" }}
             onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
             onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.35)"; }}
           >Read first</a>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <div style={{
-        position: "absolute", bottom: "44px", right: "52px",
-        display: "flex", flexDirection: "column", alignItems: "center", gap: "12px",
-        opacity: scrollY > 50 ? 0 : 0.35, transition: "opacity 0.4s",
-      }}>
+      <div style={{ position: "absolute", bottom: "44px", right: "52px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", opacity: scrollY > 50 ? 0 : 0.35, transition: "opacity 0.4s" }}>
         <span style={{ fontSize: "8px", letterSpacing: "0.28em", textTransform: "uppercase", color: LIGHT_GREY, writingMode: "vertical-rl" }}>Scroll</span>
         <div style={{ width: "1px", height: "52px", background: INK, animation: "pulse 2.2s ease-in-out infinite" }} />
       </div>
@@ -190,11 +296,11 @@ function Hero({ scrollY }) {
   );
 }
 
+// ── MANUSCRIPTS ───────────────────────────────────────────────────────────────
 function ManuscriptsSection() {
   const [hovered, setHovered] = useState(null);
   const [visible, setVisible] = useState(false);
   const ref = useRef(null);
-
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.1 });
     if (ref.current) obs.observe(ref.current);
@@ -202,90 +308,54 @@ function ManuscriptsSection() {
   }, []);
 
   return (
-    <section id="poems" ref={ref} style={{
-      padding: "130px 52px 160px",
-      borderTop: `1px solid rgba(26,26,24,0.07)`,
-      ...mono,
-    }}>
-      <div style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(24px)",
-        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
-        marginBottom: "90px",
-      }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 14px" }}>
-          From the collection
-        </p>
-        <h2 style={{ fontSize: "clamp(22px, 3.2vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>
-          Twenty poems, scattered.
-        </h2>
+    <section id="poems" ref={ref} style={{ padding: "130px 52px 160px", borderTop: "1px solid rgba(26,26,24,0.07)", ...mono }}>
+      <div style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(24px)", transition: "all 1s cubic-bezier(0.16,1,0.3,1)", marginBottom: "90px" }}>
+        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 14px" }}>From the collection</p>
+        <h2 style={{ fontSize: "clamp(22px, 3.2vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>Twenty poems, scattered.</h2>
       </div>
-
-      {/* The floor */}
       <div style={{ position: "relative", height: "820px" }}>
         {POEMS.map((poem, i) => {
           const isHovered = hovered === poem.id;
           return (
-            <div
-              key={poem.id}
+            <div key={poem.id}
               onMouseEnter={() => setHovered(poem.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                position: "absolute",
-                left: poem.left, top: poem.top,
-                width: poem.width,
-                background: WHITE,
-                padding: "26px 26px 30px",
+                position: "absolute", left: poem.left, top: poem.top, width: poem.width,
+                background: WHITE, padding: "26px 26px 30px",
                 transform: `rotate(${poem.rotation}deg) translateY(${isHovered ? -14 : 0}px) scale(${isHovered ? 1.02 : 1})`,
-                boxShadow: isHovered
-                  ? "0 28px 70px rgba(26,26,24,0.18)"
-                  : "0 2px 18px rgba(26,26,24,0.06)",
+                boxShadow: isHovered ? "0 28px 70px rgba(26,26,24,0.18)" : "0 2px 18px rgba(26,26,24,0.06)",
                 transition: "transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease",
                 zIndex: isHovered ? 30 : i + 1,
-                borderTop: `2px solid ${INK}`,
-                cursor: "default",
-                opacity: visible ? 1 : 0,
-                transitionDelay: `${i * 0.08}s`,
+                borderTop: `2px solid ${INK}`, cursor: "default",
+                opacity: visible ? 1 : 0, transitionDelay: `${i * 0.08}s`,
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
                 <span style={{ fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: "#c8c5bc" }}>{poem.num}</span>
                 <span style={{ fontSize: "8px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#c8c5bc" }}>The Only Life</span>
               </div>
-              <p style={{ fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", color: INK, margin: "0 0 14px", fontWeight: "600", lineHeight: "1.5" }}>
-                {poem.title}
-              </p>
-              <div style={{ borderTop: `1px solid rgba(26,26,24,0.07)`, paddingTop: "14px" }}>
+              <p style={{ fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", color: INK, margin: "0 0 14px", fontWeight: "600", lineHeight: "1.5" }}>{poem.title}</p>
+              <div style={{ borderTop: "1px solid rgba(26,26,24,0.07)", paddingTop: "14px" }}>
                 {poem.excerpt.map((line, j) => (
-                  <p key={j} style={{
-                    fontSize: "13px", color: "#484840", lineHeight: "1.9",
-                    margin: 0, fontStyle: "italic",
-                    minHeight: line === "" ? "0.85em" : "auto",
-                  }}>{line}</p>
+                  <p key={j} style={{ fontSize: "13px", color: "#484840", lineHeight: "1.9", margin: 0, fontStyle: "italic", minHeight: line === "" ? "0.85em" : "auto" }}>{line}</p>
                 ))}
               </div>
             </div>
           );
         })}
       </div>
-
       <div style={{ textAlign: "center", marginTop: "40px" }}>
-        <a href="#shop" style={{
-          fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
-          color: GREY, textDecoration: "none",
-          borderBottom: `1px solid rgba(107,107,98,0.3)`, paddingBottom: "3px",
-          transition: "color 0.2s, border-color 0.2s",
-        }}
+        <a href="#shop" style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: GREY, textDecoration: "none", borderBottom: "1px solid rgba(107,107,98,0.3)", paddingBottom: "3px", transition: "color 0.2s, border-color 0.2s" }}
           onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
           onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.3)"; }}
-        >
-          Get the full collection →
-        </a>
+        >Get the full collection →</a>
       </div>
     </section>
   );
 }
 
+// ── SHOP ──────────────────────────────────────────────────────────────────────
 function ShopSection() {
   const [visible, setVisible] = useState(false);
   const ref = useRef(null);
@@ -296,29 +366,12 @@ function ShopSection() {
   }, []);
 
   return (
-    <section id="shop" ref={ref} style={{
-      padding: "130px 52px",
-      borderTop: `1px solid rgba(26,26,24,0.07)`,
-      background: WHITE,
-      ...mono,
-    }}>
-      <div style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: "all 0.9s cubic-bezier(0.16,1,0.3,1)",
-        marginBottom: "80px",
-      }}>
+    <section id="shop" ref={ref} style={{ padding: "130px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", background: WHITE, ...mono }}>
+      <div style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: "all 0.9s cubic-bezier(0.16,1,0.3,1)", marginBottom: "80px" }}>
         <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 14px" }}>Shop</p>
-        <h2 style={{ fontSize: "clamp(22px, 3vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>
-          Things worth buying.
-        </h2>
+        <h2 style={{ fontSize: "clamp(22px, 3vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>Things worth buying.</h2>
       </div>
-
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        gap: "2px",
-      }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2px" }}>
         {SHOP_ITEMS.map((item, i) => (
           <div key={item.id} style={{
             padding: "52px 44px",
@@ -328,31 +381,17 @@ function ShopSection() {
             transform: visible ? "translateY(0)" : "translateY(28px)",
             transition: `all 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 0.1}s`,
           }}>
-            <p style={{
-              fontSize: "9px", letterSpacing: "0.28em", textTransform: "uppercase",
-              color: i === 0 ? "rgba(247,245,241,0.45)" : LIGHT_GREY,
-              margin: "0 0 24px",
-            }}>{item.type}</p>
-            <h3 style={{ fontSize: "clamp(18px, 2vw, 26px)", fontWeight: "400", margin: "0 0 20px", letterSpacing: "-0.01em" }}>
-              {item.title}
-            </h3>
-            <p style={{
-              fontSize: "14px", lineHeight: "1.85",
-              color: i === 0 ? "rgba(247,245,241,0.7)" : GREY,
-              margin: "0 0 40px",
-            }}>{item.desc}</p>
+            <p style={{ fontSize: "9px", letterSpacing: "0.28em", textTransform: "uppercase", color: i === 0 ? "rgba(247,245,241,0.45)" : LIGHT_GREY, margin: "0 0 24px" }}>{item.type}</p>
+            <h3 style={{ fontSize: "clamp(18px, 2vw, 26px)", fontWeight: "400", margin: "0 0 20px", letterSpacing: "-0.01em" }}>{item.title}</h3>
+            <p style={{ fontSize: "14px", lineHeight: "1.85", color: i === 0 ? "rgba(247,245,241,0.7)" : GREY, margin: "0 0 40px" }}>{item.desc}</p>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px" }}>
               <div>
                 <p style={{ fontSize: "22px", fontWeight: "400", margin: "0 0 6px" }}>{item.price}</p>
                 <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: i === 0 ? "rgba(247,245,241,0.4)" : LIGHT_GREY, margin: 0 }}>{item.format}</p>
               </div>
-              <a href={item.paypal} style={{
-                display: "inline-block",
-                background: i === 0 ? CREAM : INK,
-                color: i === 0 ? INK : CREAM,
-                padding: "13px 32px", textDecoration: "none",
-                fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
-                transition: "opacity 0.22s",
+              <a href={item.paypal} target="_blank" rel="noopener noreferrer" style={{
+                display: "inline-block", background: i === 0 ? CREAM : INK, color: i === 0 ? INK : CREAM,
+                padding: "13px 32px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", transition: "opacity 0.22s",
               }}
                 onMouseEnter={e => e.target.style.opacity = "0.78"}
                 onMouseLeave={e => e.target.style.opacity = "1"}
@@ -365,49 +404,27 @@ function ShopSection() {
   );
 }
 
+// ── JOURNAL ───────────────────────────────────────────────────────────────────
 function JournalBanner() {
   return (
-    <section id="journal" style={{
-      background: INK, color: CREAM,
-      padding: "110px 52px",
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: "80px",
-      alignItems: "center",
-      ...mono,
-    }}>
+    <section id="journal" style={{ background: INK, color: CREAM, padding: "110px 52px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center", ...mono }}>
       <div>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(247,245,241,0.35)", margin: "0 0 20px" }}>
-          Also
-        </p>
-        <h3 style={{ fontSize: "clamp(24px, 3.5vw, 48px)", fontWeight: "400", margin: "0 0 22px", lineHeight: "1.05", letterSpacing: "-0.02em" }}>
-          The Page<br />Gallery Journal
-        </h3>
+        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(247,245,241,0.35)", margin: "0 0 20px" }}>Also</p>
+        <h3 style={{ fontSize: "clamp(24px, 3.5vw, 48px)", fontWeight: "400", margin: "0 0 22px", lineHeight: "1.05", letterSpacing: "-0.02em" }}>The Page<br />Gallery Journal</h3>
         <p style={{ fontSize: "15px", color: "rgba(247,245,241,0.55)", lineHeight: "1.85", margin: "0 0 44px", maxWidth: "380px" }}>
-          A literary journal. Founded by Bea Sophia.
-          Serious work. Carefully chosen.
+          A literary journal. Founded by Bea Sophia. Serious work. Carefully chosen.
         </p>
-        <a href="#" style={{
-          display: "inline-block",
-          color: CREAM, textDecoration: "none",
-          fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
-          border: "1px solid rgba(247,245,241,0.2)",
-          padding: "14px 36px",
-          transition: "border-color 0.25s",
-        }}
+        <a href="#" style={{ display: "inline-block", color: CREAM, textDecoration: "none", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", border: "1px solid rgba(247,245,241,0.2)", padding: "14px 36px", transition: "border-color 0.25s" }}
           onMouseEnter={e => e.target.style.borderColor = "rgba(247,245,241,0.65)"}
           onMouseLeave={e => e.target.style.borderColor = "rgba(247,245,241,0.2)"}
         >Visit the Journal</a>
       </div>
-
-      {/* Stacked manuscript visual */}
       <div style={{ position: "relative", height: "340px" }}>
         {[3, 2, 1, 0].map(offset => (
           <div key={offset} style={{
             position: "absolute",
-            top: `${offset * 9}px`, left: `${offset * 7}px`,
-            right: `${-offset * 7}px`, bottom: 0,
-            background: offset === 0 ? "rgba(247,245,241,0.06)" : `rgba(247,245,241,0.02)`,
+            top: `${offset * 9}px`, left: `${offset * 7}px`, right: `${-offset * 7}px`, bottom: 0,
+            background: offset === 0 ? "rgba(247,245,241,0.06)" : "rgba(247,245,241,0.02)",
             border: "1px solid rgba(247,245,241,0.08)",
             borderTop: offset === 0 ? "2px solid rgba(247,245,241,0.3)" : "1px solid rgba(247,245,241,0.05)",
             transform: `rotate(${(offset - 1.5) * 1.1}deg)`,
@@ -415,16 +432,10 @@ function JournalBanner() {
           }}>
             {offset === 0 && (
               <>
-                <p style={{ fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(247,245,241,0.25)", margin: "0 0 24px" }}>
-                  The Page Gallery Journal
-                </p>
-                <p style={{ fontSize: "15px", fontWeight: "400", color: "rgba(247,245,241,0.7)", margin: "0 0 18px", lineHeight: "1.4", letterSpacing: "-0.01em" }}>
-                  New issue.<br />Now open.
-                </p>
+                <p style={{ fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(247,245,241,0.25)", margin: "0 0 24px" }}>The Page Gallery Journal</p>
+                <p style={{ fontSize: "15px", fontWeight: "400", color: "rgba(247,245,241,0.7)", margin: "0 0 18px", lineHeight: "1.4", letterSpacing: "-0.01em" }}>New issue.<br />Now open.</p>
                 <div style={{ width: "32px", height: "1px", background: "rgba(247,245,241,0.2)", margin: "0 0 20px" }} />
-                <p style={{ fontSize: "12px", color: "rgba(247,245,241,0.35)", lineHeight: "1.8", fontStyle: "italic", margin: 0 }}>
-                  Serious work.<br />Carefully chosen.
-                </p>
+                <p style={{ fontSize: "12px", color: "rgba(247,245,241,0.35)", lineHeight: "1.8", fontStyle: "italic", margin: 0 }}>Serious work.<br />Carefully chosen.</p>
               </>
             )}
           </div>
@@ -434,6 +445,7 @@ function JournalBanner() {
   );
 }
 
+// ── ABOUT ─────────────────────────────────────────────────────────────────────
 function AboutSection() {
   const [visible, setVisible] = useState(false);
   const ref = useRef(null);
@@ -444,17 +456,8 @@ function AboutSection() {
   }, []);
 
   return (
-    <section id="about" ref={ref} style={{
-      padding: "130px 52px",
-      borderTop: `1px solid rgba(26,26,24,0.07)`,
-      maxWidth: "720px",
-      ...mono,
-    }}>
-      <div style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
-      }}>
+    <section id="about" ref={ref} style={{ padding: "130px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", maxWidth: "720px", ...mono }}>
+      <div style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: "all 1s cubic-bezier(0.16,1,0.3,1)" }}>
         <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 20px" }}>About</p>
         <h2 style={{ fontSize: "clamp(22px, 3vw, 38px)", fontWeight: "400", color: INK, margin: "0 0 36px", letterSpacing: "-0.015em", lineHeight: "1.12" }}>
           Bea Sophia is a poet<br />based in New York City.
@@ -468,12 +471,8 @@ function AboutSection() {
           The thing that kept going. The body that kept going.
           What grows in the crack. What the crack costs.
         </p>
-        <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer" style={{
-          fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase",
-          color: GREY, textDecoration: "none",
-          borderBottom: `1px solid rgba(107,107,98,0.35)`, paddingBottom: "3px",
-          transition: "color 0.2s, border-color 0.2s",
-        }}
+        <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: GREY, textDecoration: "none", borderBottom: "1px solid rgba(107,107,98,0.35)", paddingBottom: "3px", transition: "color 0.2s, border-color 0.2s" }}
           onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
           onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.35)"; }}
         >@bsophialovesgnochi</a>
@@ -482,50 +481,26 @@ function AboutSection() {
   );
 }
 
+// ── NEWSLETTER ────────────────────────────────────────────────────────────────
 function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section style={{
-      padding: "110px 52px",
-      borderTop: `1px solid rgba(26,26,24,0.07)`,
-      background: CREAM,
-      ...mono,
-    }}>
+    <section style={{ padding: "110px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", background: CREAM, ...mono }}>
       <div style={{ maxWidth: "520px" }}>
         <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 20px" }}>Letters</p>
-        <h3 style={{ fontSize: "clamp(20px, 2.8vw, 36px)", fontWeight: "400", color: INK, margin: "0 0 18px", letterSpacing: "-0.015em" }}>
-          New work, when it exists.
-        </h3>
+        <h3 style={{ fontSize: "clamp(20px, 2.8vw, 36px)", fontWeight: "400", color: INK, margin: "0 0 18px", letterSpacing: "-0.015em" }}>New work, when it exists.</h3>
         <p style={{ fontSize: "15px", color: GREY, lineHeight: "1.85", margin: "0 0 44px" }}>
-          No frequency promised. No updates, no musings.
-          Something worth reading when it arrives.
+          No frequency promised. No updates, no musings. Something worth reading when it arrives.
         </p>
         {submitted ? (
           <p style={{ fontSize: "14px", color: GREY, fontStyle: "italic" }}>You're in.</p>
         ) : (
-          <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true); }}
-            style={{ display: "flex", maxWidth: "420px" }}>
-            <input
-              type="email" required value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Your email"
-              style={{
-                flex: 1, padding: "15px 18px",
-                border: `1px solid rgba(26,26,24,0.16)`,
-                borderRight: "none", fontSize: "14px",
-                fontFamily: "Georgia, serif", background: WHITE,
-                outline: "none", color: INK,
-              }}
-            />
-            <button type="submit" style={{
-              background: INK, color: CREAM,
-              border: "none", padding: "15px 26px",
-              fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
-              cursor: "pointer", fontFamily: "Georgia, serif",
-              whiteSpace: "nowrap", transition: "opacity 0.2s",
-            }}
+          <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true); }} style={{ display: "flex", maxWidth: "420px" }}>
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email"
+              style={{ flex: 1, padding: "15px 18px", border: "1px solid rgba(26,26,24,0.16)", borderRight: "none", fontSize: "14px", fontFamily: "Georgia, serif", background: WHITE, outline: "none", color: INK }} />
+            <button type="submit" style={{ background: INK, color: CREAM, border: "none", padding: "15px 26px", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer", fontFamily: "Georgia, serif", whiteSpace: "nowrap", transition: "opacity 0.2s" }}
               onMouseEnter={e => e.target.style.opacity = "0.78"}
               onMouseLeave={e => e.target.style.opacity = "1"}
             >Subscribe</button>
@@ -536,23 +511,14 @@ function NewsletterSection() {
   );
 }
 
+// ── FOOTER ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer style={{
-      padding: "36px 52px",
-      borderTop: `1px solid rgba(26,26,24,0.07)`,
-      display: "flex", justifyContent: "space-between",
-      alignItems: "center", flexWrap: "wrap", gap: "16px",
-      ...mono,
-    }}>
+    <footer style={{ padding: "36px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", ...mono }}>
       <span style={{ fontSize: "11px", color: LIGHT_GREY, letterSpacing: "0.1em" }}>© Bea Sophia</span>
       <div style={{ display: "flex", gap: "36px" }}>
-        {[
-          ["Instagram", "https://instagram.com/bsophialovesgnochi"],
-          ["The Page Gallery Journal", "#"],
-        ].map(([label, href]) => (
-          <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined}
-            rel="noopener noreferrer"
+        {[["Instagram", "https://instagram.com/bsophialovesgnochi"], ["The Page Gallery Journal", "#"]].map(([label, href]) => (
+          <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer"
             style={{ fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: LIGHT_GREY, textDecoration: "none", transition: "color 0.2s" }}
             onMouseEnter={e => e.target.style.color = INK}
             onMouseLeave={e => e.target.style.color = LIGHT_GREY}
@@ -566,7 +532,6 @@ function Footer() {
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
-
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -583,13 +548,14 @@ export default function Home() {
       <AboutSection />
       <NewsletterSection />
       <Footer />
+      <FeedbackWidget />
 
       <style>{`
         *, *::before, *::after { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { margin: 0; }
         ::selection { background: rgba(26,26,24,0.1); }
-        input::placeholder { color: #b8b5ac; }
+        input::placeholder, textarea::placeholder { color: #b8b5ac; }
         @keyframes pulse {
           0%, 100% { transform: scaleY(1); opacity: 0.4; }
           50% { transform: scaleY(1.2); opacity: 0.7; }
@@ -598,7 +564,6 @@ export default function Home() {
           nav { padding: 22px 24px !important; }
           section { padding-left: 24px !important; padding-right: 24px !important; }
           h1 { font-size: 52px !important; }
-          .manuscripts-floor { height: 1200px !important; }
         }
         @media (prefers-reduced-motion: reduce) {
           * { transition: none !important; animation: none !important; }
