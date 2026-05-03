@@ -5,7 +5,7 @@ const DRAWING_FOREST  = "https://media.base44.com/images/public/whatsapp/69f5fbb
 const DRAWING_FIGURES = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/24cdd3ae8_whatsapp_image_855974756792686.jpg";
 const DRAWING_GALLERY = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/a2b7907fc_whatsapp_image_1446971447177747.jpg";
 
-const CREAM = "#f5f0e4";
+const CREAM = "#ffffff";
 const NAVY  = "#1a2a6c";
 
 const SWARM_WORDS = [
