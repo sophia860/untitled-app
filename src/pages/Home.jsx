@@ -119,29 +119,6 @@ function PoemBlock({poem,open,onToggle}) {
   );
 }
 
-// ─── DEMO BLANK ───────────────────────────────────────────────────
-function DemoBlank({prompt,placeholder}) {
-  const [val,setVal]=useState("");const[active,setActive]=useState(false);const[flash,setFlash]=useState(false);const inp=useRef(null);
-  return (
-    <p style={{fontSize:"clamp(14px,1.7vw,17px)",lineHeight:2.1,fontFamily:"'EB Garamond','Times New Roman',serif",color:"#EEE8DC",marginBottom:6}}>
-      {prompt}
-      <span onClick={()=>inp.current.focus()} style={{display:"inline-block",minWidth:90,marginLeft:6,
-        borderBottom:active?"1.5px solid #C24B1A":"1.5px solid rgba(194,75,26,.22)",
-        transition:"border-color .25s",background:flash?"rgba(42,110,74,.18)":"transparent",cursor:"text",paddingBottom:1}}>
-        <input ref={inp} value={val} onChange={e=>setVal(e.target.value)}
-          onFocus={()=>setActive(true)}
-          onBlur={()=>{setActive(false);if(val){setFlash(true);setTimeout(()=>setFlash(false),400);}}}
-          placeholder={placeholder}
-          style={{background:"transparent",border:"none",outline:"none",
-            fontFamily:"'Courier Prime','Courier New',monospace",
-            fontSize:"clamp(12px,1.5vw,15px)",color:"#C24B1A",
-            width:Math.max((val.length||placeholder.length)*9+20,80)+"px",
-            minWidth:80,caretColor:"#C24B1A",transition:"width .18s"}}/>
-      </span>
-    </p>
-  );
-}
-
 // ─── LINE HERO — single body-shape, one sentence inside ──────────
 // Reference: closed organic line, one italic phrase, one dot, one square, bottom tags
 function LineHero() {
@@ -389,7 +366,7 @@ function RoomCanvas({ room }) {
 }
 
 // ─── OBJECT ROOM ──────────────────────────────────────────────────
-function ObjectRoom({ room, title, subtitle, price, label, link, demoChildren, textColor="#1a1a18", accentColor="rgba(26,26,24,.6)" }) {
+function ObjectRoom({ room, title, subtitle, label, textColor="#1a1a18" }) {
   const [revealed,setRevealed]=useState(false);
   const ref=useRef(null);
   useEffect(()=>{
@@ -399,26 +376,10 @@ function ObjectRoom({ room, title, subtitle, price, label, link, demoChildren, t
   return (
     <div ref={ref} style={{position:"relative",height:"100vh",overflow:"hidden",display:"flex",alignItems:"flex-end"}}>
       <RoomCanvas room={room}/>
-      <div style={{position:"relative",zIndex:10,padding:"0 48px 52px",width:"100%",opacity:revealed?1:0,transform:revealed?"translateY(0)":"translateY(18px)",transition:"opacity 1s ease .2s,transform 1s ease .2s"}}>
-        <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",flexWrap:"wrap",gap:24}}>
-          <div>
-            <p style={{fontSize:9,letterSpacing:".28em",textTransform:"uppercase",color:textColor,opacity:.35,marginBottom:8}}>{label}</p>
-            <h2 style={{fontSize:"clamp(26px,4.5vw,60px)",fontStyle:"italic",fontWeight:400,color:textColor,lineHeight:1.0,letterSpacing:"-.02em",marginBottom:8}}>{title}</h2>
-            <p style={{fontSize:14,color:textColor,opacity:.42,lineHeight:1.75,maxWidth:360}}>{subtitle}</p>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:14,paddingBottom:4}}>
-            <span style={{fontSize:"clamp(22px,3.5vw,40px)",fontStyle:"italic",color:textColor,opacity:.55}}>£{price}</span>
-            <a href={link} target="_blank" rel="noopener noreferrer"
-              style={{fontSize:9,letterSpacing:".24em",textTransform:"uppercase",color:textColor,border:`1px solid ${accentColor}`,padding:"11px 34px",transition:"background .3s,color .3s",display:"inline-block"}}
-              onMouseEnter={e=>{e.currentTarget.style.background=room===2?"#C24B1A":"#1a1a18";e.currentTarget.style.color=room===2?"#100E0C":"#F5F0E8";}}
-              onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=textColor;}}>
-              Take it
-            </a>
-          </div>
-        </div>
-        {demoChildren && (
-          <div style={{marginTop:24,borderTop:`1px solid rgba(${room===2?"255,255,255":"26,26,24"},.07)`,paddingTop:18}}>{demoChildren}</div>
-        )}
+      <div style={{position:"relative",zIndex:10,padding:"0 48px 64px",width:"100%",opacity:revealed?1:0,transform:revealed?"translateY(0)":"translateY(18px)",transition:"opacity 1s ease .2s,transform 1s ease .2s"}}>
+        <p style={{fontSize:9,letterSpacing:".28em",textTransform:"uppercase",color:textColor,opacity:.3,marginBottom:10}}>{label}</p>
+        <h2 style={{fontSize:"clamp(26px,4.5vw,60px)",fontStyle:"italic",fontWeight:400,color:textColor,lineHeight:1.0,letterSpacing:"-.02em",marginBottom:10}}>{title}</h2>
+        <p style={{fontSize:14,color:textColor,opacity:.38,lineHeight:1.8,maxWidth:400}}>{subtitle}</p>
       </div>
     </div>
   );
@@ -427,8 +388,6 @@ function ObjectRoom({ room, title, subtitle, price, label, link, demoChildren, t
 // ─── MAIN ─────────────────────────────────────────────────────────
 export default function Home() {
   const [openPoem,setOpenPoem]=useState(null);
-  const [email,setEmail]=useState("");
-  const [subscribed,setSubscribed]=useState(false);
   const [scrollY,setScrollY]=useState(0);
 
   useEffect(()=>{
@@ -491,12 +450,9 @@ export default function Home() {
         <ObjectRoom
           room={1}
           title="The Only Life"
-          subtitle="Twenty poems. New York. The body after the ward. A manuscript left on a floor."
-          price="12"
-          label="A collection · PDF"
-          link="https://www.paypal.com/paypalme/beasophiapoet/12"
+          subtitle="Twenty poems. New York. The body after the ward."
+          label="A collection"
           textColor="#1a1a18"
-          accentColor="rgba(26,26,24,.5)"
         />
 
         {/* gradient seam */}
@@ -506,16 +462,10 @@ export default function Home() {
         <ObjectRoom
           room={2}
           title="The Writer's Block Pack"
-          subtitle="100 Mad-Libs. 200 Ad-Libs. 1,000 prompts. A room with no name. Fill in a blank. Something will surprise you."
-          price="12"
-          label="Interactive workbook"
-          link="https://www.paypal.com/paypalme/beasophiapoet/12"
+          subtitle="100 prompts. A room with no name. Fill in a blank."
+          label="A workbook"
           textColor="#EEE8DC"
-          accentColor="#C24B1A"
-          demoChildren={
-            <div>
-              <DemoBlank prompt="The thing I keep almost saying is" placeholder="type here"/>
-              <DemoBlank prompt="I write best when I feel" placeholder="type here"/>
+        />
             </div>
           }
         />
@@ -545,26 +495,6 @@ export default function Home() {
             onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=.28}>Instagram ↗</a>
         </FadeIn>
       </section>
-
-      {/* NEWSLETTER */}
-      <section style={{borderTop:"1px solid rgba(26,26,24,.07)",padding:"80px 32px",background:"#1a1a18",color:"#F5F0E8"}}>
-        <FadeIn style={{maxWidth:500}}>
-          <p style={{fontSize:"clamp(20px,3.8vw,40px)",fontStyle:"italic",fontWeight:400,lineHeight:1.3,marginBottom:10}}>New poems, when they exist.</p>
-          <p style={{fontSize:14,opacity:.36,lineHeight:1.85,marginBottom:32}}>No frequency promises. No newsletter voice. Just the next thing.</p>
-          {subscribed ? (
-            <p style={{fontSize:12,opacity:.4,fontStyle:"italic"}}>You're in.</p>
-          ) : (
-            <form onSubmit={e=>{e.preventDefault();if(email)setSubscribed(true);}} style={{display:"flex",flexWrap:"wrap"}}>
-              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" required
-                style={{flex:1,minWidth:190,padding:"13px 14px",background:"rgba(245,240,232,.06)",border:"1px solid rgba(245,240,232,.15)",borderRight:"none",color:"#F5F0E8",fontSize:13,outline:"none"}}/>
-              <button type="submit"
-                style={{background:"#E8E5E0",color:"#1a1a18",border:"none",padding:"13px 22px",fontSize:9,letterSpacing:".22em",textTransform:"uppercase",transition:"opacity .2s"}}
-                onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=1}>Subscribe</button>
-            </form>
-          )}
-        </FadeIn>
-      </section>
-
       {/* FOOTER */}
       <footer style={{borderTop:"1px solid rgba(245,240,232,.06)",background:"#1a1a18",color:"rgba(245,240,232,.16)",padding:"22px 32px",display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
         <span style={{fontSize:10,letterSpacing:".12em"}}>© Bea Sophia {new Date().getFullYear()}</span>
