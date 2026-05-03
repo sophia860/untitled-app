@@ -308,19 +308,23 @@ export default function Home() {
 
         {/* centre text */}
         <div style={{position:"relative",zIndex:2,textAlign:"center",padding:"0 32px",animation:"fadeUp 1.2s ease .4s both",pointerEvents:"none"}}>
-          <p style={{fontSize:"10px",letterSpacing:".3em",textTransform:"uppercase",opacity:.3,marginBottom:"24px"}}>
-            The Page Gallery — 2025
+          <p style={{fontSize:"10px",letterSpacing:".3em",textTransform:"uppercase",opacity:.35,marginBottom:"20px"}}>
+            Bea Sophia — Poet
           </p>
           <h1 style={{
-            fontSize:"clamp(26px,5.5vw,66px)",
+            fontSize:"clamp(28px,5.5vw,66px)",
             fontWeight:400,fontStyle:"italic",
             lineHeight:1.12,maxWidth:"580px",
             letterSpacing:"-.015em",
+            marginBottom:"24px",
           }}>
-            What happens to a thought<br/>when the person who had it dies?
+            Poems about the thoughts<br/>people carry and never say.
           </h1>
-          <p style={{fontSize:"13px",opacity:.3,letterSpacing:".06em",marginTop:"20px",fontStyle:"italic"}}>
-            move through it ↓
+          <p style={{fontSize:"15px",opacity:.45,lineHeight:1.8,maxWidth:"380px",margin:"0 auto 28px",fontStyle:"italic"}}>
+            Read free. Buy the collection.<br/>Walk around inside someone else's mind.
+          </p>
+          <p style={{fontSize:"12px",opacity:.25,letterSpacing:".06em",fontStyle:"normal"}}>
+            ↓ scroll
           </p>
         </div>
 
@@ -331,21 +335,47 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WALK-IN STRIP — transition */}
+      {/* INTRO STRIP */}
       <div style={{
-        padding:"60px 32px",
+        padding:"64px 32px",
         background:"#fff",
         position:"relative",
         borderTop:"1px solid rgba(17,17,17,.06)",
         overflow:"hidden",
       }}>
-        {/* scattered scribble behind text */}
-        <div style={{position:"absolute",top:"10px",right:"5%",opacity:.06}}>
+        <div style={{position:"absolute",top:"10px",right:"5%",opacity:.05}}>
           <Scribble path={SCRIBBLES[6]} size={180} animate={false}/>
         </div>
-        <p style={{fontSize:"clamp(18px,3vw,34px)",fontStyle:"italic",lineHeight:1.65,maxWidth:"620px",opacity:.6}}>
-          Walk around inside someone else's mind.<br/>The poems are what we found.
-        </p>
+        <div style={{maxWidth:"680px"}}>
+          <p style={{fontSize:"10px",letterSpacing:".25em",textTransform:"uppercase",opacity:.3,marginBottom:"20px",display:"flex",alignItems:"center",gap:"8px"}}>
+            <span style={{display:"inline-block",width:5,height:5,borderRadius:"50%",background:"#111"}}/>
+            Who I am
+          </p>
+          <p style={{fontSize:"clamp(20px,3vw,32px)",fontStyle:"italic",lineHeight:1.65,marginBottom:"20px"}}>
+            I'm Bea Sophia — poet, founder of The Page Gallery Journal.
+          </p>
+          <p style={{fontSize:"16px",lineHeight:1.9,opacity:.5,marginBottom:"16px"}}>
+            I write poems about the things people feel but don't say. The conversations that happen in the wrong order. The thoughts that die with the person who had them.
+          </p>
+          <p style={{fontSize:"16px",lineHeight:1.9,opacity:.5,marginBottom:"28px"}}>
+            When I got sick, I started writing them down. This is where they live.
+          </p>
+          <div style={{display:"flex",gap:"24px",flexWrap:"wrap"}}>
+            <a href="#poems" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.3)",paddingBottom:"3px",opacity:.6,transition:"opacity .2s"}}
+              onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.6}>
+              Read free poems
+            </a>
+            <a href="#collection" style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:"3px",opacity:.35,transition:"opacity .2s"}}
+              onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>
+              Buy the collection — £12
+            </a>
+            <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
+              style={{fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",opacity:.25,transition:"opacity .2s"}}
+              onMouseEnter={e=>e.currentTarget.style.opacity=.6} onMouseLeave={e=>e.currentTarget.style.opacity=.25}>
+              Instagram ↗
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* POEMS */}
