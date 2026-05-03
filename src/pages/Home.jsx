@@ -5,16 +5,21 @@ const DRAWING_FOREST  = "https://media.base44.com/images/public/whatsapp/69f5fbb
 
 const POEMS = [
   {
-    id:1, num:"01", title:"Inbound", note:"Newark airport, gate C42",
-    lines:["Newark airport smells like carpet cleaner","and the specific anxiety of people who are almost somewhere.","","I have one bag checked and one theory about myself","I'm not ready to test yet.","","The woman at passport control asks the purpose of my visit.","I say: to live here.","She stamps the page.","Doesn't look up."],
-  },
-  {
-    id:2, num:"02", title:"Cockroach", note:"3am, Brooklyn, first week",
-    lines:["I watched one cross my kitchen floor","with such absolute certainty of direction —","not scurrying, not panicking,","just moving from one exact point to another","like it had somewhere specific to be.","","In the morning it was gone.","But something had passed through","and not apologised","and I was glad."],
-  },
-  {
-    id:3, num:"03", title:"Still Here", note:"kitchen, Flatbush, Tuesday",
-    lines:["The tap drips.","I have a reference number.","I believe in process.","","I stood in this kitchen once","imagining one more minute —","and I got the minute.","And the one after.","","The tap drips.","I let it."],
+    id:1, num:"01", title:"Retroactive Availability", note:"",
+    lines:[
+      "Four times in the same minute I said sorry",
+      "for wanting you.",
+      "",
+      "You said anything.",
+      "",
+      "Said it at eleven twenty-eight,",
+      "which is the exact minute I understood",
+      "",
+      "that a man who would do anything",
+      "can also do nothing",
+      "for years",
+      "and not know the difference.",
+    ],
   },
 ];
 
@@ -39,9 +44,10 @@ const SCRIBBLES = [
 ];
 
 const FLOATING_WORDS = [
-  "what if","remember","the gap","don't","ordinary","tuesday","almost","too late",
-  "I forgot","the light","wait","still","gone","who said","I know","not yet",
-  "the door","again","it was","no one","the shape of","before","after all","maybe",
+  "sorry","anything","eleven twenty-eight","for years","wanting","nothing",
+  "the same minute","I understood","do anything","not know","the difference",
+  "four times","you said","I said","said it","and not",
+  "for wanting","can also","who would","years","understood","exact",
 ];
 
 // ── ANIMATED SCRIBBLE ────────────────────────────────────────────
