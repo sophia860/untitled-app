@@ -1,240 +1,261 @@
 import { useState, useEffect, useRef } from "react";
 import { SiteNote } from "@/api/entities";
 
-// ── POEM DATA ─────────────────────────────────────────────────────────────────
-const POEMS = [
+// ── DESIGN TOKENS ─────────────────────────────────────────────────────────────
+const C = {
+  paper:   "#f0ebe1",
+  ink:     "#1a1a18",
+  inkFade: "rgba(26,26,24,0.5)",
+  inkGhost:"rgba(26,26,24,0.08)",
+  red:     "#c94a3a",
+  cream:   "#f7f4ee",
+  grey:    "#6b6560",
+  lightGrey:"#a09a93",
+  white:   "#faf8f4",
+};
+
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, 'Times New Roman', serif" };
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const FREE_POEMS = [
   {
-    id: 1, num: "01", title: "INBOUND",
-    excerpt: ["I have one bag checked and one theory about myself", "I'm not ready to test yet."],
-    rotation: -2.3, left: "4%", top: "5%", width: "270px",
+    id: 1,
+    num: "001",
+    title: "INBOUND",
+    annotation: "overheard at Newark, gate C42",
+    lines: [
+      "Newark airport smells like carpet cleaner",
+      "and the specific anxiety of people who are almost somewhere.",
+      "",
+      "I have one bag checked and one theory about myself",
+      "I'm not ready to test yet.",
+      "",
+      "The woman at passport control asks the purpose of my visit.",
+      "I say: to live here.",
+      "She stamps the page.",
+      "Doesn't look up.",
+      "",
+      "The stamp dries while I'm still standing there.",
+    ],
+    rotation: -1.8, left: "3%", top: "8%", width: "280px",
   },
   {
-    id: 2, num: "03", title: "FIRST MORNING, BROOKLYN",
-    excerpt: ["The rat has no interest in my history.", "", "I feel, for the first time in two years,", "genuinely less alone."],
-    rotation: 1.6, left: "48%", top: "2%", width: "290px",
+    id: 2,
+    num: "009",
+    title: "COCKROACH",
+    annotation: "3am, Brooklyn, first week",
+    lines: [
+      "I watched one cross my kitchen floor",
+      "with such absolute certainty of direction —",
+      "not scurrying, not panicking,",
+      "just moving from one exact point to another",
+      "like it had somewhere specific to be",
+      "and the appointment had been in the diary for months —",
+      "",
+      "and I put the glass back in the cupboard.",
+      "Left it to finish whatever it was doing.",
+      "Went to bed.",
+      "",
+      "In the morning it was gone.",
+      "But something had passed through it in the night",
+      "and not apologised",
+      "and I was glad.",
+    ],
+    rotation: 2.1, left: "46%", top: "4%", width: "268px",
   },
   {
-    id: 3, num: "09", title: "COCKROACH",
-    excerpt: ["something had passed through it in the night", "and not apologised", "and I was glad."],
-    rotation: -1.4, left: "24%", top: "40%", width: "255px",
+    id: 3,
+    num: "020",
+    title: "STILL HERE",
+    annotation: "kitchen, Flatbush, Tuesday",
+    lines: [
+      "The tap drips.",
+      "I have a reference number.",
+      "I believe in process.",
+      "",
+      "I stood in this kitchen once",
+      "imagining one more minute —",
+      "knowing I'd waste it,",
+      "just listening to the drip,",
+      "pretending it wasn't counting —",
+      "",
+      "and I got the minute.",
+      "And the one after.",
+      "",
+      "I am not monitoring.",
+      "I am not waiting.",
+      "",
+      "The tap drips.",
+      "I let it.",
+    ],
+    rotation: -0.9, left: "22%", top: "52%", width: "258px",
   },
   {
-    id: 4, num: "10", title: "BODEGA FLOWERS",
-    excerpt: ["Wrong colours. Wrong proportions.", "Alive.", "That's the whole requirement."],
-    rotation: 3.2, left: "60%", top: "46%", width: "248px",
-  },
-  {
-    id: 5, num: "16", title: "WHAT THE BODY KEEPS",
-    excerpt: ["Not to feel something.", "To confirm the record is still there."],
-    rotation: -2.1, left: "6%", top: "72%", width: "260px",
-  },
-  {
-    id: 6, num: "20", title: "STILL HERE",
-    excerpt: ["I am not monitoring.", "I am not waiting.", "", "The tap drips.", "I let it."],
-    rotation: 1.1, left: "66%", top: "74%", width: "242px",
+    id: 4,
+    num: "010",
+    title: "BODEGA FLOWERS",
+    annotation: "Atlantic Ave, every Saturday",
+    lines: [
+      "Wrapped in plastic,",
+      "slightly crushed,",
+      "available at all hours,",
+      "no questions asked.",
+      "",
+      "My mother would have carried these on the tube,",
+      "one arm out to keep the petals off her coat —",
+      "the woman who told a consultant",
+      "to shove his positive outlook up his arse",
+      "and meant it",
+      "and was right.",
+      "",
+      "Wrong colours. Wrong proportions.",
+      "Alive.",
+      "That's the whole requirement.",
+    ],
+    rotation: 1.4, left: "60%", top: "48%", width: "264px",
   },
 ];
 
 const SHOP_ITEMS = [
   {
     id: "collection",
-    type: "COLLECTION",
+    label: "ARCHIVE — 001",
     title: "The Only Life",
-    desc: "Twenty poems. Four movements: Arrival, Grotesque, Beautiful, The Only Life. Nature in New York City — the rat, the cockroach, the fig tree growing from the wall. Scotland and Yorkshire in the body. The body after the ward.",
+    fragment: "\"The body logged the ward. The body logged the Cairngorm plateau in February. The ward is over. The body continues logging.\"",
+    desc: "Twenty poems written from the fragments. New York. The body after the ward. Scotland in the bones. What keeps going when the reason is unclear. You will find yourself inside them.",
     price: "£12",
-    format: "Digital PDF · Instant delivery",
+    format: "Digital PDF · Yours immediately",
     paypal: "https://paypal.me/Sophiasharkey330",
+    featured: true,
   },
   {
     id: "prompts",
-    type: "PROMPT PACK",
+    label: "TOOLS — 001",
     title: "Write What Survives",
-    desc: "Prompts built around the same logic as The Only Life — object first, feeling never. For poets who want to write the thing without explaining it.",
+    fragment: "\"Object first. Feeling never. The thing that happened is in the thing, not in the explanation of the thing.\"",
+    desc: "Prompts built around the same logic as the collection — object first, feeling never. For poets who want to write the thing without explaining it.",
     price: "£8",
-    format: "Digital PDF · Instant delivery",
+    format: "Digital PDF · Yours immediately",
     paypal: "https://paypal.me/Sophiasharkey330",
+    featured: false,
   },
   {
     id: "intensive",
-    type: "MINI INTENSIVE",
+    label: "INTENSIVE — 001",
     title: "The Object Is the Meaning",
-    desc: "A condensed version of Bea's popular writing intensive. Video + exercises + feedback. You bring the object. We find what's inside it.",
+    fragment: "\"You bring the object. We find what's inside it. That's the whole method.\"",
+    desc: "A condensed version of the intensive. Video, exercises, feedback. The same method that produced the collection, handed over.",
     price: "£45",
     format: "Digital · Lifetime access",
     paypal: "https://paypal.me/Sophiasharkey330",
+    featured: false,
   },
 ];
 
-const SECTIONS = ["Hero", "Poems / Manuscripts", "Shop", "Journal", "About", "Newsletter", "Other"];
+// ── GRAIN OVERLAY ─────────────────────────────────────────────────────────────
+function Grain() {
+  return (
+    <div aria-hidden="true" style={{
+      position: "fixed", inset: 0, zIndex: 1000,
+      pointerEvents: "none",
+      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+      opacity: 0.032,
+      mixBlendMode: "multiply",
+    }} />
+  );
+}
 
-// ── STYLES ────────────────────────────────────────────────────────────────────
-const CREAM = "#f7f5f1";
-const INK = "#1a1a18";
-const GREY = "#6b6b62";
-const LIGHT_GREY = "#9b9b90";
-const WHITE = "#ffffff";
-const mono = { fontFamily: "'Georgia', 'Times New Roman', serif" };
+// ── CUSTOM CURSOR ─────────────────────────────────────────────────────────────
+function Cursor() {
+  const dotRef = useRef(null);
+  const posRef = useRef({ x: -100, y: -100 });
+  const currentRef = useRef({ x: -100, y: -100 });
+  const hovering = useRef(false);
+  const rafRef = useRef(null);
 
-// ── FEEDBACK WIDGET ───────────────────────────────────────────────────────────
-function FeedbackWidget() {
-  const [open, setOpen] = useState(false);
-  const [section, setSection] = useState("Hero");
-  const [note, setNote] = useState("");
-  const [status, setStatus] = useState("idle"); // idle | saving | saved | error
+  useEffect(() => {
+    const onMove = (e) => { posRef.current = { x: e.clientX, y: e.clientY }; };
+    const onEnter = (e) => { if (e.target.closest("[data-poem]")) hovering.current = true; };
+    const onLeave = (e) => { if (e.target.closest("[data-poem]")) hovering.current = false; };
 
-  const submit = async () => {
-    if (!note.trim()) return;
-    setStatus("saving");
-    try {
-      await SiteNote.create({ section, note: note.trim(), status: "new", url: window.location.href });
-      setStatus("saved");
-      setNote("");
-      setTimeout(() => { setStatus("idle"); setOpen(false); }, 1800);
-    } catch {
-      setStatus("error");
-    }
-  };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseover", onEnter);
+    document.addEventListener("mouseout", onLeave);
+
+    const animate = () => {
+      const lerp = 0.13;
+      currentRef.current.x += (posRef.current.x - currentRef.current.x) * lerp;
+      currentRef.current.y += (posRef.current.y - currentRef.current.y) * lerp;
+      if (dotRef.current) {
+        const size = hovering.current ? 20 : 7;
+        dotRef.current.style.transform = `translate(${currentRef.current.x - size/2}px, ${currentRef.current.y - size/2}px)`;
+        dotRef.current.style.width = size + "px";
+        dotRef.current.style.height = size + "px";
+        dotRef.current.style.opacity = hovering.current ? "0.55" : "0.75";
+        dotRef.current.style.borderRadius = hovering.current ? "2px" : "50%";
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseover", onEnter);
+      document.removeEventListener("mouseout", onLeave);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   return (
-    <>
-      {/* Floating button */}
-      <button
-        onClick={() => setOpen(o => !o)}
-        title="Leave a note for the site"
-        style={{
-          position: "fixed", bottom: "32px", right: "32px", zIndex: 9999,
-          width: "48px", height: "48px", borderRadius: "50%",
-          background: INK, border: "none", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 24px rgba(26,26,24,0.22)",
-          transition: "transform 0.25s, opacity 0.25s",
-          opacity: open ? 0.7 : 1,
-          transform: open ? "rotate(45deg)" : "rotate(0deg)",
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = open ? "rotate(45deg) scale(1.08)" : "scale(1.08)"}
-        onMouseLeave={e => e.currentTarget.style.transform = open ? "rotate(45deg)" : "rotate(0deg)"}
-      >
-        {open
-          ? <span style={{ color: CREAM, fontSize: "22px", lineHeight: 1 }}>×</span>
-          : <span style={{ color: CREAM, fontSize: "18px", lineHeight: 1 }}>✎</span>
-        }
-      </button>
-
-      {/* Panel */}
-      {open && (
-        <div style={{
-          position: "fixed", bottom: "92px", right: "32px", zIndex: 9998,
-          width: "320px",
-          background: WHITE,
-          boxShadow: "0 12px 52px rgba(26,26,24,0.16)",
-          borderTop: `3px solid ${INK}`,
-          ...mono,
-          animation: "slideUp 0.3s cubic-bezier(0.16,1,0.3,1)",
-        }}>
-          <div style={{ padding: "24px 24px 0" }}>
-            <p style={{ fontSize: "9px", letterSpacing: "0.24em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 4px" }}>
-              Site notes
-            </p>
-            <p style={{ fontSize: "14px", color: INK, margin: "0 0 20px", lineHeight: "1.4" }}>
-              Leave a note. I'll action it.
-            </p>
-
-            {/* Section selector */}
-            <label style={{ fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: LIGHT_GREY, display: "block", marginBottom: "6px" }}>
-              Section
-            </label>
-            <select
-              value={section}
-              onChange={e => setSection(e.target.value)}
-              style={{
-                width: "100%", padding: "10px 12px",
-                border: `1px solid rgba(26,26,24,0.14)`,
-                background: CREAM, color: INK,
-                fontSize: "13px", fontFamily: "Georgia, serif",
-                marginBottom: "16px", outline: "none",
-                appearance: "none",
-              }}
-            >
-              {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-
-            {/* Note */}
-            <label style={{ fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: LIGHT_GREY, display: "block", marginBottom: "6px" }}>
-              Note
-            </label>
-            <textarea
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder="Change the hero type size, move the shop up, the manuscripts feel too crowded…"
-              rows={4}
-              style={{
-                width: "100%", padding: "10px 12px",
-                border: `1px solid rgba(26,26,24,0.14)`,
-                background: CREAM, color: INK,
-                fontSize: "13px", fontFamily: "Georgia, serif",
-                resize: "vertical", outline: "none",
-                lineHeight: "1.7", boxSizing: "border-box",
-              }}
-            />
-          </div>
-
-          <div style={{ padding: "16px 24px 24px", display: "flex", justifyContent: "flex-end" }}>
-            {status === "saved" ? (
-              <span style={{ fontSize: "12px", color: GREY, fontStyle: "italic" }}>Noted ✓</span>
-            ) : (
-              <button
-                onClick={submit}
-                disabled={status === "saving" || !note.trim()}
-                style={{
-                  background: note.trim() ? INK : "rgba(26,26,24,0.2)",
-                  color: CREAM, border: "none",
-                  padding: "12px 28px", cursor: note.trim() ? "pointer" : "default",
-                  fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase",
-                  fontFamily: "Georgia, serif", transition: "opacity 0.2s",
-                }}
-              >
-                {status === "saving" ? "Saving…" : "Send note"}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      <style>{`
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-    </>
+    <div ref={dotRef} aria-hidden="true" style={{
+      position: "fixed", top: 0, left: 0,
+      width: "7px", height: "7px",
+      background: C.ink, borderRadius: "50%",
+      pointerEvents: "none", zIndex: 9990,
+      transition: "width 0.25s, height 0.25s, opacity 0.25s, border-radius 0.25s",
+      willChange: "transform",
+    }} />
   );
+}
+
+// ── SECTION REVEAL HOOK ───────────────────────────────────────────────────────
+function useReveal(threshold = 0.12) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, visible];
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 function Nav({ scrollY }) {
-  const solid = scrollY > 80;
+  const solid = scrollY > 100;
   return (
     <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 300,
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 500,
       display: "flex", justifyContent: "space-between", alignItems: "center",
-      padding: "26px 52px",
-      background: solid ? "rgba(247,245,241,0.97)" : "transparent",
-      backdropFilter: solid ? "blur(16px)" : "none",
-      borderBottom: solid ? `1px solid rgba(26,26,24,0.07)` : "none",
-      transition: "all 0.5s cubic-bezier(0.16,1,0.3,1)",
-      ...mono,
+      padding: "28px 60px",
+      background: solid ? `rgba(240,235,225,0.96)` : "transparent",
+      backdropFilter: solid ? "blur(20px)" : "none",
+      borderBottom: solid ? `1px solid ${C.inkGhost}` : "none",
+      transition: "background 0.6s, border-color 0.6s",
+      ...serif,
     }}>
-      <a href="#" style={{ fontSize: "12px", letterSpacing: "0.24em", textTransform: "uppercase", color: INK, textDecoration: "none" }}>
+      <a href="#" style={{ fontSize: "13px", letterSpacing: "0.28em", textTransform: "uppercase", color: C.ink, textDecoration: "none" }}>
         Bea Sophia
       </a>
-      <div style={{ display: "flex", gap: "44px" }}>
-        {[["Poems", "#poems"], ["Shop", "#shop"], ["About", "#about"], ["Journal", "#journal"]].map(([label, href]) => (
+      <div style={{ display: "flex", gap: "48px" }}>
+        {[["Read", "#reading-room"], ["Collect", "#archive"], ["Journal", "#gallery-journal"], ["About", "#about"]].map(([label, href]) => (
           <a key={label} href={href} style={{
-            fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
-            color: LIGHT_GREY, textDecoration: "none", transition: "color 0.2s",
+            fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase",
+            color: C.lightGrey, textDecoration: "none",
+            transition: "color 0.2s",
           }}
-            onMouseEnter={e => e.target.style.color = INK}
-            onMouseLeave={e => e.target.style.color = LIGHT_GREY}
+            onMouseEnter={e => e.target.style.color = C.ink}
+            onMouseLeave={e => e.target.style.color = C.lightGrey}
           >{label}</a>
         ))}
       </div>
@@ -242,160 +263,388 @@ function Nav({ scrollY }) {
   );
 }
 
-// ── HERO ──────────────────────────────────────────────────────────────────────
-function Hero({ scrollY }) {
-  const [in_, setIn] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setIn(true), 120); return () => clearTimeout(t); }, []);
-  const fade = Math.max(0, 1 - scrollY / 480);
-  const lift = scrollY * 0.22;
+// ── CORRIDOR / HERO ───────────────────────────────────────────────────────────
+function Corridor({ scrollY }) {
+  const [phase, setPhase] = useState(0); // 0: blank, 1: question, 2: subline, 3: cta
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 400);
+    const t2 = setTimeout(() => setPhase(2), 1400);
+    const t3 = setTimeout(() => setPhase(3), 2200);
+    return () => [t1, t2, t3].forEach(clearTimeout);
+  }, []);
+
+  const fade = Math.max(0, 1 - scrollY / 600);
+  const drift = scrollY * 0.18;
 
   return (
     <section style={{
-      height: "100vh", minHeight: "680px",
+      minHeight: "100vh",
       display: "flex", flexDirection: "column",
-      justifyContent: "flex-end",
-      padding: "0 52px 88px",
-      position: "relative", overflow: "hidden",
-      opacity: fade, transform: `translateY(${lift}px)`,
-      ...mono,
+      justifyContent: "center", alignItems: "flex-start",
+      padding: "120px 60px 100px",
+      position: "relative",
+      opacity: fade,
+      transform: `translateY(${drift}px)`,
+      background: C.paper,
+      ...serif,
     }}>
-      <div style={{ position: "absolute", top: "50%", left: 0, right: 0, height: "1px", background: "rgba(26,26,24,0.05)", transform: "translateY(-50%)" }} />
+      {/* Vertical rule — left accent */}
       <div style={{
-        opacity: in_ ? 1 : 0,
-        transform: in_ ? "translateY(0)" : "translateY(32px)",
-        transition: "all 1.6s cubic-bezier(0.16,1,0.3,1)",
-        maxWidth: "680px",
+        position: "absolute", left: "60px", top: "20%", bottom: "20%",
+        width: "1px", background: C.inkGhost,
+      }} />
+
+      {/* Archive label */}
+      <div style={{
+        opacity: phase >= 1 ? 1 : 0,
+        transform: phase >= 1 ? "translateY(0)" : "translateY(20px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+        marginLeft: "32px", marginBottom: "52px",
       }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.32em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 22px" }}>
-          A poetry collection
-        </p>
-        <h1 style={{ fontSize: "clamp(58px, 10vw, 118px)", fontWeight: "400", lineHeight: "0.92", letterSpacing: "-0.035em", color: INK, margin: "0 0 38px" }}>
-          The<br />Only<br />Life.
-        </h1>
-        <p style={{ fontSize: "clamp(14px, 1.5vw, 17px)", color: GREY, lineHeight: "1.9", maxWidth: "400px", margin: "0 0 52px" }}>
-          Twenty poems. Nature in New York.
-          The body after the ward. What keeps going
-          when the reason is unclear.
-        </p>
-        <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
-          <a href="#shop" style={{ background: INK, color: CREAM, padding: "15px 42px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", transition: "opacity 0.22s" }}
-            onMouseEnter={e => e.target.style.opacity = "0.78"}
-            onMouseLeave={e => e.target.style.opacity = "1"}
-          >Buy — £12</a>
-          <a href="#poems" style={{ fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: GREY, textDecoration: "none", borderBottom: "1px solid rgba(107,107,98,0.35)", paddingBottom: "3px", transition: "color 0.2s, border-color 0.2s" }}
-            onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
-            onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.35)"; }}
-          >Read first</a>
-        </div>
+        <span style={{ fontSize: "9px", letterSpacing: "0.36em", textTransform: "uppercase", color: C.lightGrey }}>
+          The Page Gallery · A collection of minds
+        </span>
       </div>
-      <div style={{ position: "absolute", bottom: "44px", right: "52px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", opacity: scrollY > 50 ? 0 : 0.35, transition: "opacity 0.4s" }}>
-        <span style={{ fontSize: "8px", letterSpacing: "0.28em", textTransform: "uppercase", color: LIGHT_GREY, writingMode: "vertical-rl" }}>Scroll</span>
-        <div style={{ width: "1px", height: "52px", background: INK, animation: "pulse 2.2s ease-in-out infinite" }} />
+
+      {/* Main question */}
+      <h1 style={{
+        marginLeft: "32px",
+        fontSize: "clamp(38px, 6.5vw, 96px)",
+        fontWeight: "300",
+        fontStyle: "italic",
+        lineHeight: "1.05",
+        letterSpacing: "-0.02em",
+        color: C.ink,
+        maxWidth: "820px",
+        margin: "0 0 0 32px",
+        opacity: phase >= 1 ? 1 : 0,
+        transform: phase >= 1 ? "translateY(0)" : "translateY(40px)",
+        transition: "all 1.4s cubic-bezier(0.16,1,0.3,1) 0.1s",
+      }}>
+        What happens to a thought<br />
+        when the person<br />
+        who had it dies?
+      </h1>
+
+      {/* Red mark */}
+      <div style={{
+        marginLeft: "32px", marginTop: "36px", marginBottom: "28px",
+        width: phase >= 2 ? "64px" : "0",
+        height: "2px",
+        background: C.red,
+        transition: "width 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s",
+      }} />
+
+      {/* Subline */}
+      <p style={{
+        marginLeft: "32px",
+        fontSize: "clamp(15px, 1.8vw, 22px)",
+        fontWeight: "300",
+        color: C.grey,
+        lineHeight: "1.75",
+        maxWidth: "480px",
+        margin: "0 0 64px 32px",
+        opacity: phase >= 2 ? 1 : 0,
+        transform: phase >= 2 ? "translateY(0)" : "translateY(24px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1) 0.2s",
+      }}>
+        Walk around inside someone else's mind.<br />
+        The poems are what we found.
+      </p>
+
+      {/* CTAs */}
+      <div style={{
+        marginLeft: "32px",
+        display: "flex", gap: "24px", alignItems: "center", flexWrap: "wrap",
+        opacity: phase >= 3 ? 1 : 0,
+        transform: phase >= 3 ? "translateY(0)" : "translateY(16px)",
+        transition: "all 0.9s cubic-bezier(0.16,1,0.3,1)",
+      }}>
+        <a href="#reading-room" style={{
+          background: C.ink, color: C.paper,
+          padding: "16px 48px", textDecoration: "none",
+          fontSize: "10px", letterSpacing: "0.26em", textTransform: "uppercase",
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          transition: "opacity 0.2s",
+        }}
+          onMouseEnter={e => e.target.style.opacity = "0.75"}
+          onMouseLeave={e => e.target.style.opacity = "1"}
+        >Enter free</a>
+        <a href="#archive" style={{
+          fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase",
+          color: C.grey, textDecoration: "none",
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          borderBottom: `1px solid rgba(107,101,96,0.35)`, paddingBottom: "3px",
+          transition: "color 0.2s, border-color 0.2s",
+        }}
+          onMouseEnter={e => { e.target.style.color = C.ink; e.target.style.borderColor = C.ink; }}
+          onMouseLeave={e => { e.target.style.color = C.grey; e.target.style.borderColor = "rgba(107,101,96,0.35)"; }}
+        >Buy the collection — £12</a>
+      </div>
+
+      {/* Scroll nudge */}
+      <div style={{
+        position: "absolute", bottom: "48px", right: "60px",
+        opacity: scrollY > 60 ? 0 : phase >= 3 ? 0.3 : 0,
+        transition: "opacity 0.5s",
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "10px",
+        ...serif,
+      }}>
+        <span style={{ fontSize: "8px", letterSpacing: "0.3em", textTransform: "uppercase", color: C.lightGrey, writingMode: "vertical-rl" }}>Scroll</span>
+        <div style={{ width: "1px", height: "48px", background: C.ink, opacity: 0.25 }} />
       </div>
     </section>
   );
 }
 
-// ── MANUSCRIPTS ───────────────────────────────────────────────────────────────
-function ManuscriptsSection() {
+// ── READING ROOM ──────────────────────────────────────────────────────────────
+function ReadingRoom() {
+  const [ref, visible] = useReveal(0.05);
+  const [open, setOpen] = useState(null);
   const [hovered, setHovered] = useState(null);
-  const [visible, setVisible] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.1 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
 
   return (
-    <section id="poems" ref={ref} style={{ padding: "130px 52px 160px", borderTop: "1px solid rgba(26,26,24,0.07)", ...mono }}>
-      <div style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(24px)", transition: "all 1s cubic-bezier(0.16,1,0.3,1)", marginBottom: "90px" }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 14px" }}>From the collection</p>
-        <h2 style={{ fontSize: "clamp(22px, 3.2vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>Twenty poems, scattered.</h2>
+    <section id="reading-room" ref={ref} style={{
+      background: C.cream,
+      padding: "120px 60px 160px",
+      borderTop: `1px solid ${C.inkGhost}`,
+      ...serif,
+    }}>
+      {/* Header */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "flex-end",
+        marginBottom: "100px",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+      }}>
+        <div>
+          <p style={{ fontSize: "9px", letterSpacing: "0.32em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 14px" }}>
+            Reading Room · Free access
+          </p>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 58px)", fontWeight: "300", fontStyle: "italic", color: C.ink, margin: 0, letterSpacing: "-0.015em", lineHeight: "1.05" }}>
+            Pick one up.
+          </h2>
+        </div>
+        <p style={{ fontSize: "13px", color: C.lightGrey, maxWidth: "240px", textAlign: "right", lineHeight: "1.7", margin: 0 }}>
+          Four poems from the collection.<br />The rest are inside.
+        </p>
       </div>
-      <div style={{ position: "relative", height: "820px" }}>
-        {POEMS.map((poem, i) => {
+
+      {/* The floor — manuscripts scattered */}
+      <div style={{ position: "relative", height: open ? "auto" : "760px", minHeight: "560px" }}>
+        {FREE_POEMS.map((poem, i) => {
+          const isOpen = open === poem.id;
           const isHovered = hovered === poem.id;
+
           return (
-            <div key={poem.id}
-              onMouseEnter={() => setHovered(poem.id)}
+            <div
+              key={poem.id}
+              data-poem="true"
+              onMouseEnter={() => !open && setHovered(poem.id)}
               onMouseLeave={() => setHovered(null)}
+              onClick={() => setOpen(isOpen ? null : poem.id)}
               style={{
-                position: "absolute", left: poem.left, top: poem.top, width: poem.width,
-                background: WHITE, padding: "26px 26px 30px",
-                transform: `rotate(${poem.rotation}deg) translateY(${isHovered ? -14 : 0}px) scale(${isHovered ? 1.02 : 1})`,
-                boxShadow: isHovered ? "0 28px 70px rgba(26,26,24,0.18)" : "0 2px 18px rgba(26,26,24,0.06)",
-                transition: "transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease",
-                zIndex: isHovered ? 30 : i + 1,
-                borderTop: `2px solid ${INK}`, cursor: "default",
-                opacity: visible ? 1 : 0, transitionDelay: `${i * 0.08}s`,
+                position: open ? "relative" : "absolute",
+                left: open ? undefined : poem.left,
+                top: open ? undefined : poem.top,
+                width: open ? (isOpen ? "100%" : "0") : poem.width,
+                maxWidth: isOpen ? "620px" : undefined,
+                margin: isOpen ? "0 auto 48px" : undefined,
+                height: isOpen ? "auto" : undefined,
+                overflow: isOpen ? "visible" : (open ? "hidden" : "visible"),
+                background: C.white,
+                borderTop: `2px solid ${isOpen ? C.red : C.ink}`,
+                padding: isOpen ? "44px 52px 52px" : "28px 28px 32px",
+                transform: open
+                  ? "none"
+                  : `rotate(${poem.rotation}deg) translateY(${isHovered ? -18 : 0}px) scale(${isHovered ? 1.03 : 1})`,
+                boxShadow: isHovered
+                  ? "0 32px 80px rgba(26,26,24,0.16)"
+                  : isOpen
+                    ? "0 20px 60px rgba(26,26,24,0.12)"
+                    : "0 2px 20px rgba(26,26,24,0.07)",
+                transition: "transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s, border-color 0.3s, padding 0.4s",
+                zIndex: isOpen ? 50 : isHovered ? 30 : i + 1,
+                cursor: "pointer",
+                opacity: visible ? 1 : 0,
+                transitionDelay: open ? "0s" : `${i * 0.07}s`,
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-                <span style={{ fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: "#c8c5bc" }}>{poem.num}</span>
-                <span style={{ fontSize: "8px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#c8c5bc" }}>The Only Life</span>
+              {/* Card header */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: isOpen ? "32px" : "18px" }}>
+                <span style={{ fontSize: "8px", letterSpacing: "0.28em", textTransform: "uppercase", color: C.lightGrey }}>{poem.num}</span>
+                <span style={{ fontSize: "8px", letterSpacing: "0.14em", textTransform: "uppercase", color: isOpen ? C.red : C.lightGrey, transition: "color 0.3s" }}>
+                  {isOpen ? "Close ×" : "The Only Life"}
+                </span>
               </div>
-              <p style={{ fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", color: INK, margin: "0 0 14px", fontWeight: "600", lineHeight: "1.5" }}>{poem.title}</p>
-              <div style={{ borderTop: "1px solid rgba(26,26,24,0.07)", paddingTop: "14px" }}>
-                {poem.excerpt.map((line, j) => (
-                  <p key={j} style={{ fontSize: "13px", color: "#484840", lineHeight: "1.9", margin: 0, fontStyle: "italic", minHeight: line === "" ? "0.85em" : "auto" }}>{line}</p>
-                ))}
+
+              <p style={{
+                fontSize: isOpen ? "11px" : "9px",
+                letterSpacing: "0.22em", textTransform: "uppercase",
+                color: C.ink, margin: isOpen ? "0 0 28px" : "0 0 16px",
+                fontWeight: "500", lineHeight: "1.4",
+                transition: "font-size 0.3s",
+              }}>{poem.title}</p>
+
+              {/* Annotation */}
+              {!isOpen && (
+                <p style={{ fontSize: "10px", fontStyle: "italic", color: C.lightGrey, margin: "0 0 14px", lineHeight: "1.5" }}>
+                  — {poem.annotation}
+                </p>
+              )}
+
+              {/* Divider */}
+              <div style={{ borderTop: `1px solid ${C.inkGhost}`, paddingTop: "14px" }}>
+                {isOpen ? (
+                  <>
+                    {/* Full poem */}
+                    <p style={{ fontSize: "9px", fontStyle: "italic", color: C.lightGrey, margin: "0 0 28px", letterSpacing: "0.08em" }}>
+                      — {poem.annotation}
+                    </p>
+                    {poem.lines.map((line, j) => (
+                      <p key={j} style={{
+                        fontSize: "clamp(15px, 1.6vw, 18px)",
+                        color: C.ink, lineHeight: "1.95",
+                        margin: 0, minHeight: line === "" ? "1em" : "auto",
+                      }}>{line}</p>
+                    ))}
+                    {/* Collection CTA inside poem */}
+                    <div style={{ marginTop: "52px", paddingTop: "32px", borderTop: `1px solid ${C.inkGhost}` }}>
+                      <p style={{ fontSize: "13px", color: C.grey, lineHeight: "1.75", margin: "0 0 20px" }}>
+                        There are twenty more. The full collection is £12.
+                      </p>
+                      <a href="#archive" onClick={() => setOpen(null)} style={{
+                        fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase",
+                        color: C.ink, textDecoration: "none",
+                        borderBottom: `1px solid ${C.ink}`, paddingBottom: "3px",
+                      }}>Get the collection →</a>
+                    </div>
+                  </>
+                ) : (
+                  /* Excerpt preview */
+                  poem.lines.slice(0, 3).map((line, j) => (
+                    <p key={j} style={{
+                      fontSize: "13px", color: "#5a5550", lineHeight: "1.85",
+                      margin: 0, fontStyle: "italic",
+                      minHeight: line === "" ? "0.8em" : "auto",
+                    }}>{line}</p>
+                  ))
+                )}
               </div>
             </div>
           );
         })}
       </div>
-      <div style={{ textAlign: "center", marginTop: "40px" }}>
-        <a href="#shop" style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: GREY, textDecoration: "none", borderBottom: "1px solid rgba(107,107,98,0.3)", paddingBottom: "3px", transition: "color 0.2s, border-color 0.2s" }}
-          onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
-          onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.3)"; }}
-        >Get the full collection →</a>
-      </div>
+
+      {/* Bottom CTA */}
+      {!open && (
+        <div style={{
+          marginTop: "60px", textAlign: "center",
+          opacity: visible ? 1 : 0, transition: "opacity 1s 0.5s",
+        }}>
+          <a href="#archive" style={{
+            fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase",
+            color: C.grey, textDecoration: "none",
+            borderBottom: `1px solid rgba(107,101,96,0.3)`, paddingBottom: "3px",
+          }}
+            onMouseEnter={e => { e.target.style.color = C.ink; e.target.style.borderColor = C.ink; }}
+            onMouseLeave={e => { e.target.style.color = C.grey; e.target.style.borderColor = "rgba(107,101,96,0.3)"; }}
+          >Twenty poems in the full collection →</a>
+        </div>
+      )}
     </section>
   );
 }
 
-// ── SHOP ──────────────────────────────────────────────────────────────────────
-function ShopSection() {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.08 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
+// ── ARCHIVE (SHOP) ────────────────────────────────────────────────────────────
+function Archive() {
+  const [ref, visible] = useReveal(0.08);
 
   return (
-    <section id="shop" ref={ref} style={{ padding: "130px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", background: WHITE, ...mono }}>
-      <div style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: "all 0.9s cubic-bezier(0.16,1,0.3,1)", marginBottom: "80px" }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 14px" }}>Shop</p>
-        <h2 style={{ fontSize: "clamp(22px, 3vw, 40px)", fontWeight: "400", color: INK, margin: 0, letterSpacing: "-0.015em" }}>Things worth buying.</h2>
+    <section id="archive" ref={ref} style={{
+      background: C.ink, color: C.paper,
+      padding: "120px 60px",
+      ...serif,
+    }}>
+      <div style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+        marginBottom: "80px",
+      }}>
+        <p style={{ fontSize: "9px", letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(240,235,225,0.35)", margin: "0 0 16px" }}>
+          The Archive
+        </p>
+        <h2 style={{ fontSize: "clamp(28px, 4vw, 58px)", fontWeight: "300", fontStyle: "italic", margin: 0, letterSpacing: "-0.015em", lineHeight: "1.05" }}>
+          Things worth keeping.
+        </h2>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2px" }}>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
         {SHOP_ITEMS.map((item, i) => (
           <div key={item.id} style={{
-            padding: "52px 44px",
-            background: i === 0 ? INK : CREAM,
-            color: i === 0 ? CREAM : INK,
+            display: "grid",
+            gridTemplateColumns: item.featured ? "1fr 1fr" : "1fr 1fr",
+            gap: "0",
+            background: item.featured ? C.paper : "rgba(240,235,225,0.04)",
+            color: item.featured ? C.ink : C.paper,
+            borderTop: item.featured ? `3px solid ${C.red}` : `1px solid rgba(240,235,225,0.1)`,
             opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(28px)",
-            transition: `all 0.9s cubic-bezier(0.16,1,0.3,1) ${i * 0.1}s`,
+            transform: visible ? "translateY(0)" : "translateY(32px)",
+            transition: `all 1s cubic-bezier(0.16,1,0.3,1) ${i * 0.12}s`,
           }}>
-            <p style={{ fontSize: "9px", letterSpacing: "0.28em", textTransform: "uppercase", color: i === 0 ? "rgba(247,245,241,0.45)" : LIGHT_GREY, margin: "0 0 24px" }}>{item.type}</p>
-            <h3 style={{ fontSize: "clamp(18px, 2vw, 26px)", fontWeight: "400", margin: "0 0 20px", letterSpacing: "-0.01em" }}>{item.title}</h3>
-            <p style={{ fontSize: "14px", lineHeight: "1.85", color: i === 0 ? "rgba(247,245,241,0.7)" : GREY, margin: "0 0 40px" }}>{item.desc}</p>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px" }}>
-              <div>
-                <p style={{ fontSize: "22px", fontWeight: "400", margin: "0 0 6px" }}>{item.price}</p>
-                <p style={{ fontSize: "10px", letterSpacing: "0.12em", color: i === 0 ? "rgba(247,245,241,0.4)" : LIGHT_GREY, margin: 0 }}>{item.format}</p>
+            {/* Left — info */}
+            <div style={{ padding: item.featured ? "56px 52px" : "44px 52px" }}>
+              <p style={{
+                fontSize: "8px", letterSpacing: "0.3em", textTransform: "uppercase",
+                color: item.featured ? C.lightGrey : "rgba(240,235,225,0.35)",
+                margin: "0 0 20px",
+              }}>{item.label}</p>
+              <h3 style={{
+                fontSize: item.featured ? "clamp(22px, 2.8vw, 38px)" : "clamp(18px, 2vw, 26px)",
+                fontWeight: "300", fontStyle: "italic",
+                margin: "0 0 20px", letterSpacing: "-0.01em", lineHeight: "1.1",
+              }}>{item.title}</h3>
+              <p style={{
+                fontSize: "13px", lineHeight: "1.85",
+                color: item.featured ? C.grey : "rgba(240,235,225,0.55)",
+                margin: "0 0 36px", maxWidth: "360px",
+              }}>{item.desc}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: "32px", flexWrap: "wrap" }}>
+                <div>
+                  <p style={{ fontSize: item.featured ? "28px" : "22px", fontWeight: "300", margin: "0 0 5px" }}>{item.price}</p>
+                  <p style={{ fontSize: "9px", letterSpacing: "0.14em", color: item.featured ? C.lightGrey : "rgba(240,235,225,0.3)", margin: 0 }}>{item.format}</p>
+                </div>
+                <a href={item.paypal} target="_blank" rel="noopener noreferrer" style={{
+                  display: "inline-block",
+                  background: item.featured ? C.ink : "rgba(240,235,225,0.1)",
+                  color: C.paper,
+                  border: item.featured ? "none" : "1px solid rgba(240,235,225,0.2)",
+                  padding: "14px 36px", textDecoration: "none",
+                  fontSize: "9px", letterSpacing: "0.24em", textTransform: "uppercase",
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  transition: "opacity 0.2s",
+                }}
+                  onMouseEnter={e => e.target.style.opacity = "0.7"}
+                  onMouseLeave={e => e.target.style.opacity = "1"}
+                >Buy</a>
               </div>
-              <a href={item.paypal} target="_blank" rel="noopener noreferrer" style={{
-                display: "inline-block", background: i === 0 ? CREAM : INK, color: i === 0 ? INK : CREAM,
-                padding: "13px 32px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", transition: "opacity 0.22s",
-              }}
-                onMouseEnter={e => e.target.style.opacity = "0.78"}
-                onMouseLeave={e => e.target.style.opacity = "1"}
-              >Buy</a>
+            </div>
+
+            {/* Right — fragment */}
+            <div style={{
+              padding: item.featured ? "56px 52px" : "44px 52px",
+              display: "flex", alignItems: "center",
+              borderLeft: item.featured ? `1px solid ${C.inkGhost}` : "1px solid rgba(240,235,225,0.06)",
+            }}>
+              <p style={{
+                fontSize: item.featured ? "clamp(16px, 1.8vw, 22px)" : "clamp(14px, 1.5vw, 18px)",
+                fontStyle: "italic", fontWeight: "300",
+                color: item.featured ? C.ink : "rgba(240,235,225,0.45)",
+                lineHeight: "1.7", letterSpacing: "0",
+                margin: 0,
+              }}>{item.fragment}</p>
             </div>
           </div>
         ))}
@@ -404,38 +653,81 @@ function ShopSection() {
   );
 }
 
-// ── JOURNAL ───────────────────────────────────────────────────────────────────
-function JournalBanner() {
+// ── GALLERY JOURNAL ───────────────────────────────────────────────────────────
+function GalleryJournal() {
+  const [ref, visible] = useReveal(0.1);
+
   return (
-    <section id="journal" style={{ background: INK, color: CREAM, padding: "110px 52px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center", ...mono }}>
-      <div>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(247,245,241,0.35)", margin: "0 0 20px" }}>Also</p>
-        <h3 style={{ fontSize: "clamp(24px, 3.5vw, 48px)", fontWeight: "400", margin: "0 0 22px", lineHeight: "1.05", letterSpacing: "-0.02em" }}>The Page<br />Gallery Journal</h3>
-        <p style={{ fontSize: "15px", color: "rgba(247,245,241,0.55)", lineHeight: "1.85", margin: "0 0 44px", maxWidth: "380px" }}>
-          A literary journal. Founded by Bea Sophia. Serious work. Carefully chosen.
+    <section id="gallery-journal" ref={ref} style={{
+      background: C.paper,
+      padding: "120px 60px",
+      borderTop: `1px solid ${C.inkGhost}`,
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "80px", alignItems: "center",
+      ...serif,
+    }}>
+      <div style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+      }}>
+        <p style={{ fontSize: "9px", letterSpacing: "0.32em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 20px" }}>
+          The Page Gallery Journal
         </p>
-        <a href="#" style={{ display: "inline-block", color: CREAM, textDecoration: "none", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", border: "1px solid rgba(247,245,241,0.2)", padding: "14px 36px", transition: "border-color 0.25s" }}
-          onMouseEnter={e => e.target.style.borderColor = "rgba(247,245,241,0.65)"}
-          onMouseLeave={e => e.target.style.borderColor = "rgba(247,245,241,0.2)"}
+        <h3 style={{ fontSize: "clamp(26px, 4vw, 52px)", fontWeight: "300", fontStyle: "italic", margin: "0 0 28px", lineHeight: "1.05", letterSpacing: "-0.02em" }}>
+          Nobody gets to walk around<br />inside someone else's mind.
+        </h3>
+        <div style={{ width: "48px", height: "2px", background: C.red, margin: "0 0 28px" }} />
+        <p style={{ fontSize: "15px", color: C.grey, lineHeight: "1.85", margin: "0 0 16px", maxWidth: "400px" }}>
+          When I got sick, I realised that when people die, all their thoughts die with them.
+        </p>
+        <p style={{ fontSize: "15px", color: C.grey, lineHeight: "1.85", margin: "0 0 44px", maxWidth: "400px" }}>
+          I started collecting fragments — conversations overheard, things said in the wrong order, thoughts that had nowhere to go. That became The Page Gallery Journal.
+        </p>
+        <a href="#" style={{
+          display: "inline-block",
+          border: `1px solid rgba(26,26,24,0.25)`,
+          color: C.ink, textDecoration: "none",
+          padding: "14px 36px",
+          fontSize: "9px", letterSpacing: "0.24em", textTransform: "uppercase",
+          transition: "border-color 0.25s",
+        }}
+          onMouseEnter={e => e.target.style.borderColor = C.ink}
+          onMouseLeave={e => e.target.style.borderColor = "rgba(26,26,24,0.25)"}
         >Visit the Journal</a>
       </div>
-      <div style={{ position: "relative", height: "340px" }}>
-        {[3, 2, 1, 0].map(offset => (
+
+      {/* Stacked archive folders visual */}
+      <div style={{
+        position: "relative", height: "380px",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(32px)",
+        transition: "all 1.2s cubic-bezier(0.16,1,0.3,1) 0.15s",
+      }}>
+        {[4,3,2,1,0].map(offset => (
           <div key={offset} style={{
             position: "absolute",
-            top: `${offset * 9}px`, left: `${offset * 7}px`, right: `${-offset * 7}px`, bottom: 0,
-            background: offset === 0 ? "rgba(247,245,241,0.06)" : "rgba(247,245,241,0.02)",
-            border: "1px solid rgba(247,245,241,0.08)",
-            borderTop: offset === 0 ? "2px solid rgba(247,245,241,0.3)" : "1px solid rgba(247,245,241,0.05)",
-            transform: `rotate(${(offset - 1.5) * 1.1}deg)`,
-            padding: offset === 0 ? "36px" : 0,
+            top: `${offset * 10}px`,
+            left: `${offset * 8}px`,
+            right: `${-offset * 4}px`,
+            bottom: 0,
+            background: offset === 0 ? C.white : `rgba(26,26,24,0.${offset + 2})`,
+            borderTop: offset === 0 ? `3px solid ${C.ink}` : `1px solid rgba(26,26,24,0.${offset + 1})`,
+            transform: `rotate(${(offset - 2) * 0.9}deg)`,
+            padding: offset === 0 ? "40px" : 0,
           }}>
             {offset === 0 && (
               <>
-                <p style={{ fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(247,245,241,0.25)", margin: "0 0 24px" }}>The Page Gallery Journal</p>
-                <p style={{ fontSize: "15px", fontWeight: "400", color: "rgba(247,245,241,0.7)", margin: "0 0 18px", lineHeight: "1.4", letterSpacing: "-0.01em" }}>New issue.<br />Now open.</p>
-                <div style={{ width: "32px", height: "1px", background: "rgba(247,245,241,0.2)", margin: "0 0 20px" }} />
-                <p style={{ fontSize: "12px", color: "rgba(247,245,241,0.35)", lineHeight: "1.8", fontStyle: "italic", margin: 0 }}>Serious work.<br />Carefully chosen.</p>
+                <p style={{ fontSize: "8px", letterSpacing: "0.28em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 6px" }}>Issue</p>
+                <p style={{ fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: C.ink, margin: "0 0 28px" }}>The Page Gallery Journal</p>
+                <div style={{ width: "28px", height: "1px", background: C.red, margin: "0 0 24px" }} />
+                <p style={{ fontSize: "18px", fontStyle: "italic", fontWeight: "300", color: C.ink, lineHeight: "1.4", margin: "0 0 12px" }}>
+                  Collecting thoughts<br />before they disappear.
+                </p>
+                <p style={{ fontSize: "11px", color: C.lightGrey, lineHeight: "1.7", fontStyle: "italic", margin: 0 }}>
+                  Serious work.<br />Carefully chosen.
+                </p>
               </>
             )}
           </div>
@@ -446,62 +738,104 @@ function JournalBanner() {
 }
 
 // ── ABOUT ─────────────────────────────────────────────────────────────────────
-function AboutSection() {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.1 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
+function About() {
+  const [ref, visible] = useReveal(0.1);
 
   return (
-    <section id="about" ref={ref} style={{ padding: "130px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", maxWidth: "720px", ...mono }}>
-      <div style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: "all 1s cubic-bezier(0.16,1,0.3,1)" }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 20px" }}>About</p>
-        <h2 style={{ fontSize: "clamp(22px, 3vw, 38px)", fontWeight: "400", color: INK, margin: "0 0 36px", letterSpacing: "-0.015em", lineHeight: "1.12" }}>
-          Bea Sophia is a poet<br />based in New York City.
+    <section id="about" ref={ref} style={{
+      background: C.cream,
+      padding: "120px 60px",
+      borderTop: `1px solid ${C.inkGhost}`,
+      ...serif,
+    }}>
+      <div style={{
+        maxWidth: "680px",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+      }}>
+        <p style={{ fontSize: "9px", letterSpacing: "0.32em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 20px" }}>About</p>
+        <h2 style={{ fontSize: "clamp(26px, 4vw, 52px)", fontWeight: "300", fontStyle: "italic", color: C.ink, margin: "0 0 36px", letterSpacing: "-0.015em", lineHeight: "1.1" }}>
+          Bea Sophia.<br />New York City.
         </h2>
-        <p style={{ fontSize: "16px", color: GREY, lineHeight: "1.9", margin: "0 0 20px" }}>
-          She is the founder of The Page Gallery Journal. She runs writing intensives,
-          and makes prompt packs and workbooks for poets who are serious about the work.
+        <p style={{ fontSize: "17px", color: C.grey, lineHeight: "1.9", margin: "0 0 22px" }}>
+          I got sick and I started collecting. Fragments of conversation. Things people said and didn't know they'd said. Thoughts that live in one mind and die there.
         </p>
-        <p style={{ fontSize: "16px", color: GREY, lineHeight: "1.9", margin: "0 0 44px" }}>
-          Her work is interested in survival — not as metaphor, but as fact.
-          The thing that kept going. The body that kept going.
-          What grows in the crack. What the crack costs.
+        <p style={{ fontSize: "17px", color: C.grey, lineHeight: "1.9", margin: "0 0 22px" }}>
+          The Page Gallery Journal was the first attempt to stop that. These poems are the second.
+        </p>
+        <p style={{ fontSize: "17px", color: C.grey, lineHeight: "1.9", margin: "0 0 44px" }}>
+          I also run writing intensives for poets who are serious about the work, and I make prompt packs and workbooks. I adore spaghetti.
         </p>
         <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: GREY, textDecoration: "none", borderBottom: "1px solid rgba(107,107,98,0.35)", paddingBottom: "3px", transition: "color 0.2s, border-color 0.2s" }}
-          onMouseEnter={e => { e.target.style.color = INK; e.target.style.borderColor = INK; }}
-          onMouseLeave={e => { e.target.style.color = GREY; e.target.style.borderColor = "rgba(107,107,98,0.35)"; }}
+          style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: C.grey, textDecoration: "none", borderBottom: `1px solid rgba(107,101,96,0.3)`, paddingBottom: "3px", transition: "color 0.2s, border-color 0.2s" }}
+          onMouseEnter={e => { e.target.style.color = C.ink; e.target.style.borderColor = C.ink; }}
+          onMouseLeave={e => { e.target.style.color = C.grey; e.target.style.borderColor = "rgba(107,101,96,0.3)"; }}
         >@bsophialovesgnochi</a>
       </div>
     </section>
   );
 }
 
+// ── COURSES (LOCKED DOOR) ─────────────────────────────────────────────────────
+function LockedDoor() {
+  const [ref, visible] = useReveal(0.1);
+  return (
+    <section ref={ref} style={{
+      background: C.ink, color: C.paper,
+      padding: "90px 60px",
+      borderTop: `1px solid rgba(240,235,225,0.07)`,
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      flexWrap: "wrap", gap: "40px",
+      ...serif,
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0)" : "translateY(20px)",
+      transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+    }}>
+      <div>
+        <p style={{ fontSize: "9px", letterSpacing: "0.32em", textTransform: "uppercase", color: "rgba(240,235,225,0.25)", margin: "0 0 14px" }}>Intensive — coming</p>
+        <h3 style={{ fontSize: "clamp(22px, 3vw, 42px)", fontWeight: "300", fontStyle: "italic", margin: 0, lineHeight: "1.1" }}>The door is there.<br />Not yet open.</h3>
+      </div>
+      <div style={{ border: "1px solid rgba(240,235,225,0.12)", padding: "14px 36px" }}>
+        <span style={{ fontSize: "9px", letterSpacing: "0.26em", textTransform: "uppercase", color: "rgba(240,235,225,0.3)" }}>Coming</span>
+      </div>
+    </section>
+  );
+}
+
 // ── NEWSLETTER ────────────────────────────────────────────────────────────────
-function NewsletterSection() {
+function Newsletter() {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [done, setDone] = useState(false);
+  const [ref, visible] = useReveal(0.1);
 
   return (
-    <section style={{ padding: "110px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", background: CREAM, ...mono }}>
-      <div style={{ maxWidth: "520px" }}>
-        <p style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: LIGHT_GREY, margin: "0 0 20px" }}>Letters</p>
-        <h3 style={{ fontSize: "clamp(20px, 2.8vw, 36px)", fontWeight: "400", color: INK, margin: "0 0 18px", letterSpacing: "-0.015em" }}>New work, when it exists.</h3>
-        <p style={{ fontSize: "15px", color: GREY, lineHeight: "1.85", margin: "0 0 44px" }}>
-          No frequency promised. No updates, no musings. Something worth reading when it arrives.
+    <section ref={ref} style={{
+      background: C.paper,
+      padding: "110px 60px",
+      borderTop: `1px solid ${C.inkGhost}`,
+      ...serif,
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0)" : "translateY(20px)",
+      transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+    }}>
+      <div style={{ maxWidth: "500px" }}>
+        <p style={{ fontSize: "9px", letterSpacing: "0.32em", textTransform: "uppercase", color: C.lightGrey, margin: "0 0 18px" }}>Letters</p>
+        <h3 style={{ fontSize: "clamp(22px, 3.2vw, 44px)", fontWeight: "300", fontStyle: "italic", color: C.ink, margin: "0 0 18px", letterSpacing: "-0.01em" }}>
+          New fragments,<br />when they exist.
+        </h3>
+        <p style={{ fontSize: "15px", color: C.grey, lineHeight: "1.85", margin: "0 0 44px" }}>
+          No schedule. No newsletter voice. The thing itself when it's ready.
         </p>
-        {submitted ? (
-          <p style={{ fontSize: "14px", color: GREY, fontStyle: "italic" }}>You're in.</p>
+        {done ? (
+          <p style={{ fontSize: "14px", color: C.grey, fontStyle: "italic" }}>You're in.</p>
         ) : (
-          <form onSubmit={e => { e.preventDefault(); if (email) setSubmitted(true); }} style={{ display: "flex", maxWidth: "420px" }}>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Your email"
-              style={{ flex: 1, padding: "15px 18px", border: "1px solid rgba(26,26,24,0.16)", borderRight: "none", fontSize: "14px", fontFamily: "Georgia, serif", background: WHITE, outline: "none", color: INK }} />
-            <button type="submit" style={{ background: INK, color: CREAM, border: "none", padding: "15px 26px", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", cursor: "pointer", fontFamily: "Georgia, serif", whiteSpace: "nowrap", transition: "opacity 0.2s" }}
-              onMouseEnter={e => e.target.style.opacity = "0.78"}
+          <form onSubmit={e => { e.preventDefault(); if (email) setDone(true); }} style={{ display: "flex", maxWidth: "400px" }}>
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com"
+              aria-label="Email address"
+              style={{ flex: 1, padding: "15px 18px", border: `1px solid rgba(26,26,24,0.18)`, borderRight: "none", fontSize: "14px", fontFamily: "Georgia, serif", background: C.white, outline: "none", color: C.ink }} />
+            <button type="submit" style={{ background: C.ink, color: C.paper, border: "none", padding: "15px 28px", fontSize: "9px", letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Cormorant Garamond', Georgia, serif", whiteSpace: "nowrap", transition: "opacity 0.2s" }}
+              onMouseEnter={e => e.target.style.opacity = "0.75"}
               onMouseLeave={e => e.target.style.opacity = "1"}
             >Subscribe</button>
           </form>
@@ -514,14 +848,21 @@ function NewsletterSection() {
 // ── FOOTER ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer style={{ padding: "36px 52px", borderTop: "1px solid rgba(26,26,24,0.07)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", ...mono }}>
-      <span style={{ fontSize: "11px", color: LIGHT_GREY, letterSpacing: "0.1em" }}>© Bea Sophia</span>
-      <div style={{ display: "flex", gap: "36px" }}>
+    <footer style={{
+      background: C.paper,
+      padding: "32px 60px",
+      borderTop: `1px solid ${C.inkGhost}`,
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      flexWrap: "wrap", gap: "16px",
+      ...serif,
+    }}>
+      <span style={{ fontSize: "11px", color: C.lightGrey, letterSpacing: "0.1em" }}>© Bea Sophia</span>
+      <div style={{ display: "flex", gap: "40px" }}>
         {[["Instagram", "https://instagram.com/bsophialovesgnochi"], ["The Page Gallery Journal", "#"]].map(([label, href]) => (
           <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer"
-            style={{ fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase", color: LIGHT_GREY, textDecoration: "none", transition: "color 0.2s" }}
-            onMouseEnter={e => e.target.style.color = INK}
-            onMouseLeave={e => e.target.style.color = LIGHT_GREY}
+            style={{ fontSize: "9px", letterSpacing: "0.18em", textTransform: "uppercase", color: C.lightGrey, textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={e => e.target.style.color = C.ink}
+            onMouseLeave={e => e.target.style.color = C.lightGrey}
           >{label}</a>
         ))}
       </div>
@@ -529,46 +870,122 @@ function Footer() {
   );
 }
 
+// ── FEEDBACK WIDGET ───────────────────────────────────────────────────────────
+const SECTIONS = ["Corridor / Hero", "Reading Room", "Archive / Shop", "Journal", "About", "Newsletter", "Other"];
+
+function FeedbackWidget() {
+  const [open, setOpen] = useState(false);
+  const [section, setSection] = useState("Corridor / Hero");
+  const [note, setNote] = useState("");
+  const [status, setStatus] = useState("idle");
+
+  const submit = async () => {
+    if (!note.trim()) return;
+    setStatus("saving");
+    try {
+      await SiteNote.create({ section, note: note.trim(), status: "new", url: window.location.href });
+      setStatus("saved");
+      setNote("");
+      setTimeout(() => { setStatus("idle"); setOpen(false); }, 1800);
+    } catch { setStatus("error"); }
+  };
+
+  return (
+    <>
+      <button onClick={() => setOpen(o => !o)} title="Leave a note"
+        style={{
+          position: "fixed", bottom: "30px", right: "30px", zIndex: 9999,
+          width: "46px", height: "46px", borderRadius: "50%",
+          background: C.ink, border: "none", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 24px rgba(26,26,24,0.24)",
+          transform: open ? "rotate(45deg)" : "rotate(0deg)",
+          transition: "transform 0.3s",
+        }}>
+        <span style={{ color: C.paper, fontSize: open ? "20px" : "16px", lineHeight: 1 }}>{open ? "×" : "✎"}</span>
+      </button>
+      {open && (
+        <div style={{
+          position: "fixed", bottom: "88px", right: "30px", zIndex: 9998,
+          width: "300px", background: C.white,
+          boxShadow: "0 12px 52px rgba(26,26,24,0.16)",
+          borderTop: `3px solid ${C.ink}`,
+          ...serif,
+        }}>
+          <div style={{ padding: "22px 22px 0" }}>
+            <p style={{ fontSize: "13px", color: C.ink, margin: "0 0 18px" }}>Leave a note. I'll action it.</p>
+            <select value={section} onChange={e => setSection(e.target.value)}
+              style={{ width: "100%", padding: "9px 11px", border: `1px solid ${C.inkGhost}`, background: C.paper, color: C.ink, fontSize: "12px", fontFamily: "Georgia, serif", marginBottom: "12px", outline: "none" }}>
+              {SECTIONS.map(s => <option key={s}>{s}</option>)}
+            </select>
+            <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="What needs changing…" rows={4}
+              style={{ width: "100%", padding: "9px 11px", border: `1px solid ${C.inkGhost}`, background: C.paper, color: C.ink, fontSize: "12px", fontFamily: "Georgia, serif", resize: "vertical", outline: "none", lineHeight: "1.65", boxSizing: "border-box" }} />
+          </div>
+          <div style={{ padding: "14px 22px 22px", display: "flex", justifyContent: "flex-end" }}>
+            {status === "saved"
+              ? <span style={{ fontSize: "12px", color: C.grey, fontStyle: "italic" }}>Noted ✓</span>
+              : <button onClick={submit} disabled={!note.trim() || status === "saving"}
+                  style={{ background: note.trim() ? C.ink : C.lightGrey, color: C.paper, border: "none", padding: "10px 24px", fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", cursor: note.trim() ? "pointer" : "default", fontFamily: "Georgia, serif" }}>
+                  {status === "saving" ? "…" : "Send"}
+                </button>
+            }
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
   useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <div style={{ background: CREAM, color: INK, overflowX: "hidden", fontFamily: "Georgia, 'Times New Roman', serif" }}>
-      <Nav scrollY={scrollY} />
-      <Hero scrollY={scrollY} />
-      <ManuscriptsSection />
-      <ShopSection />
-      <JournalBanner />
-      <AboutSection />
-      <NewsletterSection />
-      <Footer />
-      <FeedbackWidget />
-
+    <div style={{ background: C.paper, color: C.ink, overflowX: "hidden", cursor: "none" }}>
+      {/* Google Font */}
       <style>{`
-        *, *::before, *::after { box-sizing: border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; }
         html { scroll-behavior: smooth; }
-        body { margin: 0; }
-        ::selection { background: rgba(26,26,24,0.1); }
-        input::placeholder, textarea::placeholder { color: #b8b5ac; }
-        @keyframes pulse {
-          0%, 100% { transform: scaleY(1); opacity: 0.4; }
-          50% { transform: scaleY(1.2); opacity: 0.7; }
+        body { margin: 0; background: ${C.paper}; }
+        ::selection { background: rgba(201,74,58,0.15); }
+        input::placeholder, textarea::placeholder { color: ${C.lightGrey}; }
+        a:focus-visible, button:focus-visible {
+          outline: 2px solid ${C.red};
+          outline-offset: 3px;
         }
         @media (max-width: 768px) {
-          nav { padding: 22px 24px !important; }
           section { padding-left: 24px !important; padding-right: 24px !important; }
-          h1 { font-size: 52px !important; }
+          nav { padding: 22px 24px !important; }
+          #gallery-journal { grid-template-columns: 1fr !important; }
+          .archive-item { grid-template-columns: 1fr !important; }
         }
         @media (prefers-reduced-motion: reduce) {
-          * { transition: none !important; animation: none !important; }
+          * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
         }
       `}</style>
+
+      <Grain />
+      {!reducedMotion && <Cursor />}
+      <Nav scrollY={scrollY} />
+      <Corridor scrollY={scrollY} />
+      <ReadingRoom />
+      <Archive />
+      <GalleryJournal />
+      <About />
+      <LockedDoor />
+      <Newsletter />
+      <Footer />
+      <FeedbackWidget />
     </div>
   );
 }
