@@ -76,7 +76,7 @@ const POEMS = [
 
 const S = {
   body: {
-    background: "#f2ede5",
+    background: "#ffffff",
     minHeight: "100vh",
     fontFamily: "'Times New Roman', Times, Georgia, serif",
     color: "#1a1a18",
@@ -120,7 +120,7 @@ export default function Home() {
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         padding: "20px 36px",
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        background: scrollY > 80 ? "rgba(242,237,229,0.96)" : "transparent",
+        background: scrollY > 80 ? "rgba(255,255,255,0.96)" : "transparent",
         borderBottom: scrollY > 80 ? "1px solid rgba(26,26,24,0.07)" : "none",
         transition: "background 0.5s, border 0.5s",
         backdropFilter: scrollY > 80 ? "blur(6px)" : "none",
@@ -365,7 +365,7 @@ export default function Home() {
 
       {/* ── NEWSLETTER ── */}
       <section style={{
-        background: "#e8e2d8", padding: "100px 40px",
+        background: "#f5f5f5", padding: "100px 40px",
         borderTop: "1px solid rgba(26,26,24,0.06)",
       }}>
         <div style={{ maxWidth: "420px", margin: "0 auto" }}>
@@ -391,7 +391,7 @@ export default function Home() {
                 style={{
                   flex: 1, padding: "15px 18px",
                   border: "1px solid rgba(26,26,24,0.15)", borderRight: "none",
-                  background: "#f2ede5", fontSize: "14px",
+                  background: "#ffffff", fontSize: "14px",
                   fontFamily: "inherit", outline: "none", color: "#1a1a18", borderRadius: 0,
                 }} />
               <button type="submit" style={{
