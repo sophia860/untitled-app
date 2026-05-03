@@ -145,13 +145,13 @@ function DemoBlank({prompt,placeholder}) {
 // ─── LINE HERO — single body-shape, one sentence inside ──────────
 // Reference: closed organic line, one italic phrase, one dot, one square, bottom tags
 function LineHero() {
-  const svgRef  = useRef(null);
-  const pathRef = useRef(null);
+  const svgRef   = useRef(null);
+  const pathRef  = useRef(null);
+  const stampRef = useRef(null);
   const mouseRef = useRef({ x:0.5, y:0.5 });
   const [phase, setPhase] = useState(0); // 0=hidden 1=drawing 2=text
 
-  // One large closed organic shape — like a body, a room, a held breath
-  // ViewBox: 0 0 700 860  (portrait, like the reference)
+  // Large closed organic shape — portrait, like a body or a room
   const PATH = `
     M 340,70
     C 290,68 240,80 210,108
@@ -174,6 +174,32 @@ function LineHero() {
     L 440,460
   `;
 
+  // Stamp text — runs around a circle, slightly imperfect
+  const STAMP_TEXT = "FOR WANTING YOU · AND NOT KNOW THE DIFFERENCE · FOR YEARS · ";
+  const STAMP_R    = 72;   // radius of text circle
+  const STAMP_CX   = 350;  // centre x in viewBox
+  const STAMP_CY   = 480;  // centre y in viewBox
+
+  // Build character positions around the circle
+  const stampChars = (() => {
+    const chars = STAMP_TEXT.split("");
+    const total = chars.length;
+    return chars.map((ch, i) => {
+      const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
+      // slight hand-pressed wobble per character
+      const wobble = (Math.sin(i * 1.7) * 1.8);
+      const r = STAMP_R + wobble;
+      return {
+        ch,
+        x: STAMP_CX + Math.cos(angle) * r,
+        y: STAMP_CY + Math.sin(angle) * r,
+        rot: (angle * 180 / Math.PI) + 90 + (Math.sin(i * 2.3) * 1.5),
+        // ink fade — simulate uneven stamp press
+        opacity: 0.72 + Math.sin(i * 0.9) * 0.22,
+      };
+    });
+  })();
+
   useEffect(() => {
     const path = pathRef.current;
     if (!path) return;
@@ -186,7 +212,18 @@ function LineHero() {
       path.style.strokeDashoffset = 0;
       setPhase(1);
     }, 600);
-    const t2 = setTimeout(() => setPhase(2), 3800);
+    const t2 = setTimeout(() => setPhase(2), 3600);
+
+    // stamp slow rotation via RAF
+    let angle = 0, raf;
+    const spinStamp = () => {
+      angle += 0.12;
+      if (stampRef.current) {
+        stampRef.current.style.transform = `rotate(${angle}deg)`;
+      }
+      raf = requestAnimationFrame(spinStamp);
+    };
+    const t3 = setTimeout(() => { spinStamp(); }, 4200);
 
     const onMove = e => {
       mouseRef.current = {
@@ -199,7 +236,11 @@ function LineHero() {
       }
     };
     window.addEventListener("mousemove", onMove);
-    return () => { clearTimeout(t1); clearTimeout(t2); window.removeEventListener("mousemove", onMove); };
+    return () => {
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+    };
   }, []);
 
   return (
@@ -210,17 +251,17 @@ function LineHero() {
       alignItems:"center", justifyContent:"center",
     }}>
 
-      {/* paper texture overlay */}
+      {/* paper grain overlay */}
       <div style={{
         position:"absolute", inset:0, pointerEvents:"none", zIndex:1,
-        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E")`,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E")`,
       }}/>
 
-      {/* SVG — the shape + marks */}
+      {/* SVG composition */}
       <div style={{
         position:"relative", zIndex:2,
-        width:"min(420px,72vw)", height:"min(620px,80vh)",
-        marginTop:"2vh",
+        width:"min(420px,72vw)", height:"min(660px,82vh)",
+        marginTop:"1vh",
       }}>
         <svg
           ref={svgRef}
@@ -231,7 +272,7 @@ function LineHero() {
           }}
           aria-hidden="true">
 
-          {/* the body shape */}
+          {/* body shape */}
           <path
             ref={pathRef}
             d={PATH}
@@ -242,7 +283,7 @@ function LineHero() {
             strokeLinejoin="round"
           />
 
-          {/* single solid dot — inside the shape */}
+          {/* solid dot */}
           <circle
             cx="530" cy="300" r="5.5"
             fill="#1a1a18"
@@ -250,44 +291,80 @@ function LineHero() {
             style={{transition:"opacity .6s ease 0.2s"}}
           />
 
-          {/* small open square — upper right, outside shape */}
+          {/* open square + hairline */}
           <rect
             x="628" y="108" width="22" height="22"
             fill="none" stroke="#1a1a18" strokeWidth="1.2"
             opacity={phase >= 2 ? 1 : 0}
             style={{transition:"opacity .5s ease 0.4s"}}
           />
-          {/* line from path to square */}
           <line
             x1="615" y1="119" x2="628" y2="119"
-            stroke="#1a1a18" strokeWidth="0.9"
-            opacity={phase >= 2 ? 0.5 : 0}
+            stroke="#1a1a18" strokeWidth="0.8"
+            opacity={phase >= 2 ? 0.45 : 0}
             style={{transition:"opacity .5s ease 0.4s"}}
           />
+
+          {/* stamp — rotates slowly after phase 2 */}
+          <g
+            ref={stampRef}
+            style={{
+              transformOrigin:`${STAMP_CX}px ${STAMP_CY}px`,
+              opacity: phase >= 2 ? 1 : 0,
+              transition:"opacity 1.2s ease 1.4s",
+            }}>
+            {/* imperfect circle outline — slightly thick, slightly broken */}
+            <circle
+              cx={STAMP_CX} cy={STAMP_CY} r={STAMP_R - 10}
+              fill="none"
+              stroke="#1a1a18"
+              strokeWidth="0.9"
+              strokeDasharray="8 3.5"
+              opacity="0.18"
+            />
+            {/* character-by-character text around the circle */}
+            {stampChars.map((c, i) => (
+              <text
+                key={i}
+                x={c.x} y={c.y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                transform={`rotate(${c.rot},${c.x},${c.y})`}
+                fontSize="11"
+                fontFamily="'Times New Roman',Times,serif"
+                fontWeight="700"
+                letterSpacing="0.5"
+                fill="#1a1a18"
+                opacity={c.opacity}
+                style={{userSelect:"none"}}
+              >{c.ch}</text>
+            ))}
+          </g>
         </svg>
 
-        {/* single italic sentence — centred inside the shape */}
+        {/* italic sentence inside the shape */}
         <div style={{
           position:"absolute",
-          left:"28%", top:"52%",
+          left:"50%", top:"44%",
           transform:"translate(-50%,-50%)",
           fontFamily:"'Times New Roman',Times,serif",
           fontStyle:"italic",
-          fontSize:"clamp(13px,2.2vw,20px)",
+          fontSize:"clamp(12px,2vw,18px)",
           color:"#1a1a18",
           letterSpacing:"-.01em",
           lineHeight:1.5,
-          whiteSpace:"nowrap",
+          textAlign:"center",
           opacity: phase >= 2 ? 1 : 0,
           transition:"opacity 1s ease 0.6s",
           pointerEvents:"none",
           userSelect:"none",
+          maxWidth:"55%",
         }}>
-          Four times in the same minute I said sorry.
+          Four times in the same minute<br/>I said sorry for wanting you.
         </div>
       </div>
 
-      {/* bottom text — three tags, widely spaced, small caps */}
+      {/* bottom tags — three, widely spaced */}
       <div style={{
         position:"absolute", bottom:32, left:0, right:0,
         padding:"0 36px",
@@ -296,31 +373,29 @@ function LineHero() {
         opacity: phase >= 2 ? 1 : 0,
         transition:"opacity 1s ease 1s",
       }}>
-        <span style={{fontSize:"clamp(8px,1vw,11px)",letterSpacing:".28em",textTransform:"uppercase",color:"rgba(26,26,24,.5)"}}>
+        <span style={{fontSize:"clamp(8px,1vw,10px)",letterSpacing:".3em",textTransform:"uppercase",color:"rgba(26,26,24,.48)"}}>
           Bea Sophia
         </span>
-        <span style={{fontSize:"clamp(8px,1vw,11px)",letterSpacing:".18em",textTransform:"uppercase",color:"rgba(26,26,24,.28)",display:"flex",alignItems:"center",gap:10}}>
+        <span style={{fontSize:"clamp(8px,1vw,10px)",letterSpacing:".18em",textTransform:"uppercase",color:"rgba(26,26,24,.28)",display:"flex",alignItems:"center",gap:10}}>
           (somewhere inside)
-          <span style={{display:"inline-block",width:40,height:1,background:"rgba(26,26,24,.28)"}}/>
+          <span style={{display:"inline-block",width:38,height:1,background:"rgba(26,26,24,.25)"}}/>
         </span>
-        <span style={{fontSize:"clamp(8px,1vw,11px)",letterSpacing:".28em",textTransform:"uppercase",color:"rgba(26,26,24,.5)"}}>
+        <span style={{fontSize:"clamp(8px,1vw,10px)",letterSpacing:".3em",textTransform:"uppercase",color:"rgba(26,26,24,.48)"}}>
           read it.
         </span>
       </div>
 
-      {/* scroll cue */}
       <a href="#poems" style={{
-        position:"absolute", bottom:70, left:"50%", transform:"translateX(-50%)",
+        position:"absolute", bottom:68, left:"50%", transform:"translateX(-50%)",
         fontSize:9, letterSpacing:".22em", textTransform:"uppercase",
-        color:"rgba(26,26,24,.22)", zIndex:2,
+        color:"rgba(26,26,24,.2)", zIndex:2,
         opacity: phase >= 2 ? 1 : 0,
-        transition:"opacity 1s ease 1.4s",
+        transition:"opacity 1s ease 1.5s",
       }}>↓</a>
 
     </section>
   );
 }
-
 
 // ─── 3D ROOM CANVAS ───────────────────────────────────────────────
 function RoomCanvas({ room }) {
