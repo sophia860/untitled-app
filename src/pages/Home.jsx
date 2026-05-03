@@ -1,29 +1,19 @@
-// v6-MOBILE-FIRST
 import { useState, useEffect } from "react";
-import { SiteNote } from "@/api/entities";
 
-const C = {
-  paper:    "#f0ebe1",
-  ink:      "#1a1a18",
-  inkGhost: "rgba(26,26,24,0.08)",
-  thread:   "#c94a3a",
-  grey:     "#6b6560",
-  lightGrey:"#a09a93",
-  white:    "#faf8f4",
-  linen:    "#ede8dd",
-};
+// Bea's drawings
+const DRAWING_WOLF    = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/5ee1557e0_whatsapp_image_1773625874009166.jpg";
+const DRAWING_FOREST  = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/3d55b220c_whatsapp_image_1375833884351215.jpg";
+const DRAWING_FIGURES = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/24cdd3ae8_whatsapp_image_855974756792686.jpg";
+const DRAWING_GALLERY = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/a2b7907fc_whatsapp_image_1446971447177747.jpg";
+const DRAWING_GEN_1   = "https://media.base44.com/images/public/69f5fbb6b1f4d064d9cbd657/e4dd507d5_generated_image.png";
+const DRAWING_GEN_2   = "https://media.base44.com/images/public/69f5fbb6b1f4d064d9cbd657/7035061b9_generated_image.png";
 
-const serif  = { fontFamily: "'Times New Roman', Times, Georgia, serif" };
-const caveat = { fontFamily: "'Caveat', cursive" };
-const kalam  = { fontFamily: "'Kalam', cursive" };
-const mono   = { fontFamily: "'Courier New', Courier, monospace" };
-
-const FREE_POEMS = [
+const POEMS = [
   {
-    id: 1, num: "001", title: "INBOUND",
-    annotation: "overheard at Newark, gate C42",
-    postmark: "JFK · 14 SEP",
-    to: "anyone who has ever arrived somewhere",
+    id: 1,
+    title: "Inbound",
+    note: "Newark airport, gate C42",
+    drawing: DRAWING_GEN_1,
     lines: [
       "Newark airport smells like carpet cleaner",
       "and the specific anxiety of people who are almost somewhere.",
@@ -35,38 +25,35 @@ const FREE_POEMS = [
       "I say: to live here.",
       "She stamps the page.",
       "Doesn't look up.",
-      "",
-      "The stamp dries while I'm still standing there.",
     ],
   },
   {
-    id: 2, num: "009", title: "COCKROACH",
-    annotation: "3am, Brooklyn, first week",
-    postmark: "BKN · 3 OCT",
-    to: "the thing that does not apologise",
+    id: 2,
+    title: "Cockroach",
+    note: "3am, Brooklyn, first week",
+    drawing: DRAWING_FIGURES,
     lines: [
       "I watched one cross my kitchen floor",
       "with such absolute certainty of direction —",
       "not scurrying, not panicking,",
       "just moving from one exact point to another",
-      "like it had somewhere specific to be",
-      "and the appointment had been in the diary for months —",
+      "like it had somewhere specific to be.",
       "",
-      "and I put the glass back in the cupboard.",
+      "I put the glass back in the cupboard.",
       "Left it to finish whatever it was doing.",
       "Went to bed.",
       "",
       "In the morning it was gone.",
-      "But something had passed through it in the night",
+      "But something had passed through",
       "and not apologised",
       "and I was glad.",
     ],
   },
   {
-    id: 3, num: "020", title: "STILL HERE",
-    annotation: "kitchen, Flatbush, Tuesday",
-    postmark: "NYC · 22 NOV",
-    to: "the minute I thought I wouldn't get",
+    id: 3,
+    title: "Still Here",
+    note: "kitchen, Flatbush, Tuesday",
+    drawing: DRAWING_FOREST,
     lines: [
       "The tap drips.",
       "I have a reference number.",
@@ -81,399 +68,357 @@ const FREE_POEMS = [
       "and I got the minute.",
       "And the one after.",
       "",
-      "I am not monitoring.",
-      "I am not waiting.",
-      "",
       "The tap drips.",
       "I let it.",
     ],
   },
-  {
-    id: 4, num: "010", title: "BODEGA FLOWERS",
-    annotation: "Atlantic Ave, every Saturday",
-    postmark: "ATL · 8 OCT",
-    to: "my mother, wherever this finds her",
-    lines: [
-      "Wrapped in plastic,",
-      "slightly crushed,",
-      "available at all hours,",
-      "no questions asked.",
-      "",
-      "My mother would have carried these on the tube,",
-      "one arm out to keep the petals off her coat —",
-      "the woman who told a consultant",
-      "to shove his positive outlook up his arse",
-      "and meant it",
-      "and was right.",
-      "",
-      "Wrong colours. Wrong proportions.",
-      "Alive.",
-      "That's the whole requirement.",
-    ],
-  },
 ];
 
-const SHOP_ITEMS = [
-  {
-    id: "collection", label: "ARCHIVE — 001", title: "The Only Life",
-    fragment: "\"The body logged the ward. The body logged the Cairngorm plateau in February. The ward is over. The body continues logging.\"",
-    desc: "Twenty poems. New York. The body after the ward. Scotland in the bones. You will find yourself inside them.",
-    price: "£12", format: "Digital PDF · Yours immediately",
-    paypal: "https://paypal.me/Sophiasharkey330", featured: true,
+const S = {
+  body: {
+    background: "#f2ede5",
+    minHeight: "100vh",
+    fontFamily: "'Times New Roman', Times, Georgia, serif",
+    color: "#1a1a18",
+    overflowX: "hidden",
   },
-  {
-    id: "prompts", label: "TOOLS — 001", title: "Write What Survives",
-    fragment: "\"Object first. Feeling never.\"",
-    desc: "Prompts built around the same logic as the collection. For poets who want to write the thing without explaining it.",
-    price: "£8", format: "Digital PDF · Yours immediately",
-    paypal: "https://paypal.me/Sophiasharkey330", featured: false,
-  },
-  {
-    id: "intensive", label: "INTENSIVE — 001", title: "The Object Is the Meaning",
-    fragment: "\"You bring the object. We find what's inside it.\"",
-    desc: "A condensed version of the intensive. Video, exercises, feedback.",
-    price: "£45", format: "Digital · Lifetime access",
-    paypal: "https://paypal.me/Sophiasharkey330", featured: false,
-  },
-];
-
-function PoemCard({ poem, colors, saved, onToggleSave }) {
-  const [open, setOpen] = useState(false);
-  const col = colors || C;
-  return (
-    <div style={{
-      background: col.white,
-      border: `1px solid ${col.inkGhost}`,
-      borderTopWidth: "2px",
-      borderTopColor: open ? col.thread : col.ink,
-      marginBottom: "12px",
-      transition: "border-color 0.3s, background 0.3s",
-    }}>
-      <button
-        onClick={() => setOpen(o => !o)}
-        style={{
-          width: "100%", background: "none", border: "none", cursor: "pointer",
-          padding: "20px 22px", textAlign: "left", display: "flex",
-          justifyContent: "space-between", alignItems: "flex-start",
-        }}
-      >
-        <div>
-          <p style={{ ...mono, fontSize: "9px", color: col.lightGrey, margin: "0 0 4px", letterSpacing: "0.18em" }}>{poem.num} · {poem.postmark}</p>
-          <p style={{ ...serif, fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: "600", color: col.ink, margin: "0 0 4px" }}>{poem.title}</p>
-          <p style={{ ...kalam, fontSize: "13px", color: col.lightGrey, margin: 0 }}>— {poem.annotation}</p>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginLeft: "12px", flexShrink: 0, marginTop: "2px" }}>
-          <button
-            onClick={e => { e.stopPropagation(); onToggleSave && onToggleSave(poem.id); }}
-            aria-label={saved ? "Remove from saved" : "Save poem"}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: "2px", fontSize: "16px", lineHeight: 1, color: saved ? col.thread : col.lightGrey, transition: "color 0.2s, transform 0.15s", transform: saved ? "scale(1.15)" : "scale(1)" }}
-          >
-            {saved ? "♥" : "♡"}
-          </button>
-          <span style={{ ...serif, fontSize: "18px", color: col.lightGrey }}>{open ? "−" : "+"}</span>
-        </div>
-      </button>
-
-      {open && (
-        <div style={{ padding: "0 22px 28px" }}>
-          <div style={{ borderTop: `1px solid ${col.inkGhost}`, paddingTop: "18px", marginBottom: "20px" }}>
-            {poem.lines.map((line, j) => (
-              <p key={j} style={{ ...serif, fontSize: "16px", color: col.ink, lineHeight: "1.95", margin: 0, minHeight: line === "" ? "1em" : "auto" }}>{line}</p>
-            ))}
-          </div>
-          <div style={{ borderTop: `1px solid ${col.inkGhost}`, paddingTop: "16px" }}>
-            <p style={{ ...mono, fontSize: "8px", color: col.lightGrey, margin: "0 0 4px", letterSpacing: "0.16em" }}>TO:</p>
-            <p style={{ ...kalam, fontSize: "14px", color: col.ink, margin: "0 0 16px" }}>{poem.to}</p>
-            <a href="#archive" style={{ ...serif, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: col.ink, textDecoration: "none", borderBottom: `1px solid ${col.ink}`, paddingBottom: "2px" }}>
-              Get the full collection →
-            </a>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+};
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
-  const [noteOpen, setNoteOpen] = useState(false);
-  const [note, setNote] = useState("");
-  const [noteSent, setNoteSent] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [savedIds, setSavedIds] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("bea-saved-poems") || "[]"); } catch { return []; }
-  });
-
-  const toggleSave = (id) => {
-    setSavedIds(prev => {
-      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      localStorage.setItem("bea-saved-poems", JSON.stringify(next));
-      return next;
-    });
-  };
-
-  const savedPoems = FREE_POEMS.filter(p => savedIds.includes(p.id));
-
-  const D = darkMode ? {
-    paper:    "#0f0e0c",
-    ink:      "#f0ebe1",
-    inkGhost: "rgba(240,235,225,0.1)",
-    thread:   "#e05a48",
-    grey:     "#a09a93",
-    lightGrey:"#6b6560",
-    white:    "#1a1916",
-    linen:    "#161410",
-  } : C;
+  const [openPoem, setOpenPoem] = useState(null);
+  const [email, setEmail]       = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+  const [scrollY, setScrollY]   = useState(0);
 
   useEffect(() => {
-    if (!document.getElementById("bea-fonts")) {
-      const link = document.createElement("link");
-      link.id = "bea-fonts";
-      link.rel = "stylesheet";
-      link.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap";
-      document.head.appendChild(link);
-    }
+    const fn = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const sendNote = async () => {
-    if (!note.trim()) return;
-    try {
-      await SiteNote.create({ section: "General", note: note.trim(), status: "new", url: "mobile" });
-      setNoteSent(true);
-      setNote("");
-      setTimeout(() => setNoteOpen(false), 1500);
-    } catch (e) { console.error(e); }
-  };
-
   return (
-    <div style={{ background: D.paper, color: D.ink, overflowX: "hidden", minHeight: "100vh", transition: "background 0.3s, color 0.3s" }}>
+    <div style={S.body}>
       <style>{`
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-        html{scroll-behavior:smooth;}
-        body{margin:0;background:#f0ebe1;-webkit-font-smoothing:antialiased;}
-        ::selection{background:rgba(201,74,58,0.13);}
-        input::placeholder,textarea::placeholder{color:#a09a93;}
-        a:focus-visible,button:focus-visible{outline:2px solid #c94a3a;outline-offset:3px;}
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        ::selection { background: rgba(26,26,24,0.1); }
+        a { color: inherit; text-decoration: none; }
+        img { display: block; max-width: 100%; }
+        button { font-family: inherit; }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
       `}</style>
 
-      {/* NAV */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: darkMode ? "rgba(15,14,12,0.97)" : "rgba(240,235,225,0.97)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${D.inkGhost}`, padding: "18px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "background 0.3s" }}>
-        <a href="#" style={{ ...caveat, fontSize: "22px", fontWeight: "700", color: D.ink, textDecoration: "none" }}>Bea Sophia</a>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {/* Dark mode toggle */}
-          <button onClick={() => setDarkMode(d => !d)} aria-label="Toggle dark mode"
-            style={{ display: "flex", alignItems: "center", gap: "6px", background: "none", border: "none", cursor: "pointer", padding: "4px" }}>
-            <span style={{ ...serif, fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: D.lightGrey }}>{darkMode ? "Day" : "Eve"}</span>
-            <div style={{ width: "36px", height: "20px", borderRadius: "10px", background: darkMode ? D.thread : D.inkGhost, border: `1px solid ${darkMode ? D.thread : "rgba(26,26,24,0.2)"}`, position: "relative", transition: "background 0.3s" }}>
-              <div style={{ position: "absolute", top: "3px", left: darkMode ? "17px" : "3px", width: "12px", height: "12px", borderRadius: "50%", background: darkMode ? D.ink : D.grey, transition: "left 0.3s" }} />
-            </div>
-          </button>
-          <button onClick={() => setMenuOpen(o => !o)} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", flexDirection: "column", gap: "5px" }}>
-            {[0,1,2].map(i => (
-              <div key={i} style={{ width: "22px", height: "1.5px", background: D.ink, transition: "opacity 0.2s", opacity: menuOpen && i===1 ? 0 : 1 }} />
-            ))}
-          </button>
+      {/* ── NAV ── */}
+      <nav style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        padding: "20px 36px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        background: scrollY > 80 ? "rgba(242,237,229,0.96)" : "transparent",
+        borderBottom: scrollY > 80 ? "1px solid rgba(26,26,24,0.07)" : "none",
+        transition: "background 0.5s, border 0.5s",
+        backdropFilter: scrollY > 80 ? "blur(6px)" : "none",
+      }}>
+        <span style={{ fontSize: "11px", letterSpacing: "0.24em", textTransform: "uppercase" }}>
+          Bea Sophia
+        </span>
+        <div style={{ display: "flex", gap: "28px" }}>
+          {[["Poems","#poems"],["Collection","#collection"],["About","#about"]].map(([l,h]) => (
+            <a key={l} href={h} style={{
+              fontSize: "10px", letterSpacing: "0.2em",
+              textTransform: "uppercase", opacity: 0.4,
+            }}>{l}</a>
+          ))}
         </div>
       </nav>
 
-      {menuOpen && (
-        <div style={{ background: D.paper, borderBottom: `1px solid ${D.inkGhost}`, padding: "20px 24px 24px", transition: "background 0.3s" }}>
-          {[["Read free poems","#reading-room"],...(savedPoems.length > 0 ? [["Saved fragments","#saved-fragments"]] : []),["Buy the collection","#archive"],["The Journal","#gallery-journal"],["About","#about"]].map(([l,h]) => (
-            <a key={l} href={h} onClick={() => setMenuOpen(false)} style={{ ...serif, display: "block", fontSize: "13px", letterSpacing: "0.16em", textTransform: "uppercase", color: D.ink, textDecoration: "none", padding: "12px 0", borderBottom: `1px solid ${D.inkGhost}` }}>{l}</a>
-          ))}
-        </div>
-      )}
-
-      {/* HERO */}
-      <section style={{ padding: "60px 24px 64px", position: "relative", overflow: "hidden", background: D.paper, transition: "background 0.3s" }}>
-        <div style={{ position: "absolute", top: "80px", left: 0, right: 0, height: "1px", background: D.thread, opacity: 0.2 }} />
-        <div style={{ position: "absolute", top: 0, bottom: 0, left: "24px", width: "1px", background: D.thread, opacity: 0.12 }} />
-
-        <p style={{ ...serif, fontSize: "9px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 20px" }}>
-          The Page Gallery · A collection of minds
-        </p>
-        <h1 style={{ ...caveat, fontSize: "clamp(44px, 12vw, 72px)", fontWeight: "700", lineHeight: "1.05", color: D.ink, margin: "0 0 20px" }}>
-          What happens<br />to a thought<br />when the person<br />who had it dies?
-        </h1>
-        <div style={{ width: "44px", height: "1.5px", background: D.thread, margin: "0 0 20px" }} />
-        <p style={{ ...serif, fontSize: "16px", color: D.grey, lineHeight: "1.8", margin: "0 0 36px", maxWidth: "340px" }}>
-          Walk around inside someone else's mind. The poems are what we found.
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <a href="#reading-room" style={{ ...serif, display: "block", background: D.ink, color: D.white, padding: "16px 28px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", textAlign: "center" }}>
-            Read free poems
-          </a>
-          <a href="#archive" style={{ ...serif, display: "block", border: `1px solid ${D.inkGhost}`, color: D.ink, padding: "16px 28px", textDecoration: "none", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", textAlign: "center" }}>
-            Buy the collection — £12
-          </a>
-        </div>
-
-        <div aria-hidden="true" style={{ position: "absolute", right: "8px", top: "40px", bottom: "40px", display: "flex", flexDirection: "column", justifyContent: "space-evenly", alignItems: "center" }}>
-          {[0,1,2,3].map(i => (
-            <div key={i} style={{ width: "14px", height: "14px", borderRadius: "50%", border: `1.5px solid ${D.inkGhost}` }} />
-          ))}
-        </div>
-      </section>
-
-      {/* READING ROOM */}
-      <section id="reading-room" style={{ background: D.linen, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>Reading Room · Free</p>
-        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: D.ink, margin: "0 0 8px", lineHeight: "1.05" }}>Pick one up.</h2>
-        <p style={{ ...serif, fontSize: "13px", color: D.lightGrey, margin: "0 0 32px", lineHeight: "1.6" }}>
-          Four poems from the collection. The rest are inside.
-        </p>
-        {FREE_POEMS.map(poem => <PoemCard key={poem.id} poem={poem} colors={D} saved={savedIds.includes(poem.id)} onToggleSave={toggleSave} />)}
-        <div style={{ marginTop: "24px", textAlign: "center" }}>
-          <a href="#archive" style={{ ...serif, fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: D.grey, textDecoration: "none", borderBottom: `1px solid ${D.inkGhost}`, paddingBottom: "2px" }}>
-            Twenty poems in the full collection →
-          </a>
-        </div>
-      </section>
-
-      {/* SAVED FRAGMENTS */}
-      {savedPoems.length > 0 && (
-        <section id="saved-fragments" style={{ background: D.paper, padding: "56px 24px 64px", borderTop: `2px solid ${D.thread}`, transition: "background 0.3s" }}>
-          <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.thread, margin: "0 0 10px" }}>Saved Fragments · {savedPoems.length}</p>
-          <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 54px)", color: D.ink, margin: "0 0 8px", lineHeight: "1.05" }}>Your collection.</h2>
-          <p style={{ ...serif, fontSize: "13px", color: D.lightGrey, margin: "0 0 28px", lineHeight: "1.6" }}>
-            The ones you kept.
-          </p>
-          {savedPoems.map(poem => (
-            <PoemCard key={poem.id} poem={poem} colors={D} saved={true} onToggleSave={toggleSave} />
-          ))}
-        </section>
-      )}
-
-      {/* ARCHIVE */}
-      <section id="archive" style={{ background: D.ink, color: D.white, padding: "56px 24px 64px", transition: "background 0.3s" }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>The Archive</p>
-        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: D.white, margin: "0 0 36px", lineHeight: "1.05" }}>Things worth keeping.</h2>
-        {SHOP_ITEMS.map((item) => (
-          <div key={item.id} style={{
-            background: item.featured ? D.paper : "rgba(240,235,225,0.05)",
-            color: item.featured ? D.ink : D.white,
-            borderTop: item.featured ? `3px solid ${D.thread}` : `1px solid ${D.inkGhost}`,
-            padding: "28px 24px",
-            marginBottom: "2px",
-            transition: "background 0.3s",
+      {/* ── HERO ── */}
+      <section style={{
+        position: "relative", height: "100vh",
+        display: "flex", alignItems: "flex-end",
+        overflow: "hidden",
+      }}>
+        <img src={DRAWING_WOLF} alt="" style={{
+          position: "absolute", inset: 0,
+          width: "100%", height: "100%",
+          objectFit: "cover", objectPosition: "center 20%",
+          opacity: 0.8, mixBlendMode: "multiply",
+          transform: `translateY(${scrollY * 0.12}px)`,
+        }} />
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, height: "60%",
+          background: "linear-gradient(to bottom, transparent, #f2ede5)",
+        }} />
+        <div style={{
+          position: "relative", zIndex: 2,
+          padding: "0 40px 72px",
+          animation: "fadeUp 1.4s ease both",
+        }}>
+          <p style={{
+            fontSize: "10px", letterSpacing: "0.32em",
+            textTransform: "uppercase", opacity: 0.35, marginBottom: "18px",
+          }}>The Page Gallery</p>
+          <h1 style={{
+            fontSize: "clamp(26px, 4.5vw, 54px)",
+            fontWeight: 400, fontStyle: "italic",
+            lineHeight: 1.22, maxWidth: "620px", marginBottom: "24px",
           }}>
-            <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.26em", textTransform: "uppercase", color: item.featured ? D.lightGrey : D.lightGrey, margin: "0 0 10px" }}>{item.label}</p>
-            <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(26px, 7vw, 42px)", margin: "0 0 12px", lineHeight: "1.05" }}>{item.title}</h3>
-            <p style={{ ...kalam, fontSize: "15px", color: item.featured ? D.grey : D.grey, lineHeight: "1.7", margin: "0 0 14px", fontStyle: "italic" }}>{item.fragment}</p>
-            <p style={{ ...serif, fontSize: "13px", lineHeight: "1.8", color: item.featured ? D.grey : D.grey, margin: "0 0 20px" }}>{item.desc}</p>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
-              <div>
-                <p style={{ ...serif, fontSize: "22px", fontWeight: "300", margin: "0 0 2px" }}>{item.price}</p>
-                <p style={{ ...serif, fontSize: "9px", color: D.lightGrey, margin: 0 }}>{item.format}</p>
-              </div>
-              <a href={item.paypal} target="_blank" rel="noopener noreferrer" style={{
-                ...serif, display: "inline-block",
-                background: item.featured ? D.ink : D.inkGhost,
-                color: D.white,
-                border: item.featured ? "none" : `1px solid ${D.inkGhost}`,
-                padding: "14px 32px", textDecoration: "none", fontSize: "10px",
-                letterSpacing: "0.2em", textTransform: "uppercase",
-              }}>Buy</a>
+            What happens to a thought<br />
+            when the person who had it dies?
+          </h1>
+          <p style={{
+            fontSize: "15px", lineHeight: 1.9,
+            opacity: 0.55, maxWidth: "340px", marginBottom: "40px",
+          }}>
+            Walk around inside someone else's mind.<br />
+            The poems are what we found.
+          </p>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            <a href="#poems" style={{
+              fontSize: "10px", letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              borderBottom: "1px solid rgba(26,26,24,0.55)", paddingBottom: "3px",
+            }}>Read free poems</a>
+            <a href="#collection" style={{
+              fontSize: "10px", letterSpacing: "0.22em",
+              textTransform: "uppercase", opacity: 0.38,
+              borderBottom: "1px solid rgba(26,26,24,0.2)", paddingBottom: "3px",
+            }}>Buy the collection — £12</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── POEMS ── */}
+      <section id="poems" style={{ padding: "120px 0 80px" }}>
+        <p style={{
+          padding: "0 40px",
+          fontSize: "10px", letterSpacing: "0.3em",
+          textTransform: "uppercase", opacity: 0.28, marginBottom: "80px",
+        }}>Free poems</p>
+
+        {POEMS.map((poem, i) => (
+          <div key={poem.id} style={{ marginBottom: "120px" }}>
+            {/* Drawing */}
+            <div style={{
+              width: i % 2 === 0 ? "52%" : "44%",
+              marginLeft: i % 2 === 0 ? "0" : "auto",
+              marginBottom: "44px",
+            }}>
+              <img src={poem.drawing} alt="" style={{
+                width: "100%", opacity: 0.5, mixBlendMode: "multiply",
+              }} />
+            </div>
+
+            {/* Text */}
+            <div style={{
+              padding: "0 40px",
+              maxWidth: "520px",
+              marginLeft: i % 2 === 0 ? "40px" : "auto",
+              marginRight: i % 2 === 0 ? "auto" : "40px",
+            }}>
+              <span style={{
+                fontSize: "10px", letterSpacing: "0.24em",
+                textTransform: "uppercase", opacity: 0.22,
+                display: "block", marginBottom: "8px",
+              }}>{String(i+1).padStart(3,"0")}</span>
+
+              <h2 onClick={() => setOpenPoem(openPoem === poem.id ? null : poem.id)}
+                style={{
+                  fontSize: "clamp(22px, 3.5vw, 36px)",
+                  fontWeight: 400, fontStyle: "italic",
+                  marginBottom: "8px", cursor: "pointer",
+                  transition: "opacity 0.2s",
+                }}>
+                {poem.title}
+              </h2>
+              <p style={{ fontSize: "12px", opacity: 0.28, fontStyle: "italic", marginBottom: "24px" }}>
+                {poem.note}
+              </p>
+
+              {openPoem === poem.id ? (
+                <div style={{ animation: "fadeIn 0.4s ease" }}>
+                  <div style={{
+                    borderLeft: "1px solid rgba(26,26,24,0.1)",
+                    paddingLeft: "22px", marginBottom: "24px",
+                  }}>
+                    {poem.lines.map((line, j) => (
+                      <p key={j} style={{
+                        fontSize: "17px", lineHeight: 2.1,
+                        minHeight: line === "" ? "1em" : "auto",
+                      }}>{line || "\u00A0"}</p>
+                    ))}
+                  </div>
+                  <button onClick={() => setOpenPoem(null)} style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    fontSize: "10px", letterSpacing: "0.2em",
+                    textTransform: "uppercase", opacity: 0.3, padding: 0,
+                  }}>Close</button>
+                </div>
+              ) : (
+                <div onClick={() => setOpenPoem(poem.id)} style={{ cursor: "pointer" }}>
+                  <p style={{
+                    fontSize: "15px", fontStyle: "italic",
+                    opacity: 0.35, lineHeight: 1.85, marginBottom: "10px",
+                  }}>{poem.lines[0]}</p>
+                  <span style={{
+                    fontSize: "10px", letterSpacing: "0.18em",
+                    textTransform: "uppercase", opacity: 0.22,
+                  }}>Tap to read</span>
+                </div>
+              )}
             </div>
           </div>
         ))}
       </section>
 
-      {/* JOURNAL */}
-      <section id="gallery-journal" style={{ background: D.paper, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>The Page Gallery Journal</p>
-        <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 56px)", margin: "0 0 14px", lineHeight: "1.05", color: D.ink }}>
-          Nobody gets to walk around inside someone else's mind.
-        </h3>
-        <div style={{ width: "36px", height: "1.5px", background: D.thread, margin: "0 0 20px" }} />
-        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.9", margin: "0 0 14px" }}>
-          When I got sick, I realised that when people die, all their thoughts die with them.
-        </p>
-        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.9", margin: "0 0 28px" }}>
-          I started collecting fragments — conversations overheard, things said in the wrong order, thoughts that had nowhere to go. That became The Page Gallery Journal.
-        </p>
-        <div style={{ background: D.white, borderTop: `2px solid ${D.ink}`, padding: "24px", marginBottom: "28px", transition: "background 0.3s" }}>
-          <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.24em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 12px" }}>Fragment — 047</p>
-          <p style={{ ...caveat, fontWeight: "600", fontSize: "22px", color: D.ink, margin: "0 0 10px", lineHeight: "1.35" }}>She said it like she was correcting a mistake.</p>
-          <p style={{ ...kalam, fontSize: "13px", color: D.lightGrey, margin: 0 }}>— overheard, Pret a Manger, Soho</p>
+      {/* ── GALLERY DIVIDER ── */}
+      <div style={{
+        borderTop: "1px solid rgba(26,26,24,0.06)",
+        borderBottom: "1px solid rgba(26,26,24,0.06)",
+        overflow: "hidden",
+      }}>
+        <img src={DRAWING_GALLERY} alt="" style={{
+          width: "100%", maxHeight: "480px",
+          objectFit: "cover", objectPosition: "center top",
+          opacity: 0.32, mixBlendMode: "multiply",
+        }} />
+      </div>
+
+      {/* ── COLLECTION ── */}
+      <section id="collection" style={{
+        background: "#1a1a18", color: "#f2ede5",
+        padding: "120px 40px",
+      }}>
+        <div style={{ maxWidth: "580px", margin: "0 auto" }}>
+          <p style={{
+            fontSize: "10px", letterSpacing: "0.3em",
+            textTransform: "uppercase", opacity: 0.28, marginBottom: "36px",
+          }}>Collection 001</p>
+          <h2 style={{
+            fontSize: "clamp(30px, 5vw, 54px)",
+            fontWeight: 400, fontStyle: "italic",
+            lineHeight: 1.18, marginBottom: "36px",
+          }}>The Only Life</h2>
+          <img src={DRAWING_GEN_2} alt="" style={{
+            width: "55%", opacity: 0.22,
+            mixBlendMode: "screen", marginBottom: "40px",
+          }} />
+          <p style={{ fontSize: "16px", lineHeight: 1.95, opacity: 0.5, marginBottom: "14px" }}>
+            Twenty poems. New York. The body after the ward.
+          </p>
+          <p style={{ fontSize: "16px", lineHeight: 1.95, opacity: 0.5, marginBottom: "52px" }}>
+            Scotland in the bones. The city not yet earned.<br />
+            Things that survived and didn't know it yet.
+          </p>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "18px", marginBottom: "32px" }}>
+            <span style={{ fontSize: "38px", fontWeight: 300 }}>£12</span>
+            <span style={{ fontSize: "11px", opacity: 0.28, letterSpacing: "0.12em" }}>
+              Digital PDF · Yours immediately
+            </span>
+          </div>
+          <a href="https://paypal.me/Sophiasharkey330" target="_blank" rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              border: "1px solid rgba(242,237,229,0.2)",
+              color: "#f2ede5", padding: "16px 40px",
+              fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase",
+            }}>
+            Buy the collection
+          </a>
         </div>
-        <a href="#" style={{ ...serif, display: "inline-block", border: `1px solid ${D.inkGhost}`, color: D.ink, textDecoration: "none", padding: "14px 28px", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase" }}>
-          Visit the Journal
-        </a>
       </section>
 
-      {/* ABOUT */}
-      <section id="about" style={{ background: D.linen, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>About</p>
-        <h2 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(36px, 10vw, 60px)", color: D.ink, margin: "0 0 20px", lineHeight: "1.05" }}>
-          Bea Sophia.<br />New York City.
-        </h2>
-        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.95", margin: "0 0 14px" }}>
-          I got sick and I started collecting. Fragments of conversation. Things people said and didn't know they'd said. Thoughts that live in one mind and die there.
+      {/* ── ABOUT ── */}
+      <section id="about" style={{ padding: "120px 40px", maxWidth: "560px", margin: "0 auto" }}>
+        <p style={{
+          fontSize: "10px", letterSpacing: "0.3em",
+          textTransform: "uppercase", opacity: 0.28, marginBottom: "40px",
+        }}>About</p>
+        <p style={{ fontSize: "18px", lineHeight: 2, marginBottom: "22px" }}>
+          When I got sick, I realised that when people die, all their thoughts die with them.
         </p>
-        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.95", margin: "0 0 14px" }}>
-          The Page Gallery Journal was the first attempt to stop that. These poems are the second.
+        <p style={{ fontSize: "17px", lineHeight: 2, opacity: 0.58, marginBottom: "22px" }}>
+          I started collecting fragments. Conversations overheard. Things said in the wrong order. Thoughts that lived in one mind and died there.
         </p>
-        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.95", margin: "0 0 28px" }}>
-          I also run writing intensives for poets who are serious about the work. I adore spaghetti.
+        <p style={{ fontSize: "17px", lineHeight: 2, opacity: 0.58, marginBottom: "52px" }}>
+          That became The Page Gallery Journal. These poems are the second attempt at the same problem.
         </p>
+        <img src={DRAWING_FIGURES} alt="" style={{
+          width: "65%", opacity: 0.28,
+          mixBlendMode: "multiply", marginBottom: "48px",
+        }} />
         <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-          style={{ ...serif, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: D.grey, textDecoration: "none", borderBottom: `1px solid ${D.inkGhost}`, paddingBottom: "2px" }}>
+          style={{
+            fontSize: "11px", letterSpacing: "0.18em",
+            textTransform: "uppercase", opacity: 0.35,
+            borderBottom: "1px solid rgba(26,26,24,0.18)", paddingBottom: "4px",
+          }}>
           @bsophialovesgnochi
         </a>
       </section>
 
-      {/* NEWSLETTER */}
-      <section style={{ background: D.paper, padding: "56px 24px 64px", borderTop: `1px solid ${D.inkGhost}`, transition: "background 0.3s" }}>
-        <p style={{ ...serif, fontSize: "8px", letterSpacing: "0.34em", textTransform: "uppercase", color: D.lightGrey, margin: "0 0 10px" }}>Letters</p>
-        <h3 style={{ ...caveat, fontWeight: "700", fontSize: "clamp(32px, 9vw, 56px)", color: D.ink, margin: "0 0 14px", lineHeight: "1.05" }}>
-          New fragments,<br />when they exist.
-        </h3>
-        <p style={{ ...serif, fontSize: "15px", color: D.grey, lineHeight: "1.85", margin: "0 0 28px" }}>
-          No schedule. No newsletter voice. The thing itself when it's ready.
-        </p>
-        {done ? (
-          <p style={{ ...serif, fontSize: "15px", color: D.grey, fontStyle: "italic" }}>You're in.</p>
-        ) : (
-          <form onSubmit={e => { e.preventDefault(); if (email) setDone(true); }} style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "360px" }}>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" aria-label="Email address"
-              style={{ ...serif, padding: "14px 16px", border: `1px solid ${D.inkGhost}`, fontSize: "15px", background: D.white, outline: "none", color: D.ink }} />
-            <button type="submit" style={{ ...serif, background: D.ink, color: D.white, border: "none", padding: "15px", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", cursor: "pointer" }}>
-              Subscribe
-            </button>
-          </form>
-        )}
+      {/* ── NEWSLETTER ── */}
+      <section style={{
+        background: "#e8e2d8", padding: "100px 40px",
+        borderTop: "1px solid rgba(26,26,24,0.06)",
+      }}>
+        <div style={{ maxWidth: "420px", margin: "0 auto" }}>
+          <p style={{
+            fontSize: "10px", letterSpacing: "0.3em",
+            textTransform: "uppercase", opacity: 0.28, marginBottom: "28px",
+          }}>Letters</p>
+          <p style={{
+            fontSize: "22px", fontStyle: "italic",
+            fontWeight: 400, lineHeight: 1.5, marginBottom: "14px",
+          }}>New fragments, when they exist.</p>
+          <p style={{ fontSize: "14px", opacity: 0.45, lineHeight: 1.75, marginBottom: "36px" }}>
+            No schedule. No newsletter voice. The thing itself when it's ready.
+          </p>
+          {subscribed ? (
+            <p style={{ fontSize: "15px", fontStyle: "italic", opacity: 0.45 }}>You're in.</p>
+          ) : (
+            <form onSubmit={e => { e.preventDefault(); if (email) setSubscribed(true); }}
+              style={{ display: "flex" }}>
+              <input type="email" required value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                style={{
+                  flex: 1, padding: "15px 18px",
+                  border: "1px solid rgba(26,26,24,0.15)", borderRight: "none",
+                  background: "#f2ede5", fontSize: "14px",
+                  fontFamily: "inherit", outline: "none", color: "#1a1a18", borderRadius: 0,
+                }} />
+              <button type="submit" style={{
+                background: "#1a1a18", color: "#f2ede5",
+                border: "none", padding: "15px 24px",
+                fontSize: "10px", letterSpacing: "0.2em",
+                textTransform: "uppercase", cursor: "pointer",
+                fontFamily: "inherit", whiteSpace: "nowrap", borderRadius: 0,
+              }}>Subscribe</button>
+            </form>
+          )}
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: D.paper, padding: "24px", borderTop: `1px solid ${D.inkGhost}`, display: "flex", flexDirection: "column", gap: "12px", transition: "background 0.3s" }}>
-        <span style={{ ...serif, fontSize: "11px", color: D.lightGrey }}>© Bea Sophia</span>
-        <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
-          {[["Instagram","https://instagram.com/bsophialovesgnochi"],["The Page Gallery Journal","#"]].map(([l,h]) => (
-            <a key={l} href={h} target={h.startsWith("http")?"_blank":undefined} rel="noopener noreferrer"
-              style={{ ...serif, fontSize: "9px", letterSpacing: "0.14em", textTransform: "uppercase", color: D.lightGrey, textDecoration: "none" }}>{l}</a>
-          ))}
-        </div>
+      {/* ── FOOTER ── */}
+      <footer style={{
+        padding: "28px 40px",
+        borderTop: "1px solid rgba(26,26,24,0.06)",
+        display: "flex", justifyContent: "space-between",
+        alignItems: "center", flexWrap: "wrap", gap: "12px",
+      }}>
+        <span style={{ fontSize: "11px", opacity: 0.22 }}>© Bea Sophia</span>
+        <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", opacity: 0.22 }}>
+          Instagram
+        </a>
       </footer>
-
-      {/* FEEDBACK BUTTON */}
-      <button onClick={() => setNoteOpen(o => !o)}
-        style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 999, width: "44px", height: "44px", borderRadius: "50%", background: D.ink, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 16px rgba(26,26,24,0.2)" }}>
-        <span style={{ color: D.white, fontSize: noteOpen ? "18px" : "14px" }}>{noteOpen ? "×" : "✎"}</span>
-      </button>
-      {noteOpen && (
-        <div style={{ position: "fixed", bottom: "80px", right: "20px", left: "20px", zIndex: 998, background: D.white, boxShadow: "0 8px 36px rgba(26,26,24,0.14)", borderTop: `2.5px solid ${D.ink}`, padding: "20px", transition: "background 0.3s" }}>
-          <p style={{ ...serif, fontSize: "13px", color: D.ink, margin: "0 0 12px" }}>Leave a note. I'll action it.</p>
-          <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="What needs changing…" rows={3}
-            style={{ ...serif, width: "100%", padding: "10px 12px", border: `1px solid ${D.inkGhost}`, background: D.paper, color: D.ink, fontSize: "14px", resize: "none", outline: "none", lineHeight: "1.6", boxSizing: "border-box", marginBottom: "10px" }} />
-          {noteSent
-            ? <p style={{ ...serif, fontSize: "13px", color: D.grey, fontStyle: "italic" }}>Noted ✓</p>
-            : <button onClick={sendNote} disabled={!note.trim()} style={{ ...serif, background: note.trim() ? D.ink : D.lightGrey, color: D.white, border: "none", padding: "11px 24px", fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", cursor: note.trim() ? "pointer" : "default" }}>Send</button>
-          }
-        </div>
-      )}
     </div>
   );
 }
