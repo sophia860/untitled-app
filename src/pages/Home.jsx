@@ -116,31 +116,31 @@ export default function Home() {
   const navPast = scrollY > 80;
 
   return (
-    <div style={{fontFamily:"'Times New Roman',Times,Georgia,serif",overflowX:"hidden",background:NAVY,color:CREAM}}>
+    <div style={{fontFamily:"'Times New Roman',Times,Georgia,serif",overflowX:"hidden",background:CREAM,color:NAVY}}>
       <style>{`
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         html{scroll-behavior:smooth}
         a{color:inherit;text-decoration:none}
         img{display:block}
         button,input{font-family:inherit}
-        ::selection{background:${CREAM};color:${NAVY}}
+        ::selection{background:${NAVY};color:${CREAM}}
         @keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        .num-circle{width:44px;height:44px;border-radius:50%;border:1px solid rgba(245,240,228,.3);display:flex;align-items:center;justify-content:center;font-size:12px;letter-spacing:.08em;flex-shrink:0}
-        .bullet-label{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;opacity:.5}
+        .num-circle{width:44px;height:44px;border-radius:50%;border:1px solid rgba(26,42,108,.25);display:flex;align-items:center;justify-content:center;font-size:12px;letter-spacing:.08em;flex-shrink:0}
+        .bullet-label{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;opacity:.4}
         .bullet-label::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
         .read-link{font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.4;cursor:pointer;transition:opacity .2s;background:none;border:none;padding:0;color:inherit;display:inline-flex;align-items:center;gap:8px}
         .read-link:hover{opacity:1}
-        .buy-btn{display:inline-block;border:1.5px solid rgba(245,240,228,.35);color:${CREAM};padding:16px 44px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;transition:background .25s}
-        .buy-btn:hover{background:rgba(245,240,228,.1)}
-        .sub-btn{background:${CREAM};color:${NAVY};border:none;padding:15px 28px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:opacity .2s}
+        .buy-btn{display:inline-block;border:1.5px solid rgba(26,42,108,.4);color:${NAVY};padding:16px 44px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;transition:background .25s}
+        .buy-btn:hover{background:rgba(26,42,108,.06)}
+        .sub-btn{background:${NAVY};color:${CREAM};border:none;padding:15px 28px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:opacity .2s}
         .sub-btn:hover{opacity:.75}
         .nav-link{font-size:10px;letter-spacing:.2em;text-transform:uppercase;transition:color .4s,opacity .2s}
         .nav-link:hover{opacity:1 !important}
       `}</style>
 
       {/* NAV */}
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:200,padding:"20px 36px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navPast?"rgba(26,42,108,.97)":"transparent",borderBottom:navPast?"1px solid rgba(245,240,228,.08)":"none",backdropFilter:navPast?"blur(8px)":"none",transition:"background .4s,border .4s"}}>
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:200,padding:"20px 36px",display:"flex",justifyContent:"space-between",alignItems:"center",background:navPast?"rgba(245,240,228,.97)":"transparent",borderBottom:navPast?"1px solid rgba(26,42,108,.08)":"none",backdropFilter:navPast?"blur(8px)":"none",transition:"background .4s,border .4s"}}>
         <span style={{fontSize:"12px",letterSpacing:".18em",textTransform:"uppercase",color:CREAM}}>Bea Sophia</span>
         <div style={{display:"flex",gap:"28px"}}>
           {[["Poems","#poems"],["Collection","#collection"],["About","#about"]].map(([l,h])=>(
@@ -165,8 +165,8 @@ export default function Home() {
       </section>
 
       {/* DIVIDER — image strip */}
-      <div style={{height:"clamp(120px,20vw,220px)",overflow:"hidden",borderTop:"1px solid rgba(245,240,228,.06)"}}>
-        <img src={DRAWING_WOLF} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 30%",opacity:.25,mixBlendMode:"screen"}}/>
+      <div style={{height:"clamp(120px,20vw,220px)",overflow:"hidden",borderTop:"1px solid rgba(26,42,108,.07)"}}>
+        <img src={DRAWING_WOLF} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 30%",opacity:.25,mixBlendMode:"multiply"}}/>
       </div>
 
       {/* POEMS */}
@@ -174,7 +174,7 @@ export default function Home() {
         {POEMS.map((poem,i) => {
           const align = i%2===0 ? "left" : "right";
           return (
-            <FadeIn key={poem.id} style={{borderTop:"1px solid rgba(245,240,228,.06)"}}>
+            <FadeIn key={poem.id} style={{borderTop:"1px solid rgba(26,42,108,.07)"}}>
               <div style={{padding:"80px 36px"}}>
                 {/* number + title row */}
                 <div style={{display:"flex",alignItems:"flex-start",gap:"20px",marginBottom:"40px",justifyContent:align==="right"?"flex-end":"flex-start"}}>
@@ -187,7 +187,7 @@ export default function Home() {
 
                 {/* waveform */}
                 <div style={{margin:"0 0 40px",padding:"0 4px"}}>
-                  <Waveform color={CREAM} opacity={0.14}/>
+                  <Waveform color={NAVY} opacity={0.14}/>
                 </div>
 
                 {/* drawing strip */}
@@ -198,7 +198,7 @@ export default function Home() {
                   marginRight: align==="left"  ? "20%" : 0,
                   borderRadius:"2px",
                 }}>
-                  <img src={poem.drawing} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center",opacity:.4,mixBlendMode:"screen"}}/>
+                  <img src={poem.drawing} alt="" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center",opacity:.4,mixBlendMode:"multiply"}}/>
                 </div>
 
                 {/* label + body */}
@@ -217,7 +217,7 @@ export default function Home() {
                     </div>
                   ) : (
                     <button className="read-link" onClick={()=>setOpenPoem(poem.id)}>
-                      Read the full poem <span style={{opacity:.5}}>→</span>
+                      Read the full poem <span style={{opacity:.4}}>→</span>
                     </button>
                   )}
                 </div>
@@ -228,10 +228,10 @@ export default function Home() {
       </div>
 
       {/* COLLECTION */}
-      <section id="collection" style={{borderTop:"1px solid rgba(245,240,228,.06)",padding:"0"}}>
+      <section id="collection" style={{borderTop:"1px solid rgba(26,42,108,.07)",padding:"0"}}>
         {/* top image full bleed */}
         <div style={{height:"clamp(160px,25vw,280px)",overflow:"hidden"}}>
-          <img src={DRAWING_GALLERY} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.3,mixBlendMode:"screen"}}/>
+          <img src={DRAWING_GALLERY} alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:.3,mixBlendMode:"multiply"}}/>
         </div>
 
         <FadeIn style={{padding:"80px 36px"}}>
@@ -242,7 +242,7 @@ export default function Home() {
             </h2>
           </div>
 
-          <Waveform color={CREAM} opacity={0.1}/>
+          <Waveform color={NAVY} opacity={0.1}/>
 
           <div style={{maxWidth:"520px",marginTop:"40px"}}>
             <p className="bullet-label" style={{marginBottom:"20px"}}>Collection 001 · Twenty poems</p>
@@ -260,7 +260,7 @@ export default function Home() {
       </section>
 
       {/* ABOUT */}
-      <FadeIn style={{borderTop:"1px solid rgba(245,240,228,.06)",padding:"80px 36px"}}>
+      <FadeIn style={{borderTop:"1px solid rgba(26,42,108,.07)",padding:"80px 36px"}}>
         <div style={{display:"flex",alignItems:"flex-start",gap:"20px",marginBottom:"40px"}}>
           <div className="num-circle">05</div>
           <h2 style={{fontSize:"clamp(30px,6vw,72px)",fontWeight:400,fontStyle:"italic",lineHeight:1.05,letterSpacing:"-.01em",maxWidth:"560px"}}>
@@ -268,7 +268,7 @@ export default function Home() {
           </h2>
         </div>
 
-        <Waveform color={CREAM} opacity={0.1}/>
+        <Waveform color={NAVY} opacity={0.1}/>
 
         <div style={{maxWidth:"520px",marginTop:"40px"}} id="about">
           <p className="bullet-label" style={{marginBottom:"18px"}}>The Page Gallery</p>
@@ -289,14 +289,14 @@ export default function Home() {
       </FadeIn>
 
       {/* NEWSLETTER */}
-      <FadeIn style={{borderTop:"1px solid rgba(245,240,228,.06)",padding:"80px 36px"}}>
+      <FadeIn style={{borderTop:"1px solid rgba(26,42,108,.07)",padding:"80px 36px"}}>
         <div style={{display:"flex",alignItems:"flex-start",gap:"20px",marginBottom:"36px"}}>
           <div className="num-circle">06</div>
           <h2 style={{fontSize:"clamp(28px,5vw,60px)",fontWeight:400,fontStyle:"italic",lineHeight:1.1,letterSpacing:"-.01em"}}>
             New fragments,<br/>when they exist.
           </h2>
         </div>
-        <Waveform color={CREAM} opacity={0.08}/>
+        <Waveform color={NAVY} opacity={0.08}/>
         <div style={{maxWidth:"420px",marginTop:"36px"}}>
           <p className="bullet-label" style={{marginBottom:"16px"}}>Letters</p>
           <p style={{fontSize:"15px",opacity:.4,lineHeight:1.8,marginBottom:"36px"}}>No schedule. No newsletter voice. The thing itself when it's ready.</p>
@@ -305,7 +305,7 @@ export default function Home() {
           ) : (
             <form onSubmit={e=>{e.preventDefault();if(email)setSubscribed(true);}} style={{display:"flex",maxWidth:"400px"}}>
               <input type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com"
-                style={{flex:1,padding:"14px 16px",border:"1px solid rgba(245,240,228,.2)",borderRight:"none",background:"transparent",fontSize:"14px",outline:"none",color:CREAM,borderRadius:0}}/>
+                style={{flex:1,padding:"14px 16px",border:"1px solid rgba(26,42,108,.15)",borderRight:"none",background:"transparent",fontSize:"14px",outline:"none",color:CREAM,borderRadius:0}}/>
               <button type="submit" className="sub-btn">Subscribe</button>
             </form>
           )}
@@ -313,7 +313,7 @@ export default function Home() {
       </FadeIn>
 
       {/* FOOTER */}
-      <footer style={{padding:"24px 36px",borderTop:"1px solid rgba(245,240,228,.06)",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"12px"}}>
+      <footer style={{padding:"24px 36px",borderTop:"1px solid rgba(26,42,108,.07)",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"12px"}}>
         <span style={{fontSize:"11px",opacity:.2}}>© Bea Sophia 2025</span>
         <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
           style={{fontSize:"10px",letterSpacing:".16em",textTransform:"uppercase",opacity:.2}}>Instagram</a>
