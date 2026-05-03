@@ -506,27 +506,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PHOTO */}
-      <div style={{background:"#fff",borderTop:"1px solid rgba(17,17,17,.06)"}}>
-        <div style={{position:"relative",width:"100%",height:"clamp(500px,85vh,900px)",overflow:"hidden"}}>
-          <img src={PHOTO_BEA} alt="Bea Sophia" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 15%"}}/>
-          <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,transparent 70%,rgba(255,255,255,.5))",pointerEvents:"none"}}/>
-        </div>
-        <div style={{padding:"36px 32px 56px",borderBottom:"1px solid rgba(17,17,17,.06)"}}>
-          <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"flex-start",gap:24,maxWidth:900}}>
-            <div>
-              <p style={{fontSize:"clamp(22px,3.5vw,38px)",fontStyle:"italic",fontWeight:400,lineHeight:1.3,marginBottom:10}}>Bea Sophia — poet, founder of<br/>The Page Gallery Journal.</p>
-              <p style={{fontSize:15,lineHeight:1.9,opacity:.42,maxWidth:480}}>I write poems about the things people feel but don't say. When I got sick I started writing them down. This is where they live.</p>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:4}}>
-              {[["Read free poems","#poems",.6],["Enter the works","#works",.35],["Instagram ↗","https://instagram.com/bsophialovesgnochi",.2]].map(([label,href,op])=>(
-                <a key={label} href={href} target={href.startsWith("http")?"_blank":undefined} rel="noopener noreferrer"
-                  style={{fontSize:11,letterSpacing:".18em",textTransform:"uppercase",borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:3,opacity:op,whiteSpace:"nowrap",transition:"opacity .2s"}}
-                  onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=op}>{label}</a>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* POEMS */}
