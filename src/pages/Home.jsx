@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 
-const PHOTO_BEA    = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/4415d70a3_whatsapp_image_1987811375197218.jpg";
-const DRAWING_WOLF = "https://media.base44.com/images/public/whatsapp/69f5fbb6b1f4d064d9cbd657/your_agent/69f5fbb6b1f4d064d9cbd658/5ee1557e0_whatsapp_image_1773625874009166.jpg";
-
 const POEMS = [
   {
     id:1, num:"01", title:"Retroactive Availability", note:"",
@@ -26,30 +23,16 @@ const POEMS = [
 const SCRIBBLES = [
   "M 20 50 C 18 30, 40 15, 55 20 C 72 25, 80 40, 75 58 C 70 75, 50 82, 35 76 C 18 68, 16 60, 20 50",
   "M 5 60 C 15 58, 30 63, 45 59 C 60 55, 75 62, 90 58",
-  "M 15 15 C 25 22, 40 28, 55 35 M 55 15 C 45 22, 30 28, 15 38",
   "M 50 50 C 55 45, 62 44, 65 50 C 68 56, 63 65, 55 67 C 44 70, 35 62, 33 52 C 31 40, 40 30, 52 28 C 66 26, 76 36, 78 50",
-  "M 10 50 C 14 48, 18 52, 22 50 M 28 47 C 32 45, 36 49, 40 47 M 46 50 C 50 48, 54 52, 58 50",
-  "M 10 50 C 25 50, 50 48, 70 50 M 60 42 C 65 46, 70 50, 65 56",
-  "M 15 20 C 20 18, 50 16, 75 20 C 78 25, 80 55, 78 75 C 72 78, 40 80, 18 78 C 14 72, 12 40, 15 20",
   "M 50 10 C 52 28, 60 35, 80 35 C 65 42, 68 52, 78 68 C 62 55, 50 60, 38 70 C 44 52, 40 42, 22 38 C 42 36, 46 26, 50 10",
-];
-
-const FLOATING_WORDS = [
-  "sorry","anything","eleven twenty-eight","for years","wanting","nothing",
-  "the same minute","I understood","do anything","not know","the difference",
-  "four times","you said","I said","said it","and not",
-  "for wanting","can also","who would","years","understood","exact",
 ];
 
 // ─── CUSTOM CURSOR ────────────────────────────────────────────────
 function Cursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
-  const pos = useRef({ x:0, y:0 });
+  const pos  = useRef({ x:0, y:0 });
   const ring = useRef({ x:0, y:0 });
-  const label = useRef("");
-  const labelRef = useRef(null);
-
   useEffect(() => {
     const move = e => { pos.current = { x:e.clientX, y:e.clientY }; };
     window.addEventListener("mousemove", move);
@@ -64,64 +47,30 @@ function Cursor() {
     loop();
     return () => { window.removeEventListener("mousemove", move); cancelAnimationFrame(raf); };
   }, []);
-
   return (
     <>
-      <div ref={dotRef}  style={{position:"fixed",top:0,left:0,zIndex:9999,pointerEvents:"none",width:5,height:5,background:"#111",borderRadius:"50%",marginLeft:-2.5,marginTop:-2.5,mixBlendMode:"multiply"}}/>
-      <div ref={ringRef} style={{position:"fixed",top:0,left:0,zIndex:9998,pointerEvents:"none",width:36,height:36,border:"1px solid rgba(17,17,17,.25)",borderRadius:"50%",marginLeft:-18,marginTop:-18,transition:"width .3s,height .3s"}}/>
+      <div ref={dotRef}  style={{position:"fixed",top:0,left:0,zIndex:9999,pointerEvents:"none",width:5,height:5,background:"#1a1a18",borderRadius:"50%",marginLeft:-2.5,marginTop:-2.5,mixBlendMode:"multiply"}}/>
+      <div ref={ringRef} style={{position:"fixed",top:0,left:0,zIndex:9998,pointerEvents:"none",width:36,height:36,border:"1px solid rgba(26,26,24,.2)",borderRadius:"50%",marginLeft:-18,marginTop:-18}}/>
     </>
   );
 }
 
-// ─── SCRIBBLE SVG ─────────────────────────────────────────────────
-function Scribble({ path, size=120, color="#111", opacity=0.12, delay=0, animate=true }) {
+// ─── SCRIBBLE ─────────────────────────────────────────────────────
+function Scribble({ path, size=120, color="#1a1a18", opacity=0.10, animate=false }) {
   const id = useRef(`sc-${Math.random().toString(36).slice(2)}`).current;
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" style={{overflow:"visible",opacity}}>
-      {animate && <style>{`#${id}{stroke-dasharray:300;stroke-dashoffset:300;animation:draw-${id} 1.8s ease ${delay}s forwards}@keyframes draw-${id}{to{stroke-dashoffset:0}}`}</style>}
-      <path id={id} d={path} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={animate?{}:{strokeDasharray:"none"}}/>
+      {animate && <style>{`#${id}{stroke-dasharray:300;stroke-dashoffset:300;animation:draw-${id} 2s ease .5s forwards}@keyframes draw-${id}{to{stroke-dashoffset:0}}`}</style>}
+      <path id={id} d={path} fill="none" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={animate?{}:{strokeDasharray:"none"}}/>
     </svg>
   );
-}
-
-// ─── CORRIDOR CANVAS ──────────────────────────────────────────────
-function CorridorCanvas() {
-  const canvasRef = useRef(null);
-  const mouseRef  = useRef({ x:0.5, y:0.5 });
-  useEffect(() => {
-    const canvas = canvasRef.current; const ctx = canvas.getContext("2d"); let W,H;
-    const resize = () => { W=canvas.width=canvas.offsetWidth; H=canvas.height=canvas.offsetHeight; };
-    resize(); window.addEventListener("resize",resize);
-    const onMove = e => { const r=canvas.getBoundingClientRect(); mouseRef.current={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}; };
-    canvas.addEventListener("mousemove",onMove);
-    let t=0,raf;
-    const draw = () => {
-      ctx.clearRect(0,0,W,H); ctx.fillStyle="#fff"; ctx.fillRect(0,0,W,H);
-      const cx=W/2+(mouseRef.current.x-.5)*30, cy=H/2+(mouseRef.current.y-.5)*20;
-      for(let l=0;l<8;l++){const p=l/7,s=.08+p*.42;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(W*(.5-s),0);ctx.moveTo(cx,cy);ctx.lineTo(W*(.5-s),H);ctx.moveTo(cx,cy);ctx.lineTo(W*(.5+s),0);ctx.moveTo(cx,cy);ctx.lineTo(W*(.5+s),H);ctx.strokeStyle=`rgba(17,17,17,${.04+p*.06})`;ctx.lineWidth=.5+p*.5;ctx.stroke();}
-      const hy=cy+Math.sin(t*.4)*3; ctx.beginPath();
-      for(let x=0;x<W;x+=4){const y=hy+Math.sin(x*.03+t*.5)*2.5;if(!x)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
-      ctx.strokeStyle="rgba(17,17,17,.08)";ctx.lineWidth=1;ctx.stroke();
-      t+=.012; raf=requestAnimationFrame(draw);
-    };
-    draw();
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize",resize); };
-  },[]);
-  return <canvas ref={canvasRef} style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>;
-}
-
-// ─── FLOATING WORD ────────────────────────────────────────────────
-function FloatingWord({word,x,y,size,opacity,delay}) {
-  const ref=useRef(null);const[v,setV]=useState(false);
-  useEffect(()=>{const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){setV(true);obs.disconnect();}},{threshold:.1});if(ref.current)obs.observe(ref.current);return()=>obs.disconnect();},[]);
-  return <div ref={ref} style={{position:"absolute",left:`${x}%`,top:`${y}%`,fontSize:`${size}px`,fontStyle:"italic",color:"#111",opacity:v?opacity:0,transform:v?`translateY(0) rotate(${Math.sin(x*.3)*8-4}deg)`:"translateY(10px)",transition:`opacity 1s ease ${delay}s,transform 1s ease ${delay}s`,fontFamily:"'Times New Roman',serif",whiteSpace:"nowrap",pointerEvents:"none",userSelect:"none"}}>{word}</div>;
 }
 
 // ─── FADE IN ──────────────────────────────────────────────────────
 function FadeIn({children,delay=0,style={}}) {
   const ref=useRef(null);const[v,setV]=useState(false);
   useEffect(()=>{const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){setV(true);obs.disconnect();}},{threshold:.08});if(ref.current)obs.observe(ref.current);return()=>obs.disconnect();},[]);
-  return <div ref={ref} style={{opacity:v?1:0,transform:v?"translateY(0)":"translateY(28px)",transition:`opacity .9s ease ${delay}s,transform .9s ease ${delay}s`,...style}}>{children}</div>;
+  return <div ref={ref} style={{opacity:v?1:0,transform:v?"translateY(0)":"translateY(22px)",transition:`opacity .9s ease ${delay}s,transform .9s ease ${delay}s`,...style}}>{children}</div>;
 }
 
 // ─── POEM BLOCK ───────────────────────────────────────────────────
@@ -132,29 +81,37 @@ function PoemBlock({poem,open,onToggle}) {
     else setLines([]);
   },[open,poem.lines]);
   return (
-    <FadeIn style={{borderTop:"1px solid rgba(17,17,17,.06)",position:"relative",overflow:"hidden"}}>
+    <FadeIn style={{borderTop:"1px solid rgba(26,26,24,.07)",position:"relative",overflow:"hidden"}}>
       <div style={{position:"absolute",top:20,right:"4%",opacity:.04,pointerEvents:"none",transform:"rotate(-8deg)"}}>
-        <Scribble path={SCRIBBLES[1]} size={220} animate={false}/>
+        <Scribble path={SCRIBBLES[1]} size={220}/>
       </div>
       <div style={{padding:"80px 32px",position:"relative",zIndex:1}}>
         <div style={{display:"flex",alignItems:"flex-start",gap:16,marginBottom:36}}>
-          <div style={{width:38,height:38,borderRadius:"50%",border:"1.5px solid rgba(17,17,17,.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,letterSpacing:".06em",flexShrink:0}}>{poem.num}</div>
+          <div style={{width:36,height:36,borderRadius:"50%",border:"1px solid rgba(26,26,24,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,letterSpacing:".08em",flexShrink:0,color:"rgba(26,26,24,.5)"}}>{poem.num}</div>
           <h2 onClick={onToggle} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-            style={{fontSize:"clamp(34px,7vw,90px)",fontWeight:400,fontStyle:"italic",lineHeight:.95,letterSpacing:hov?"0.01em":"-.015em",cursor:"pointer",transition:"opacity .2s,letter-spacing .4s",opacity:hov?.55:1}}>
+            style={{fontSize:"clamp(30px,6.5vw,88px)",fontWeight:400,fontStyle:"italic",lineHeight:.95,
+              letterSpacing:hov?"0.01em":"-.015em",cursor:"pointer",
+              transition:"opacity .25s,letter-spacing .5s",opacity:hov?.5:1,color:"#1a1a18"}}>
             {poem.title}
           </h2>
         </div>
         {open ? (
-          <div style={{paddingLeft:54}}>
+          <div style={{paddingLeft:52}}>
             {lines.map((line,j)=>(
-              <p key={j} style={{fontSize:"clamp(16px,2vw,22px)",fontStyle:"italic",lineHeight:1.9,minHeight:"1.9em",opacity:lines.length>j?1:0,transform:lines.length>j?"translateY(0)":"translateY(6px)",transition:"opacity .3s,transform .3s"}}>{line||"\u00a0"}</p>
+              <p key={j} style={{fontSize:"clamp(15px,1.9vw,21px)",fontStyle:"italic",lineHeight:1.95,minHeight:"1.95em",
+                opacity:lines.length>j?1:0,transform:lines.length>j?"translateY(0)":"translateY(5px)",
+                transition:"opacity .28s,transform .28s",color:"#1a1a18"}}>{line||"\u00a0"}</p>
             ))}
-            <button onClick={onToggle} style={{marginTop:32,fontSize:10,letterSpacing:".2em",textTransform:"uppercase",cursor:"pointer",opacity:.35,background:"none",border:"none",color:"#111",transition:"opacity .2s"}} onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>Close</button>
+            <button onClick={onToggle} style={{marginTop:32,fontSize:9,letterSpacing:".22em",textTransform:"uppercase",
+              cursor:"pointer",opacity:.3,background:"none",border:"none",color:"#1a1a18",transition:"opacity .2s"}}
+              onMouseEnter={e=>e.currentTarget.style.opacity=.8} onMouseLeave={e=>e.currentTarget.style.opacity=.3}>Close</button>
           </div>
         ) : (
-          <div style={{paddingLeft:54}}>
-            <p style={{fontSize:17,fontStyle:"italic",opacity:.3,lineHeight:1.9,marginBottom:20}}>{poem.lines[0]}</p>
-            <button onClick={onToggle} style={{fontSize:10,letterSpacing:".2em",textTransform:"uppercase",cursor:"pointer",opacity:.35,background:"none",border:"none",color:"#111",transition:"opacity .2s"}} onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>Read the poem →</button>
+          <div style={{paddingLeft:52}}>
+            <p style={{fontSize:16,fontStyle:"italic",opacity:.28,lineHeight:1.95,marginBottom:20,color:"#1a1a18"}}>{poem.lines[0]}</p>
+            <button onClick={onToggle} style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",
+              cursor:"pointer",opacity:.3,background:"none",border:"none",color:"#1a1a18",transition:"opacity .2s"}}
+              onMouseEnter={e=>e.currentTarget.style.opacity=.8} onMouseLeave={e=>e.currentTarget.style.opacity=.3}>Read the poem →</button>
           </div>
         )}
       </div>
@@ -166,276 +123,318 @@ function PoemBlock({poem,open,onToggle}) {
 function DemoBlank({prompt,placeholder}) {
   const [val,setVal]=useState("");const[active,setActive]=useState(false);const[flash,setFlash]=useState(false);const inp=useRef(null);
   return (
-    <p style={{fontSize:"clamp(14px,1.8vw,18px)",lineHeight:2,fontFamily:"'EB Garamond','Times New Roman',serif",color:"#EEE8DC",marginBottom:8}}>
+    <p style={{fontSize:"clamp(14px,1.7vw,17px)",lineHeight:2.1,fontFamily:"'EB Garamond','Times New Roman',serif",color:"#EEE8DC",marginBottom:6}}>
       {prompt}
-      <span onClick={()=>inp.current.focus()} style={{display:"inline-block",minWidth:100,marginLeft:6,borderBottom:active?"1.5px solid #C24B1A":"1.5px solid rgba(194,75,26,.25)",transition:"border-color .25s",background:flash?"rgba(42,110,74,.2)":"transparent",cursor:"text",paddingBottom:1,position:"relative"}}>
-        <input ref={inp} value={val} onChange={e=>setVal(e.target.value)} onFocus={()=>setActive(true)} onBlur={()=>{setActive(false);if(val){setFlash(true);setTimeout(()=>setFlash(false),400);}}} placeholder={placeholder}
-          style={{background:"transparent",border:"none",outline:"none",fontFamily:"'Courier Prime','Courier New',monospace",fontSize:"clamp(13px,1.6vw,16px)",color:"#C24B1A",width:Math.max((val.length||placeholder.length)*9+20,90)+"px",minWidth:90,caretColor:"#C24B1A",transition:"width .2s"}}/>
+      <span onClick={()=>inp.current.focus()} style={{display:"inline-block",minWidth:90,marginLeft:6,
+        borderBottom:active?"1.5px solid #C24B1A":"1.5px solid rgba(194,75,26,.22)",
+        transition:"border-color .25s",background:flash?"rgba(42,110,74,.18)":"transparent",cursor:"text",paddingBottom:1}}>
+        <input ref={inp} value={val} onChange={e=>setVal(e.target.value)}
+          onFocus={()=>setActive(true)}
+          onBlur={()=>{setActive(false);if(val){setFlash(true);setTimeout(()=>setFlash(false),400);}}}
+          placeholder={placeholder}
+          style={{background:"transparent",border:"none",outline:"none",
+            fontFamily:"'Courier Prime','Courier New',monospace",
+            fontSize:"clamp(12px,1.5vw,15px)",color:"#C24B1A",
+            width:Math.max((val.length||placeholder.length)*9+20,80)+"px",
+            minWidth:80,caretColor:"#C24B1A",transition:"width .18s"}}/>
       </span>
     </p>
   );
 }
 
-// ─── 3D ROOM CANVAS — the two objects ────────────────────────────
-// Room 1: the manuscript (collection)
-// Room 2: the door in the dark (writer's block pack)
+// ─── CONTINUOUS LINE HERO ─────────────────────────────────────────
+// A single organic SVG path that draws itself, with poem words anchored at specific points.
+// Mouse shifts the whole composition gently.
+function LineHero() {
+  const svgRef   = useRef(null);
+  const pathRef  = useRef(null);
+  const mouseRef = useRef({ x:0, y:0 });
+  const [drawn, setDrawn] = useState(false);
+  const [wordsVisible, setWordsVisible] = useState(false);
+
+  // Word anchors: position as % of SVG viewBox (0 0 800 600), plus label offset direction
+  const ANCHORS = [
+    { word:"four times",       cx:182, cy:148, dx:-90, dy:-18,  delay:2.6 },
+    { word:"I said sorry",     cx:310, cy:108, dx: 18, dy:-28,  delay:3.0 },
+    { word:"for wanting",      cx:490, cy:155, dx: 22, dy:-20,  delay:3.4 },
+    { word:"you.",             cx:618, cy:220, dx: 22, dy: 0,   delay:3.8 },
+    { word:"you said anything",cx:500, cy:310, dx: 22, dy: 14,  delay:4.2 },
+    { word:"eleven twenty-eight", cx:310, cy:368, dx:-12, dy: 28, delay:4.6 },
+    { word:"for years",        cx:200, cy:440, dx:-72, dy: 10,  delay:5.0 },
+    { word:"and not know",     cx:380, cy:490, dx: 18, dy: 24,  delay:5.4 },
+    { word:"the difference.",  cx:550, cy:450, dx: 22, dy: 8,   delay:5.8 },
+  ];
+
+  // The single continuous organic path — handcrafted curve
+  const PATH = `
+    M 150,160
+    C 160,120 180,100 210,108
+    C 260,118 310,90  370,96
+    C 430,102 480,128 520,148
+    C 570,172 620,210 638,228
+    C 660,250 648,290 610,308
+    C 570,328 520,318 490,322
+    C 450,328 410,355 370,370
+    C 330,385 280,382 250,390
+    C 210,400 188,420 192,445
+    C 196,468 218,478 250,484
+    C 290,492 340,490 388,492
+    C 440,496 500,488 545,468
+    C 590,448 618,420 630,400
+    C 640,382 628,360 610,352
+  `;
+
+  useEffect(() => {
+    const path = pathRef.current;
+    if (!path) return;
+    const len = path.getTotalLength();
+    path.style.strokeDasharray  = len;
+    path.style.strokeDashoffset = len;
+
+    // trigger draw after a short pause
+    const t1 = setTimeout(() => {
+      path.style.transition = `stroke-dashoffset 3.2s cubic-bezier(0.16,1,0.3,1)`;
+      path.style.strokeDashoffset = 0;
+      setDrawn(true);
+    }, 400);
+
+    const t2 = setTimeout(() => setWordsVisible(true), 2200);
+
+    // subtle mouse parallax on the whole SVG
+    const move = e => {
+      mouseRef.current = {
+        x: (e.clientX / window.innerWidth  - 0.5) * 14,
+        y: (e.clientY / window.innerHeight - 0.5) * 10,
+      };
+      if (svgRef.current) {
+        svgRef.current.style.transform = `translate(${mouseRef.current.x}px,${mouseRef.current.y}px)`;
+      }
+    };
+    window.addEventListener("mousemove", move);
+    return () => { clearTimeout(t1); clearTimeout(t2); window.removeEventListener("mousemove", move); };
+  }, []);
+
+  return (
+    <section style={{
+      position:"relative", height:"100vh", overflow:"hidden",
+      background:"#F5F0E8", display:"flex", flexDirection:"column",
+      alignItems:"center", justifyContent:"center",
+    }}>
+      {/* top nav line — thin rule like the reference */}
+      <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(26,26,24,.12)"}}/>
+
+      {/* SVG composition */}
+      <div style={{position:"relative",width:"min(800px,92vw)",height:"min(600px,70vh)"}}>
+        <svg
+          ref={svgRef}
+          viewBox="0 0 800 600"
+          style={{width:"100%",height:"100%",overflow:"visible",transition:"transform .8s cubic-bezier(.16,1,.3,1)"}}
+          aria-hidden="true">
+
+          {/* the single continuous line */}
+          <path
+            ref={pathRef}
+            d={PATH}
+            fill="none"
+            stroke="#8C8880"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* dot at each anchor */}
+          {ANCHORS.map((a,i) => (
+            <circle key={i} cx={a.cx} cy={a.cy} r="2.2"
+              fill="#8C8880"
+              opacity={wordsVisible ? 0.6 : 0}
+              style={{transition:`opacity .4s ease ${a.delay}s`}}/>
+          ))}
+
+          {/* connector ticks — small line from dot to label */}
+          {ANCHORS.map((a,i) => (
+            <line key={i}
+              x1={a.cx} y1={a.cy}
+              x2={a.cx + a.dx * 0.4} y2={a.cy + a.dy * 0.4}
+              stroke="#8C8880" strokeWidth="0.8"
+              opacity={wordsVisible ? 0.4 : 0}
+              style={{transition:`opacity .4s ease ${a.delay}s`}}/>
+          ))}
+        </svg>
+
+        {/* word labels — absolutely positioned over the SVG */}
+        {ANCHORS.map((a, i) => {
+          // convert viewBox coords to % of container
+          const left = (a.cx / 800 * 100) + "%";
+          const top  = (a.cy / 600 * 100) + "%";
+          return (
+            <div key={i} style={{
+              position:"absolute",
+              left, top,
+              transform:`translate(${a.dx}px,${a.dy}px) translateY(-50%)`,
+              fontFamily:"'Times New Roman',Times,serif",
+              fontStyle:"italic",
+              fontSize:"clamp(11px,1.4vw,16px)",
+              color:"#1a1a18",
+              whiteSpace:"nowrap",
+              opacity: wordsVisible ? 1 : 0,
+              transition:`opacity .7s ease ${a.delay}s`,
+              pointerEvents:"none",
+              userSelect:"none",
+              letterSpacing:"-.01em",
+            }}>{a.word}</div>
+          );
+        })}
+      </div>
+
+      {/* title — bottom left, understated */}
+      <div style={{
+        position:"absolute", bottom:48, left:40,
+        opacity: drawn ? 1 : 0, transition:"opacity 1s ease 2s",
+      }}>
+        <p style={{fontSize:11,letterSpacing:".22em",textTransform:"uppercase",color:"rgba(26,26,24,.35)",marginBottom:6}}>Bea Sophia</p>
+        <p style={{fontSize:10,letterSpacing:".16em",textTransform:"uppercase",color:"rgba(26,26,24,.2)"}}>Poet · The Page Gallery Journal · New York</p>
+      </div>
+
+      {/* nav links — bottom right */}
+      <div style={{
+        position:"absolute", bottom:48, right:40,
+        display:"flex", gap:20,
+        opacity: drawn ? 1 : 0, transition:"opacity 1s ease 2.4s",
+      }}>
+        <a href="#poems" style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",color:"rgba(26,26,24,.35)",borderBottom:"1px solid rgba(26,26,24,.2)",paddingBottom:2,transition:"color .2s"}}
+          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.8)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.35)"}>Poems</a>
+        <a href="#works" style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",color:"rgba(26,26,24,.35)",borderBottom:"1px solid rgba(26,26,24,.2)",paddingBottom:2,transition:"color .2s"}}
+          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.8)"} onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.35)"}>Works</a>
+      </div>
+
+      {/* bottom rule */}
+      <div style={{position:"absolute",bottom:0,left:0,right:0,height:1,background:"rgba(26,26,24,.08)"}}/>
+    </section>
+  );
+}
+
+// ─── 3D ROOM CANVAS ───────────────────────────────────────────────
 function RoomCanvas({ room }) {
   const canvasRef = useRef(null);
   const mouseRef  = useRef({ x:0.5, y:0.5 });
-  const hovRef    = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let W, H;
     const resize = () => { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const onMove = e => {
-      const r = canvas.getBoundingClientRect();
-      mouseRef.current = { x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.height };
-    };
+    resize(); window.addEventListener("resize", resize);
+    const onMove = e => { const r=canvas.getBoundingClientRect(); mouseRef.current={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}; };
     canvas.addEventListener("mousemove", onMove);
-    canvas.addEventListener("mouseenter", ()=>{ hovRef.current=true; });
-    canvas.addEventListener("mouseleave", ()=>{ hovRef.current=false; mouseRef.current={x:.5,y:.5}; });
 
     let t=0, raf;
-    const ease = (a,b,k=.06) => a + (b-a)*k;
-    let cx=.5,cy=.5;
+    let cx=.5, cy=.5;
+    const ease=(a,b,k=.06)=>a+(b-a)*k;
 
     const drawRoom1 = () => {
-      // warm off-white room — manuscript on the floor
-      cx = ease(cx, mouseRef.current.x);
-      cy = ease(cy, mouseRef.current.y);
-
-      const bg = "#F5F0E8";
-      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
-
-      // perspective walls
-      const vx = W*(0.38 + (cx-.5)*.06);
-      const vy = H*(0.44 + (cy-.5)*.04);
-
+      cx=ease(cx,mouseRef.current.x); cy=ease(cy,mouseRef.current.y);
+      ctx.fillStyle="#F0EAD8"; ctx.fillRect(0,0,W,H);
+      const vx=W*(.38+(cx-.5)*.06), vy=H*(.44+(cy-.5)*.04);
       // floor
-      ctx.beginPath();
-      ctx.moveTo(0,H); ctx.lineTo(W,H);
-      ctx.lineTo(W*(0.5+(cx-.5)*.1+.48),H*(.5+(cy-.5)*.08));
-      ctx.lineTo(vx,vy);
-      ctx.lineTo(W*(0.5+(cx-.5)*.1-.48),H*(.5+(cy-.5)*.08));
-      ctx.lineTo(0,H);
+      ctx.beginPath(); ctx.moveTo(0,H); ctx.lineTo(W,H);
+      ctx.lineTo(W*(.98),H*(.55+(cy-.5)*.08)); ctx.lineTo(vx,vy);
+      ctx.lineTo(W*(.02),H*(.55+(cy-.5)*.08)); ctx.lineTo(0,H);
       ctx.fillStyle="#EDE5D5"; ctx.fill();
-
       // left wall
-      ctx.beginPath();
-      ctx.moveTo(0,0); ctx.lineTo(0,H);
-      ctx.lineTo(W*(0.5+(cx-.5)*.1-.48),H*(.5+(cy-.5)*.08));
-      ctx.lineTo(vx,vy); ctx.lineTo(W*.32,0);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,H);
+      ctx.lineTo(W*.02,H*(.55+(cy-.5)*.08)); ctx.lineTo(vx,vy); ctx.lineTo(W*.30,0);
       ctx.fillStyle="#EAE3D2"; ctx.fill();
-
       // right wall
-      ctx.beginPath();
-      ctx.moveTo(W,0); ctx.lineTo(W,H);
-      ctx.lineTo(W*(0.5+(cx-.5)*.1+.48),H*(.5+(cy-.5)*.08));
-      ctx.lineTo(vx,vy); ctx.lineTo(W*.68,0);
+      ctx.beginPath(); ctx.moveTo(W,0); ctx.lineTo(W,H);
+      ctx.lineTo(W*.98,H*(.55+(cy-.5)*.08)); ctx.lineTo(vx,vy); ctx.lineTo(W*.70,0);
       ctx.fillStyle="#E5DCC8"; ctx.fill();
-
-      // ceiling
-      ctx.beginPath();
-      ctx.moveTo(0,0); ctx.lineTo(W,0); ctx.lineTo(W*.68,0); ctx.lineTo(vx,vy); ctx.lineTo(W*.32,0);
-      ctx.fillStyle="#F0EAD8"; ctx.fill();
-
-      // horizon line — pencil thin
-      ctx.beginPath(); ctx.moveTo(0,vy); ctx.lineTo(W,vy);
-      ctx.strokeStyle="rgba(17,17,17,.06)"; ctx.lineWidth=.8; ctx.stroke();
-
-      // manuscript pages on the floor — scattered
-      const pages = [
-        { x:.35, y:.72, w:.22, h:.28, rot:-8,  alpha:.92 },
-        { x:.42, y:.68, w:.20, h:.26, rot: 3,  alpha:.88 },
-        { x:.38, y:.75, w:.18, h:.24, rot:-14, alpha:.8  },
-        { x:.47, y:.70, w:.21, h:.27, rot: 7,  alpha:.85 },
-        { x:.40, y:.66, w:.17, h:.22, rot:-4,  alpha:.78 },
-      ];
-
-      pages.forEach(({ x,y,w,h,rot,alpha },i) => {
-        const px = W*(x+(cx-.5)*.04*(i+1)*.3);
-        const py = H*(y+(cy-.5)*.03*(i+1)*.3);
-        const pw = W*w; const ph = H*h;
-        ctx.save();
-        ctx.translate(px,py);
-        ctx.rotate(rot*Math.PI/180 + Math.sin(t*.2+i)*.008);
-        ctx.shadowColor="rgba(0,0,0,.18)"; ctx.shadowBlur=12; ctx.shadowOffsetY=4;
-        ctx.fillStyle=`rgba(255,252,244,${alpha})`; ctx.fillRect(-pw/2,-ph/2,pw,ph);
+      // manuscript pages
+      const pages=[{x:.34,y:.70,w:.22,h:.26,rot:-8,a:.93},{x:.41,y:.66,w:.20,h:.25,rot:3,a:.88},{x:.37,y:.73,w:.18,h:.23,rot:-14,a:.80},{x:.46,y:.68,w:.21,h:.26,rot:7,a:.85}];
+      pages.forEach(({x,y,w,h,rot,a},i)=>{
+        const px=W*(x+(cx-.5)*.04*(i+1)*.3), py=H*(y+(cy-.5)*.03*(i+1)*.3);
+        ctx.save(); ctx.translate(px,py); ctx.rotate(rot*Math.PI/180+Math.sin(t*.2+i)*.007);
+        ctx.shadowColor="rgba(0,0,0,.15)"; ctx.shadowBlur=10; ctx.shadowOffsetY=3;
+        ctx.fillStyle=`rgba(255,252,244,${a})`; ctx.fillRect(-W*w/2,-H*h/2,W*w,H*h);
         ctx.shadowColor="transparent";
-        // faint text lines on page
-        ctx.strokeStyle="rgba(17,17,17,.08)"; ctx.lineWidth=.7;
-        const lines = Math.floor(ph/12);
-        for(let l=0;l<lines-1;l++){
-          const lx=-pw/2+8; const ly=-ph/2+14+l*12;
-          const lw = pw-16-(l%3)*8;
-          ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(lx+lw,ly); ctx.stroke();
-        }
+        ctx.strokeStyle="rgba(26,26,24,.07)"; ctx.lineWidth=.6;
+        const lc=Math.floor(H*h/11);
+        for(let l=0;l<lc-1;l++){const lx=-W*w/2+8,ly=-H*h/2+12+l*11,lw=W*w-16-(l%3)*8;ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+lw,ly);ctx.stroke();}
         ctx.restore();
       });
-
-      // faint scribbled circle on floor — watermark
-      ctx.save();
-      ctx.translate(W*.43+(cx-.5)*6, H*.78+(cy-.5)*4);
-      ctx.rotate(t*.003);
-      ctx.strokeStyle="rgba(17,17,17,.04)"; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.ellipse(0,0,W*.07,W*.035,0,0,Math.PI*2); ctx.stroke();
-      ctx.restore();
-
-      // ambient grain
-      for(let i=0;i<60;i++){
-        const gx=Math.random()*W, gy=Math.random()*H;
-        ctx.fillStyle="rgba(17,17,17,.015)";
-        ctx.fillRect(gx,gy,1,1);
-      }
+      for(let i=0;i<40;i++){ctx.fillStyle="rgba(26,26,24,.012)";ctx.fillRect(Math.random()*W,Math.random()*H,1,1);}
     };
 
     const drawRoom2 = () => {
-      // absolute darkness — a door glowing
-      cx = ease(cx, mouseRef.current.x);
-      cy = ease(cy, mouseRef.current.y);
-
+      cx=ease(cx,mouseRef.current.x); cy=ease(cy,mouseRef.current.y);
       ctx.fillStyle="#0A0907"; ctx.fillRect(0,0,W,H);
-
-      // door frame — receding perspective
-      const vx = W*(.5+(cx-.5)*.04);
-      const vy = H*(.5+(cy-.5)*.04);
-      const dw = W*.22; const dh = H*.48;
-      const dx = vx-dw/2; const dy = vy-dh/2;
-
-      // outer glow
-      const grad = ctx.createRadialGradient(vx,vy,0,vx,vy,W*.4);
-      grad.addColorStop(0,"rgba(194,75,26,.08)");
-      grad.addColorStop(1,"rgba(0,0,0,0)");
-      ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
-
-      // door surround — perspective lines
-      const outerW = dw*1.6; const outerH = dh*1.3;
-      const odx = vx-outerW/2; const ody = vy-outerH/2;
-      ctx.strokeStyle="rgba(194,75,26,.15)"; ctx.lineWidth=.8;
-      ctx.beginPath();
-      ctx.moveTo(odx,ody); ctx.lineTo(dx,dy);
-      ctx.moveTo(odx+outerW,ody); ctx.lineTo(dx+dw,dy);
-      ctx.moveTo(odx,ody+outerH); ctx.lineTo(dx,dy+dh);
-      ctx.moveTo(odx+outerW,ody+outerH); ctx.lineTo(dx+dw,dy+dh);
-      ctx.stroke();
-
-      // door frame
-      ctx.strokeStyle=`rgba(194,75,26,${.3+Math.sin(t*.4)*.05})`; ctx.lineWidth=1.2;
+      const vx=W*(.5+(cx-.5)*.04), vy=H*(.5+(cy-.5)*.04);
+      const dw=W*.22, dh=H*.48, dx=vx-dw/2, dy=vy-dh/2;
+      const g=ctx.createRadialGradient(vx,vy,0,vx,vy,W*.38);
+      g.addColorStop(0,"rgba(194,75,26,.09)"); g.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+      const ow=dw*1.6,oh=dh*1.3,odx=vx-ow/2,ody=vy-oh/2;
+      ctx.strokeStyle="rgba(194,75,26,.12)"; ctx.lineWidth=.7;
+      ctx.beginPath(); ctx.moveTo(odx,ody); ctx.lineTo(dx,dy); ctx.moveTo(odx+ow,ody); ctx.lineTo(dx+dw,dy);
+      ctx.moveTo(odx,ody+oh); ctx.lineTo(dx,dy+dh); ctx.moveTo(odx+ow,ody+oh); ctx.lineTo(dx+dw,dy+dh); ctx.stroke();
+      ctx.strokeStyle=`rgba(194,75,26,${.28+Math.sin(t*.4)*.04})`; ctx.lineWidth=1.1;
       ctx.strokeRect(dx,dy,dw,dh);
-
-      // door fill — very dark but slightly warm
       ctx.fillStyle="rgba(16,14,12,.96)"; ctx.fillRect(dx,dy,dw,dh);
-
-      // keyhole glow
-      const kx=vx, ky=vy+dh*.25;
-      const kg=ctx.createRadialGradient(kx,ky,0,kx,ky,30);
-      kg.addColorStop(0,`rgba(194,75,26,${.5+Math.sin(t*.6)*.1})`);
-      kg.addColorStop(1,"rgba(194,75,26,0)");
-      ctx.fillStyle=kg; ctx.beginPath(); ctx.arc(kx,ky,30,0,Math.PI*2); ctx.fill();
-      // keyhole mark
-      ctx.fillStyle=`rgba(194,75,26,${.7+Math.sin(t*.6)*.15})`;
-      ctx.beginPath(); ctx.arc(kx,ky,4,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(kx-3,ky+4); ctx.lineTo(kx+3,ky+4); ctx.lineTo(kx+2,ky+12); ctx.lineTo(kx-2,ky+12); ctx.closePath(); ctx.fill();
-
-      // floating words rising from below the door
-      const words=["sorry","wanting","anything","for years","I understood","do nothing"];
+      const kx=vx, ky=vy+dh*.24;
+      const kg=ctx.createRadialGradient(kx,ky,0,kx,ky,28);
+      kg.addColorStop(0,`rgba(194,75,26,${.45+Math.sin(t*.6)*.1})`); kg.addColorStop(1,"rgba(194,75,26,0)");
+      ctx.fillStyle=kg; ctx.beginPath(); ctx.arc(kx,ky,28,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=`rgba(194,75,26,${.65+Math.sin(t*.6)*.12})`;
+      ctx.beginPath(); ctx.arc(kx,ky,3.5,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(kx-2.5,ky+3.5); ctx.lineTo(kx+2.5,ky+3.5); ctx.lineTo(kx+2,ky+11); ctx.lineTo(kx-2,ky+11); ctx.closePath(); ctx.fill();
+      const words=["sorry","wanting","anything","for years","eleven twenty-eight"];
       words.forEach((w,i)=>{
-        const wx=dx+dw*.2+i*(dw*.12);
-        const wy=dy+dh-((t*8+i*30)%dh);
-        const a=Math.min(1,(wy-dy)/60)*Math.min(1,(dy+dh-wy)/60)*0.25;
-        ctx.fillStyle=`rgba(238,232,220,${a})`;
-        ctx.font=`italic ${10+i%2}px 'Times New Roman',serif`;
-        ctx.fillText(w,wx+(cx-.5)*4,wy+(cy-.5)*2);
+        const wx=dx+dw*.15+i*(dw*.14); const wy=dy+dh-((t*7+i*28)%dh);
+        const a=Math.min(1,(wy-dy)/50)*Math.min(1,(dy+dh-wy)/50)*.22;
+        ctx.fillStyle=`rgba(238,232,220,${a})`; ctx.font=`italic ${10+i%2}px 'Times New Roman',serif`;
+        ctx.fillText(w,wx+(cx-.5)*3,wy+(cy-.5)*2);
       });
-
-      // copper hair-lines — the grid behind the dark
-      ctx.strokeStyle="rgba(194,75,26,.04)"; ctx.lineWidth=.5;
-      for(let i=0;i<6;i++){
-        const lx=W*(i/5);
-        ctx.beginPath(); ctx.moveTo(lx,0); ctx.lineTo(vx,vy); ctx.lineTo(lx,H); ctx.stroke();
-      }
-      for(let i=0;i<4;i++){
-        const ly=H*(i/3);
-        ctx.beginPath(); ctx.moveTo(0,ly); ctx.lineTo(vx,vy); ctx.lineTo(W,ly); ctx.stroke();
-      }
-
-      // grain
-      for(let i=0;i<80;i++){
-        const gx=Math.random()*W,gy=Math.random()*H;
-        ctx.fillStyle="rgba(255,255,255,.012)"; ctx.fillRect(gx,gy,1,1);
-      }
+      for(let i=0;i<6;i++){ctx.strokeStyle="rgba(194,75,26,.035)";ctx.lineWidth=.4;const lx=W*(i/5);ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(vx,vy);ctx.lineTo(lx,H);ctx.stroke();}
+      for(let i=0;i<70;i++){ctx.fillStyle="rgba(255,255,255,.01)";ctx.fillRect(Math.random()*W,Math.random()*H,1,1);}
     };
 
-    const loop = () => {
-      if(room===1) drawRoom1();
-      else drawRoom2();
-      t+=.016; raf=requestAnimationFrame(loop);
-    };
+    const loop=()=>{ if(room===1)drawRoom1();else drawRoom2(); t+=.016; raf=requestAnimationFrame(loop); };
     loop();
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize",resize); };
+    return ()=>{ cancelAnimationFrame(raf); window.removeEventListener("resize",resize); };
   },[room]);
 
   return <canvas ref={canvasRef} style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>;
 }
 
-// ─── OBJECT ROOM — full viewport encounter ────────────────────────
-function ObjectRoom({ room, title, subtitle, price, label, link, demoChildren, textColor="#111", accentColor="#111" }) {
-  const [entered, setEntered] = useState(false);
-  const [revealed, setRevealed] = useState(false);
-  const ref = useRef(null);
-
+// ─── OBJECT ROOM ──────────────────────────────────────────────────
+function ObjectRoom({ room, title, subtitle, price, label, link, demoChildren, textColor="#1a1a18", accentColor="rgba(26,26,24,.6)" }) {
+  const [revealed,setRevealed]=useState(false);
+  const ref=useRef(null);
   useEffect(()=>{
-    const obs = new IntersectionObserver(([e])=>{ if(e.isIntersecting){ setEntered(true); setTimeout(()=>setRevealed(true),600); obs.disconnect(); }},{threshold:.3});
-    if(ref.current) obs.observe(ref.current);
-    return ()=>obs.disconnect();
+    const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){setTimeout(()=>setRevealed(true),500);obs.disconnect();}},{threshold:.25});
+    if(ref.current)obs.observe(ref.current); return()=>obs.disconnect();
   },[]);
-
   return (
     <div ref={ref} style={{position:"relative",height:"100vh",overflow:"hidden",display:"flex",alignItems:"flex-end"}}>
       <RoomCanvas room={room}/>
-
-      {/* text overlay — bottom left */}
-      <div style={{
-        position:"relative",zIndex:10,
-        padding:"0 48px 52px",
-        width:"100%",
-        opacity: revealed ? 1 : 0,
-        transform: revealed ? "translateY(0)" : "translateY(20px)",
-        transition:"opacity 1s ease .2s, transform 1s ease .2s",
-      }}>
+      <div style={{position:"relative",zIndex:10,padding:"0 48px 52px",width:"100%",opacity:revealed?1:0,transform:revealed?"translateY(0)":"translateY(18px)",transition:"opacity 1s ease .2s,transform 1s ease .2s"}}>
         <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",flexWrap:"wrap",gap:24}}>
           <div>
-            <p style={{fontSize:9,letterSpacing:".28em",textTransform:"uppercase",color:textColor,opacity:.4,marginBottom:10}}>{label}</p>
-            <h2 style={{fontSize:"clamp(28px,5vw,64px)",fontStyle:"italic",fontWeight:400,color:textColor,lineHeight:1.0,letterSpacing:"-.02em",marginBottom:8}}>
-              {title}
-            </h2>
-            <p style={{fontSize:14,color:textColor,opacity:.45,lineHeight:1.7,maxWidth:380}}>
-              {subtitle}
-            </p>
+            <p style={{fontSize:9,letterSpacing:".28em",textTransform:"uppercase",color:textColor,opacity:.35,marginBottom:8}}>{label}</p>
+            <h2 style={{fontSize:"clamp(26px,4.5vw,60px)",fontStyle:"italic",fontWeight:400,color:textColor,lineHeight:1.0,letterSpacing:"-.02em",marginBottom:8}}>{title}</h2>
+            <p style={{fontSize:14,color:textColor,opacity:.42,lineHeight:1.75,maxWidth:360}}>{subtitle}</p>
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:16,paddingBottom:4}}>
-            <span style={{fontSize:"clamp(24px,4vw,44px)",fontStyle:"italic",color:textColor,opacity:.6}}>£{price}</span>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:14,paddingBottom:4}}>
+            <span style={{fontSize:"clamp(22px,3.5vw,40px)",fontStyle:"italic",color:textColor,opacity:.55}}>£{price}</span>
             <a href={link} target="_blank" rel="noopener noreferrer"
-              style={{fontSize:10,letterSpacing:".22em",textTransform:"uppercase",color:textColor,
-                border:`1px solid ${accentColor}`,padding:"12px 36px",
-                transition:"background .3s,color .3s",display:"inline-block"}}
-              onMouseEnter={e=>{e.currentTarget.style.background=accentColor;e.currentTarget.style.color=room===2?"#100E0C":"#fff";}}
+              style={{fontSize:9,letterSpacing:".24em",textTransform:"uppercase",color:textColor,border:`1px solid ${accentColor}`,padding:"11px 34px",transition:"background .3s,color .3s",display:"inline-block"}}
+              onMouseEnter={e=>{e.currentTarget.style.background=room===2?"#C24B1A":"#1a1a18";e.currentTarget.style.color=room===2?"#100E0C":"#F5F0E8";}}
               onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=textColor;}}>
               Take it
             </a>
           </div>
         </div>
-
-        {/* demo blanks for room 2 */}
         {demoChildren && (
-          <div style={{marginTop:28,borderTop:`1px solid rgba(${room===2?"255,255,255":"17,17,17"},.07)`,paddingTop:20}}>
-            {demoChildren}
-          </div>
+          <div style={{marginTop:24,borderTop:`1px solid rgba(${room===2?"255,255,255":"26,26,24"},.07)`,paddingTop:18}}>{demoChildren}</div>
         )}
       </div>
     </div>
@@ -444,10 +443,10 @@ function ObjectRoom({ room, title, subtitle, price, label, link, demoChildren, t
 
 // ─── MAIN ─────────────────────────────────────────────────────────
 export default function Home() {
-  const [openPoem,setOpenPoem] = useState(null);
-  const [email,setEmail]       = useState("");
-  const [subscribed,setSubscribed] = useState(false);
-  const [scrollY,setScrollY]   = useState(0);
+  const [openPoem,setOpenPoem]=useState(null);
+  const [email,setEmail]=useState("");
+  const [subscribed,setSubscribed]=useState(false);
+  const [scrollY,setScrollY]=useState(0);
 
   useEffect(()=>{
     const fn=()=>setScrollY(window.scrollY);
@@ -456,7 +455,7 @@ export default function Home() {
   },[]);
 
   return (
-    <div style={{fontFamily:"'Times New Roman',Times,Georgia,serif",overflowX:"hidden",background:"#fff",color:"#111",cursor:"none"}}>
+    <div style={{fontFamily:"'Times New Roman',Times,Georgia,serif",overflowX:"hidden",background:"#F5F0E8",color:"#1a1a18",cursor:"none"}}>
       <Cursor/>
 
       <style>{`
@@ -465,68 +464,47 @@ export default function Home() {
         a,button,input{font-family:inherit;cursor:none}
         a{color:inherit;text-decoration:none}
         img{display:block}
-        ::selection{background:#111;color:#fff}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        ::selection{background:#1a1a18;color:#F5F0E8}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        @keyframes drift{0%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(1deg)}100%{transform:translateY(0) rotate(-2deg)}}
+        @keyframes drift{0%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(1deg)}100%{transform:translateY(0) rotate(-2deg)}}
       `}</style>
 
-      {/* NAV */}
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:200,padding:"18px 32px",display:"flex",justifyContent:"space-between",alignItems:"center",background:scrollY>60?"rgba(255,255,255,.95)":"transparent",borderBottom:scrollY>60?"1px solid rgba(17,17,17,.07)":"none",backdropFilter:scrollY>60?"blur(8px)":"none",transition:"background .4s,border .4s"}}>
-        <span style={{fontSize:12,letterSpacing:".18em",textTransform:"uppercase"}}>Bea Sophia</span>
+      {/* NAV — fixed, minimal */}
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:200,padding:"16px 32px",display:"flex",justifyContent:"space-between",alignItems:"center",
+        background:scrollY>80?"rgba(245,240,232,.95)":"transparent",
+        borderBottom:scrollY>80?"1px solid rgba(26,26,24,.08)":"none",
+        backdropFilter:scrollY>80?"blur(10px)":"none",
+        transition:"background .5s,border .5s"}}>
+        <span style={{fontSize:11,letterSpacing:".2em",textTransform:"uppercase",color:"rgba(26,26,24,.5)"}}>Bea Sophia</span>
         <div style={{display:"flex",gap:28}}>
           {[["Poems","#poems"],["Works","#works"],["About","#about"]].map(([l,h])=>(
-            <a key={l} href={h} style={{fontSize:10,letterSpacing:".2em",textTransform:"uppercase",opacity:.35,transition:"opacity .2s"}} onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>{l}</a>
+            <a key={l} href={h} style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",opacity:.3,transition:"opacity .2s"}}
+              onMouseEnter={e=>e.currentTarget.style.opacity=.9} onMouseLeave={e=>e.currentTarget.style.opacity=.3}>{l}</a>
           ))}
         </div>
       </nav>
 
-      {/* HERO */}
-      <section style={{position:"relative",height:"100vh",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
-        <CorridorCanvas/>
-        <div style={{position:"absolute",inset:0,pointerEvents:"none"}}>
-          {FLOATING_WORDS.slice(0,14).map((word,i)=>(
-            <FloatingWord key={i} word={word} x={8+(i*17.3)%82} y={10+(i*23.7)%78} size={10+(i%4)*2} opacity={.1+(i%3)*.04} delay={.3+i*.12}/>
-          ))}
-        </div>
-        <div style={{position:"absolute",top:"15%",left:"8%",animation:"drift 6s ease-in-out infinite"}}>
-          <Scribble path={SCRIBBLES[0]} size={100} opacity={.09} delay={.5}/>
-        </div>
-        <div style={{position:"absolute",bottom:"22%",right:"10%",animation:"drift 7.5s ease-in-out infinite",animationDelay:"1s"}}>
-          <Scribble path={SCRIBBLES[3]} size={80} opacity={.07} delay={.8}/>
-        </div>
-        <div style={{position:"relative",zIndex:2,textAlign:"center",padding:"0 32px",animation:"fadeUp 1.2s ease .4s both",pointerEvents:"none"}}>
-          <h1 style={{fontSize:"clamp(32px,6vw,80px)",fontWeight:400,fontStyle:"italic",lineHeight:1.05,letterSpacing:"-.02em",marginBottom:20}}>Bea Sophia</h1>
-          <p style={{fontSize:"clamp(13px,1.6vw,18px)",opacity:.5,lineHeight:1.8,fontStyle:"italic",marginBottom:28}}>Poet. The Page Gallery Journal.<br/>New York.</p>
-          <p style={{fontSize:11,opacity:.22,letterSpacing:".08em"}}>↓</p>
-        </div>
-        <div style={{position:"absolute",bottom:32,display:"flex",gap:24,flexWrap:"wrap",justifyContent:"center",animation:"fadeIn 1.5s ease 1.4s both",zIndex:2,padding:"0 20px"}}>
-          <a href="#poems" style={{fontSize:10,letterSpacing:".2em",textTransform:"uppercase",opacity:.4,borderBottom:"1px solid rgba(17,17,17,.3)",paddingBottom:3}}>Read free poems</a>
-          <a href="#works" style={{fontSize:10,letterSpacing:".2em",textTransform:"uppercase",opacity:.25,borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:3}}>Enter the works</a>
-        </div>
-      </section>
-
-      </div>
+      {/* HERO — continuous line drawing */}
+      <LineHero/>
 
       {/* POEMS */}
-      <div id="poems">
+      <div id="poems" style={{background:"#F5F0E8"}}>
         {POEMS.map(poem=>(
           <PoemBlock key={poem.id} poem={poem} open={openPoem===poem.id} onToggle={()=>setOpenPoem(openPoem===poem.id?null:poem.id)}/>
         ))}
       </div>
 
-      {/* WORKS — two immersive rooms */}
+      {/* WORKS */}
       <div id="works">
-
-        {/* divider line + label */}
-        <FadeIn style={{padding:"60px 32px 20px",borderTop:"1px solid rgba(17,17,17,.06)"}}>
-          <p style={{fontSize:9,letterSpacing:".3em",textTransform:"uppercase",opacity:.25,display:"flex",alignItems:"center",gap:10}}>
-            <span style={{display:"inline-block",width:5,height:5,borderRadius:"50%",background:"#111"}}/>
-            The Works — enter a room, find something
+        <FadeIn style={{padding:"56px 32px 16px",borderTop:"1px solid rgba(26,26,24,.07)",background:"#F5F0E8"}}>
+          <p style={{fontSize:9,letterSpacing:".3em",textTransform:"uppercase",opacity:.22,display:"flex",alignItems:"center",gap:10}}>
+            <span style={{display:"inline-block",width:4,height:4,borderRadius:"50%",background:"#1a1a18"}}/>
+            The Works
           </p>
         </FadeIn>
 
-        {/* Room 1 — The Manuscript */}
+        {/* Room 1 — manuscript on a floor */}
         <ObjectRoom
           room={1}
           title="The Only Life"
@@ -534,14 +512,14 @@ export default function Home() {
           price="12"
           label="A collection · PDF"
           link="https://www.paypal.com/paypalme/beasophiapoet/12"
-          textColor="#111"
-          accentColor="rgba(17,17,17,.7)"
+          textColor="#1a1a18"
+          accentColor="rgba(26,26,24,.5)"
         />
 
-        {/* transition line */}
-        <div style={{height:2,background:"linear-gradient(90deg,#fff,rgba(17,17,17,.08),#100E0C)",margin:0}}/>
+        {/* gradient seam */}
+        <div style={{height:2,background:"linear-gradient(90deg,#F5F0E8,rgba(26,26,24,.06),#0A0907)"}}/>
 
-        {/* Room 2 — The Door */}
+        {/* Room 2 — door in the dark */}
         <ObjectRoom
           room={2}
           title="The Writer's Block Pack"
@@ -561,47 +539,53 @@ export default function Home() {
       </div>
 
       {/* ABOUT */}
-      <section id="about" style={{borderTop:"1px solid rgba(17,17,17,.06)",padding:"80px 32px",position:"relative",overflow:"hidden"}}>
+      <section id="about" style={{borderTop:"1px solid rgba(26,26,24,.07)",padding:"80px 32px",background:"#F5F0E8",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:30,right:"5%",opacity:.04,pointerEvents:"none"}}>
-          <Scribble path={SCRIBBLES[7]} size={260} animate={false}/>
+          <Scribble path={SCRIBBLES[3]} size={260}/>
         </div>
-        <FadeIn style={{maxWidth:600,position:"relative",zIndex:1}}>
-          <p style={{fontSize:10,letterSpacing:".28em",textTransform:"uppercase",opacity:.3,marginBottom:20,display:"flex",alignItems:"center",gap:8}}>
-            <span style={{display:"inline-block",width:5,height:5,borderRadius:"50%",background:"#111"}}/>
+        <FadeIn style={{maxWidth:580,position:"relative",zIndex:1}}>
+          <p style={{fontSize:9,letterSpacing:".28em",textTransform:"uppercase",opacity:.28,marginBottom:22,display:"flex",alignItems:"center",gap:8}}>
+            <span style={{display:"inline-block",width:4,height:4,borderRadius:"50%",background:"#1a1a18"}}/>
             About
           </p>
-          <p style={{fontSize:"clamp(20px,3vw,30px)",fontStyle:"italic",lineHeight:1.55,marginBottom:20}}>
+          <p style={{fontSize:"clamp(19px,2.8vw,28px)",fontStyle:"italic",lineHeight:1.55,marginBottom:18}}>
             When I got sick I realised: when people die, all their thoughts die with them.
           </p>
-          <p style={{fontSize:16,lineHeight:2,opacity:.4,marginBottom:16}}>So I started writing them down — the fragments, the overheard things, the conversations that happened in the wrong order. That became The Page Gallery Journal.</p>
-          <p style={{fontSize:16,lineHeight:2,opacity:.4,marginBottom:44}}>These poems are the second attempt at the same problem.</p>
+          <p style={{fontSize:15,lineHeight:2,opacity:.38,marginBottom:14}}>
+            So I started writing them down — the fragments, the overheard things, the conversations that happened in the wrong order. That became The Page Gallery Journal.
+          </p>
+          <p style={{fontSize:15,lineHeight:2,opacity:.38,marginBottom:44}}>
+            These poems are the second attempt at the same problem.
+          </p>
           <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-            style={{fontSize:11,letterSpacing:".18em",textTransform:"uppercase",opacity:.35,borderBottom:"1px solid rgba(17,17,17,.15)",paddingBottom:3,transition:"opacity .2s"}}
-            onMouseEnter={e=>e.currentTarget.style.opacity=.8} onMouseLeave={e=>e.currentTarget.style.opacity=.35}>Instagram ↗</a>
+            style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",opacity:.28,borderBottom:"1px solid rgba(26,26,24,.18)",paddingBottom:2,transition:"opacity .2s"}}
+            onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=.28}>Instagram ↗</a>
         </FadeIn>
       </section>
 
       {/* NEWSLETTER */}
-      <section style={{borderTop:"1px solid rgba(17,17,17,.06)",padding:"80px 32px",background:"#111",color:"#fff"}}>
-        <FadeIn style={{maxWidth:520}}>
-          <p style={{fontSize:"clamp(22px,4vw,42px)",fontStyle:"italic",fontWeight:400,lineHeight:1.3,marginBottom:12}}>New poems, when they exist.</p>
-          <p style={{fontSize:15,opacity:.4,lineHeight:1.8,marginBottom:36}}>No frequency promises. No newsletter voice. Just the next thing.</p>
+      <section style={{borderTop:"1px solid rgba(26,26,24,.07)",padding:"80px 32px",background:"#1a1a18",color:"#F5F0E8"}}>
+        <FadeIn style={{maxWidth:500}}>
+          <p style={{fontSize:"clamp(20px,3.8vw,40px)",fontStyle:"italic",fontWeight:400,lineHeight:1.3,marginBottom:10}}>New poems, when they exist.</p>
+          <p style={{fontSize:14,opacity:.36,lineHeight:1.85,marginBottom:32}}>No frequency promises. No newsletter voice. Just the next thing.</p>
           {subscribed ? (
-            <p style={{fontSize:13,opacity:.5,fontStyle:"italic"}}>You're in.</p>
+            <p style={{fontSize:12,opacity:.4,fontStyle:"italic"}}>You're in.</p>
           ) : (
-            <form onSubmit={e=>{e.preventDefault();if(email)setSubscribed(true);}} style={{display:"flex",gap:0,flexWrap:"wrap"}}>
+            <form onSubmit={e=>{e.preventDefault();if(email)setSubscribed(true);}} style={{display:"flex",flexWrap:"wrap"}}>
               <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" required
-                style={{flex:1,minWidth:200,padding:"14px 16px",background:"rgba(255,255,255,.07)",border:"1px solid rgba(255,255,255,.15)",borderRight:"none",color:"#fff",fontSize:14,outline:"none"}}/>
-              <button type="submit" style={{background:"#fff",color:"#111",border:"none",padding:"14px 24px",fontSize:10,letterSpacing:".2em",textTransform:"uppercase",transition:"opacity .2s"}} onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=1}>Subscribe</button>
+                style={{flex:1,minWidth:190,padding:"13px 14px",background:"rgba(245,240,232,.06)",border:"1px solid rgba(245,240,232,.15)",borderRight:"none",color:"#F5F0E8",fontSize:13,outline:"none"}}/>
+              <button type="submit"
+                style={{background:"#F5F0E8",color:"#1a1a18",border:"none",padding:"13px 22px",fontSize:9,letterSpacing:".22em",textTransform:"uppercase",transition:"opacity .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=1}>Subscribe</button>
             </form>
           )}
         </FadeIn>
       </section>
 
       {/* FOOTER */}
-      <footer style={{borderTop:"1px solid rgba(255,255,255,.06)",background:"#111",color:"rgba(255,255,255,.18)",padding:"24px 32px",display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
-        <span style={{fontSize:11,letterSpacing:".12em"}}>© Bea Sophia {new Date().getFullYear()}</span>
-        <span style={{fontSize:11,letterSpacing:".12em"}}>The Page Gallery Journal</span>
+      <footer style={{borderTop:"1px solid rgba(245,240,232,.06)",background:"#1a1a18",color:"rgba(245,240,232,.16)",padding:"22px 32px",display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
+        <span style={{fontSize:10,letterSpacing:".12em"}}>© Bea Sophia {new Date().getFullYear()}</span>
+        <span style={{fontSize:10,letterSpacing:".12em"}}>The Page Gallery Journal</span>
       </footer>
     </div>
   );
