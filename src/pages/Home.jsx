@@ -2,504 +2,807 @@ import { useState, useEffect, useRef } from "react";
 
 const POEMS = [
   {
-    id:1, num:"01", title:"Retroactive Availability", note:"",
-    lines:[
-      "Four times in the same minute I said sorry",
-      "for wanting you.",
+    id: 1, num: "01", title: "INBOUND",
+    lines: [
+      "Newark airport smells like carpet cleaner",
+      "and the specific anxiety of people who are almost somewhere.",
       "",
-      "You said anything.",
+      "I have one bag checked and one theory about myself",
+      "I'm not ready to test yet.",
       "",
-      "Said it at eleven twenty-eight,",
-      "which is the exact minute I understood",
+      "The woman at passport control asks the purpose of my visit.",
+      "I say: to live here.",
+      "She stamps the page.",
+      "Doesn't look up.",
       "",
-      "that a man who would do anything",
-      "can also do nothing",
-      "for years",
-      "and not know the difference.",
+      "The stamp dries while I'm still standing there.",
+    ],
+  },
+  {
+    id: 2, num: "02", title: "INVENTORY, BROOKLYN, WEEK ONE",
+    lines: [
+      "Things present:",
+      "one mattress, one window facing a wall,",
+      "a previous tenant's fork in the drawer,",
+      "a roach trap behind the fridge",
+      "that has been there long enough to become infrastructure.",
+      "",
+      "Things absent:",
+      "the ward.",
+      "The consultant's voice saying we'll monitor and see.",
+      "The fluorescent light that meant bad news",
+      "was on its way through the door in a paper folder.",
+      "",
+      "I eat off the previous tenant's fork for a week",
+      "before I buy my own.",
+      "Nobody is tracking this.",
+      "It seems fine.",
+    ],
+  },
+  {
+    id: 3, num: "03", title: "FIRST MORNING, BROOKLYN",
+    lines: [
+      "There is a rat on the subway grate at 7am",
+      "eating something I cannot identify",
+      "with the focused dignity",
+      "of someone who has survived considerable difficulty.",
+      "",
+      "A man in a suit steps around it without breaking stride.",
+      "A child points. The mother pulls the child away.",
+      "The rat finishes what it was eating.",
+      "Then it is gone —",
+      "into the machinery that runs beneath the part",
+      "everyone photographs.",
+      "",
+      "I feel, for the first time in two years,",
+      "genuinely less alone.",
+    ],
+  },
+  {
+    id: 4, num: "04", title: "WHAT I BROUGHT",
+    lines: [
+      "One habit of checking the door twice.",
+      "One reflex that fires when a phone rings —",
+      "the quick arithmetic: what time is it there,",
+      "who is calling,",
+      "is this the one.",
+      "",
+      "I brought the books he dropped.",
+      "I know. I'm working on it.",
+      "",
+      "I left the ward.",
+      "I left the consultant saying monitoring",
+      "like it was a kindness.",
+      "I left the October that was a brand",
+      "while I was an itemised bill.",
+      "",
+      "I brought the part that kept writing anyway.",
+      "Bile with punctuation.",
+      "The only thing I packed that I actually need.",
+    ],
+  },
+  {
+    id: 5, num: "05", title: "RANNOCH MOOR",
+    lines: [
+      "Eighty-two percent water.",
+      "That is not poetry — that is the geological survey.",
+      "The ground is mostly not ground.",
+      "You walk on the skin of something",
+      "that has not decided to be land yet",
+      "and may never.",
+      "",
+      "The sundew grows here —",
+      "a carnivorous plant",
+      "the size of a ten-pence piece,",
+      "its leaves ringed with red hairs",
+      "that glisten and grip",
+      "and do not let go.",
+      "",
+      "It doesn't eat large things.",
+      "Midges mostly.",
+      "Whatever lands and doesn't read the signs.",
+      "",
+      "I walked three miles out from the road",
+      "and sat on a rock that was mostly dry",
+      "and ate a cereal bar",
+      "and watched a red deer on the far ridge",
+      "doing nothing in particular",
+      "for a very long time.",
+      "",
+      "Neither of us was performing.",
+      "Neither of us needed to be somewhere else.",
+      "",
+      "The bog kept its water.",
+      "The sundew kept what it caught.",
+      "I kept what I came with.",
+      "",
+      "That was the whole afternoon.",
+      "That was enough of a life for one day.",
+    ],
+  },
+  {
+    id: 6, num: "06", title: "TAXONOMY OF SURVIVING THINGS",
+    lines: [
+      "The weed splitting the kerb on Atlantic Avenue:",
+      "genus unknown, ambitions clear.",
+      "",
+      "The ginkgo outside the laundromat on 7th:",
+      "survives everything, smells briefly in autumn",
+      "like the city is confessing something it shouldn't.",
+      "",
+      "The sparrow eating a french fry on the A train platform:",
+      "no comment necessary.",
+      "",
+      "The moss on the fire escape railing:",
+      "patient, damp, committed to the project.",
+      "",
+      "The fig tree growing from the crack in the brownstone wall on Dean Street:",
+      "I stop every time.",
+      "Every time I stop.",
+      "There is something here I refuse to name",
+      "because the tree is already saying it",
+      "and it doesn't need my help.",
+    ],
+  },
+  {
+    id: 7, num: "07", title: "THE BUACHAILLE",
+    lines: [
+      "Buachaille Etive Mòr stands at the entrance to Glencoe",
+      "like something that has been asked no questions",
+      "and intends to keep it that way.",
+      "",
+      "Nine hundred and fifty metres.",
+      "The quartzite pale in the morning light —",
+      "not quite white, not quite grey,",
+      "the colour of a thing that has been here",
+      "so much longer than anything",
+      "that it stopped tracking time",
+      "around the Devonian period.",
+      "",
+      "I stood at the foot of it once in November",
+      "with the cloud coming in from the west",
+      "and the rain already decided",
+      "and a sandwich I hadn't started yet",
+      "and thought about nothing for four minutes —",
+      "not the ward,",
+      "not the consultant,",
+      "not the phone call I'd had in the car park",
+      "before I drove here.",
+      "",
+      "Four minutes is longer than it sounds",
+      "when your brain normally bills you",
+      "for every second of silence.",
+      "",
+      "The cloud came in.",
+      "I ate the sandwich.",
+      "The Buachaille didn't move.",
+    ],
+  },
+  {
+    id: 8, num: "08", title: "WHAT GROWS IN CONCRETE",
+    lines: [
+      "Plantain. Dandelion. Mugwort.",
+      "Not metaphors. Plants.",
+      "Growing from the gap between the kerb and the wall",
+      "on Flatbush Avenue",
+      "like they read the lease",
+      "and found a clause no one else bothered with.",
+      "",
+      "I crouched down to look.",
+      "A man stopped and asked if I was okay.",
+      "I said yes.",
+      "He walked away unconvinced, which is fair.",
+      "",
+      "I was trying to understand the mechanism.",
+      "How something selects a crack over a garden.",
+      "How the decision gets made",
+      "at the level of the seed:",
+      "not there.",
+      "Here.",
+      "This specific compromise in the concrete.",
+      "This is where everything goes.",
+      "",
+      "I stayed until I understood",
+      "it wasn't a decision.",
+      "It was just where the seed landed",
+      "and what the seed did next.",
+    ],
+  },
+  {
+    id: 9, num: "09", title: "COCKROACH",
+    lines: [
+      "I watched one cross my kitchen floor",
+      "with such absolute certainty of direction —",
+      "not scurrying, not panicking,",
+      "just moving from one exact point to another",
+      "like it had somewhere specific to be",
+      "and the appointment had been in the diary for months —",
+      "",
+      "and I thought about the ward,",
+      "about dragging my body from one side of the mattress to the other,",
+      "about every morning that required a decision",
+      "just to be upright,",
+      "",
+      "and I put the glass back in the cupboard.",
+      "Left it to finish whatever it was doing.",
+      "Went to bed.",
+      "",
+      "In the morning it was gone.",
+      "The kitchen was just a kitchen.",
+      "But something had passed through it in the night",
+      "and not apologised",
+      "and I was glad.",
+    ],
+  },
+  {
+    id: 10, num: "10", title: "BODEGA FLOWERS",
+    lines: [
+      "Wrapped in plastic,",
+      "slightly crushed,",
+      "available at all hours,",
+      "no questions asked.",
+      "",
+      "Carnations dyed improbable colours.",
+      "Roses that will open fast and drop in four days.",
+      "Sunflowers listing badly to one side.",
+      "",
+      "My mother would have carried these on the tube,",
+      "one arm out to keep the petals off her coat —",
+      "the woman who told a consultant",
+      "to shove his positive outlook up his arse",
+      "and meant it",
+      "and was right.",
+      "",
+      "I buy them every Saturday from the man on my corner.",
+      "There at 6am, still there at midnight.",
+      "No conversation.",
+      "Always one extra stem",
+      "added without comment.",
+      "",
+      "I put them on the table.",
+      "Wrong colours. Wrong proportions.",
+      "Alive.",
+      "That's the whole requirement.",
+    ],
+  },
+  {
+    id: 11, num: "11", title: "THE FIG TREE ON DEAN STREET",
+    lines: [
+      "I've been back eleven times.",
+      "I counted.",
+      "",
+      "It grows from a crack in the brownstone",
+      "six feet off the ground —",
+      "no soil visible, no apparent reason,",
+      "just the wall and the decision.",
+      "",
+      "A woman who lives in the building",
+      "saw me looking and said:",
+      "it's been there for years. Nobody planted it.",
+      "",
+      "Nobody planted it.",
+      "",
+      "I think about the things that grew in me",
+      "that nobody planted.",
+      "The refusal. The notes.",
+      "The bile with punctuation.",
+      "The voice that kept going",
+      "because if it stopped",
+      "I stopped.",
+      "",
+      "Nobody planted that either.",
+      "It just found the crack",
+      "and put everything there.",
+    ],
+  },
+  {
+    id: 12, num: "12", title: "HAWORTH, BEFORE",
+    lines: [
+      "The path went straight up out of the village",
+      "past the last house",
+      "and onto the moor —",
+      "sudden, total, no negotiation.",
+      "",
+      "The ground changed underfoot within twenty steps.",
+      "Tarmac to stone to peat.",
+      "",
+      "Bilberry low on either side.",
+      "Heather not yet in flower — it was June,",
+      "still brown and patient,",
+      "two months from purple.",
+      "",
+      "South Dean Beck somewhere below,",
+      "running brown with peat,",
+      "the sound of it dropping away",
+      "as the path climbed.",
+      "",
+      "I went out most mornings that year.",
+      "Not for any reason I could name then.",
+      "Just that the moor didn't ask questions",
+      "and the hospital did,",
+      "and I had got very tired",
+      "of being a question",
+      "someone was trying to answer.",
+    ],
+  },
+  {
+    id: 13, num: "13", title: "GINKGO",
+    lines: [
+      "Two hundred and seventy million years.",
+      "Ice age. Bomb blast. Whatever this is.",
+      "",
+      "Its fruit in autumn smells like",
+      "the city's less polished ambitions.",
+      "People step around it.",
+      "",
+      "The leaves are the shape of a small fan,",
+      "of a thought that has known what it is",
+      "for a very long time",
+      "and is not revising.",
+      "",
+      "I pressed one in my notebook in October.",
+      "Still there.",
+      "Still that exact shape.",
+      "Unchanged.",
+    ],
+  },
+  {
+    id: 14, num: "14", title: "THE CAIRNGORM PLATEAU, FEBRUARY",
+    lines: [
+      "The plateau in February is not hospitable.",
+      "That is not a complaint — it is an accurate description",
+      "of a place that has no interest",
+      "in being hospitable.",
+      "",
+      "Quartzite underfoot, the snow compacted to ice",
+      "in the places the wind has been working.",
+      "The sky the specific white of a sky",
+      "that has more weather in it",
+      "and is deciding when.",
+      "",
+      "I ate lunch in the shelter of a boulder",
+      "that had been there since the last glaciation —",
+      "twelve thousand years, roughly,",
+      "since the ice left it",
+      "exactly here",
+      "and moved on.",
+      "",
+      "A ptarmigan walked past",
+      "in its winter white,",
+      "nearly invisible,",
+      "barely there,",
+      "carrying on.",
+      "",
+      "I watched it until it disappeared",
+      "into the white of the plateau",
+      "and the white of the sky",
+      "and I could not tell you",
+      "where one ended",
+      "and the other started.",
+    ],
+  },
+  {
+    id: 15, num: "15", title: "CENTRAL PARK, AUGUST",
+    lines: [
+      "The heat is a system.",
+      "You move through it the way you move through bureaucracy —",
+      "slowly, without dignity, producing the required forms.",
+      "",
+      "A heron stands in the pond",
+      "at the exact centre of its own indifference.",
+      "Six tourists photograph it.",
+      "The heron does not perform.",
+      "The heron is interested in the fish",
+      "and the fish only.",
+      "",
+      "I am not there yet —",
+      "I still check my phone,",
+      "I still rehearse the message ten times and delete it eleven,",
+      "I still ration the good olives",
+      "so the jar doesn't hit the bottom.",
+      "",
+      "But I stood in that heat for forty minutes",
+      "watching something that did not need to justify its existence",
+      "and I felt, briefly,",
+      "like maybe I don't either.",
+    ],
+  },
+  {
+    id: 16, num: "16", title: "WHAT THE BODY KEEPS",
+    lines: [
+      "The scar from the cannula,",
+      "inner left arm —",
+      "a slight variation in texture,",
+      "two centimetres,",
+      "you'd miss it if you weren't specifically looking.",
+      "",
+      "I press it sometimes on the subway.",
+      "Not to feel something.",
+      "To confirm the record is still there.",
+      "",
+      "The body logged the ward.",
+      "The body logged the Cairngorm plateau in February,",
+      "the Rannoch bog in October,",
+      "the Haworth moor in the year before any of this —",
+      "all those mornings going up",
+      "because up was available",
+      "and going up was still an option.",
+      "",
+      "The ward is over.",
+      "The body continues logging.",
+    ],
+  },
+  {
+    id: 17, num: "17", title: "OCTOBER",
+    lines: [
+      "Not a brand.",
+      "",
+      "The ginkgo drops its leaves on a cab roof",
+      "on 6th Avenue",
+      "and the cab doesn't notice",
+      "and the leaves don't care",
+      "and I am standing on the pavement",
+      "watching this transaction that involves no one",
+      "and means nothing",
+      "and I cannot explain",
+      "why it makes me feel",
+      "like I got away with something.",
+    ],
+  },
+  {
+    id: 18, num: "18", title: "NOVEMBER, FLATBUSH",
+    lines: [
+      "I called my mother.",
+      "She asked if I needed anything.",
+      "I said no.",
+      "She said: are you sure.",
+      "I said: yes.",
+      "",
+      "Outside my window a pigeon",
+      "was navigating the fire escape",
+      "on a foot that bends the wrong way —",
+      "making it work, making it work,",
+      "dropping into the air",
+      "when it had what it came for.",
+      "",
+      "I didn't tell her about the pigeon.",
+      "She would have found a way to worry about the pigeon.",
+      "",
+      "I said: I'm good, Mum.",
+      "Which was true in the way things are true",
+      "when you've stopped comparing them",
+      "to how they were.",
+    ],
+  },
+  {
+    id: 19, num: "19", title: "RECOVERY CHECKLIST",
+    lines: [
+      "Fine. I take the meds on time.",
+      "I can answer the phone without dissolving.",
+      "I can make tea and not forget the mug.",
+      "",
+      "I still whisper my own name sometimes",
+      "like I'm accusing someone.",
+      "I still freeze when someone says you look well —",
+      "I look for the catch.",
+      "",
+      "The vending machine in my old ward",
+      "had orange crisps nobody chose.",
+      "I bought one once to see if I could finish anything.",
+      "",
+      "I ate the whole bag on the fire escape",
+      "at 11pm in October",
+      "watching a ginkgo drop its leaves",
+      "on a city that had never heard of me",
+      "",
+      "and I finished it.",
+    ],
+  },
+  {
+    id: 20, num: "20", title: "STILL HERE",
+    lines: [
+      "The tap drips.",
+      "I have a reference number.",
+      "I believe in process.",
+      "",
+      "I stood in this kitchen once",
+      "imagining one more minute —",
+      "knowing I'd waste it,",
+      "just listening to the drip,",
+      "pretending it wasn't counting —",
+      "",
+      "and I got the minute.",
+      "And the one after.",
+      "",
+      "The diary is open on the table",
+      "still refusing to shut up.",
+      "The flowers are wrong and bright.",
+      "The roach trap behind the fridge",
+      "has been there long enough to become infrastructure.",
+      "My mother's number is in my phone.",
+      "",
+      "I am not monitoring.",
+      "I am not waiting.",
+      "",
+      "The tap drips.",
+      "I let it.",
     ],
   },
 ];
 
-const SCRIBBLES = [
-  "M 20 50 C 18 30, 40 15, 55 20 C 72 25, 80 40, 75 58 C 70 75, 50 82, 35 76 C 18 68, 16 60, 20 50",
-  "M 5 60 C 15 58, 30 63, 45 59 C 60 55, 75 62, 90 58",
-  "M 50 50 C 55 45, 62 44, 65 50 C 68 56, 63 65, 55 67 C 44 70, 35 62, 33 52 C 31 40, 40 30, 52 28 C 66 26, 76 36, 78 50",
-  "M 50 10 C 52 28, 60 35, 80 35 C 65 42, 68 52, 78 68 C 62 55, 50 60, 38 70 C 44 52, 40 42, 22 38 C 42 36, 46 26, 50 10",
-];
-
-// ─── CUSTOM CURSOR ────────────────────────────────────────────────
-function Cursor() {
-  const dotRef = useRef(null);
-  const ringRef = useRef(null);
-  const pos  = useRef({ x:0, y:0 });
-  const ring = useRef({ x:0, y:0 });
-  useEffect(() => {
-    const move = e => { pos.current = { x:e.clientX, y:e.clientY }; };
-    window.addEventListener("mousemove", move);
-    let raf;
-    const loop = () => {
-      ring.current.x += (pos.current.x - ring.current.x) * 0.1;
-      ring.current.y += (pos.current.y - ring.current.y) * 0.1;
-      if (dotRef.current)  dotRef.current.style.transform  = `translate(${pos.current.x}px,${pos.current.y}px)`;
-      if (ringRef.current) ringRef.current.style.transform = `translate(${ring.current.x}px,${ring.current.y}px)`;
-      raf = requestAnimationFrame(loop);
-    };
-    loop();
-    return () => { window.removeEventListener("mousemove", move); cancelAnimationFrame(raf); };
-  }, []);
+// ─── GRAIN ──────────────────────────────────────────────────────────
+function Grain() {
   return (
-    <>
-      <div ref={dotRef}  style={{position:"fixed",top:0,left:0,zIndex:9999,pointerEvents:"none",width:5,height:5,background:"#1a1a18",borderRadius:"50%",marginLeft:-2.5,marginTop:-2.5,mixBlendMode:"multiply"}}/>
-      <div ref={ringRef} style={{position:"fixed",top:0,left:0,zIndex:9998,pointerEvents:"none",width:36,height:36,border:"1px solid rgba(26,26,24,.2)",borderRadius:"50%",marginLeft:-18,marginTop:-18}}/>
-    </>
-  );
-}
-
-// ─── SCRIBBLE ─────────────────────────────────────────────────────
-function Scribble({ path, size=120, color="#1a1a18", opacity=0.10, animate=false }) {
-  const id = useRef(`sc-${Math.random().toString(36).slice(2)}`).current;
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" style={{overflow:"visible",opacity}}>
-      {animate && <style>{`#${id}{stroke-dasharray:300;stroke-dashoffset:300;animation:draw-${id} 2s ease .5s forwards}@keyframes draw-${id}{to{stroke-dashoffset:0}}`}</style>}
-      <path id={id} d={path} fill="none" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" style={animate?{}:{strokeDasharray:"none"}}/>
+    <svg style={{position:"fixed",inset:0,width:"100%",height:"100%",zIndex:100,pointerEvents:"none"}} aria-hidden="true">
+      <filter id="gr">
+        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#gr)" opacity="0.055"/>
     </svg>
   );
 }
 
-// ─── FADE IN ──────────────────────────────────────────────────────
-function FadeIn({children,delay=0,style={}}) {
-  const ref=useRef(null);const[v,setV]=useState(false);
-  useEffect(()=>{const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){setV(true);obs.disconnect();}},{threshold:.08});if(ref.current)obs.observe(ref.current);return()=>obs.disconnect();},[]);
-  return <div ref={ref} style={{opacity:v?1:0,transform:v?"translateY(0)":"translateY(22px)",transition:`opacity .9s ease ${delay}s,transform .9s ease ${delay}s`,...style}}>{children}</div>;
-}
-
-// ─── POEM BLOCK ───────────────────────────────────────────────────
-function PoemBlock({poem,open,onToggle}) {
-  const [lines,setLines]=useState([]);const[hov,setHov]=useState(false);const iRef=useRef(null);
-  useEffect(()=>{
-    if(open){setLines([]);let i=0;iRef.current=setInterval(()=>{i++;setLines(poem.lines.slice(0,i));if(i>=poem.lines.length)clearInterval(iRef.current);},90);return()=>clearInterval(iRef.current);}
-    else setLines([]);
-  },[open,poem.lines]);
-  return (
-    <FadeIn style={{borderTop:"1px solid rgba(26,26,24,.07)",position:"relative",overflow:"hidden"}}>
-      <div style={{position:"absolute",top:20,right:"4%",opacity:.04,pointerEvents:"none",transform:"rotate(-8deg)"}}>
-        <Scribble path={SCRIBBLES[1]} size={220}/>
-      </div>
-      <div style={{padding:"80px 32px",position:"relative",zIndex:1}}>
-        <div style={{display:"flex",alignItems:"flex-start",gap:16,marginBottom:36}}>
-          <div style={{width:36,height:36,borderRadius:"50%",border:"1px solid rgba(26,26,24,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,letterSpacing:".08em",flexShrink:0,color:"rgba(26,26,24,.5)"}}>{poem.num}</div>
-          <h2 onClick={onToggle} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-            style={{fontSize:"clamp(30px,6.5vw,88px)",fontWeight:400,fontStyle:"italic",lineHeight:.95,
-              letterSpacing:hov?"0.01em":"-.015em",cursor:"pointer",
-              transition:"opacity .25s,letter-spacing .5s",opacity:hov?.5:1,color:"#1a1a18"}}>
-            {poem.title}
-          </h2>
-        </div>
-        {open ? (
-          <div style={{paddingLeft:52}}>
-            {lines.map((line,j)=>(
-              <p key={j} style={{fontSize:"clamp(15px,1.9vw,21px)",fontStyle:"italic",lineHeight:1.95,minHeight:"1.95em",
-                opacity:lines.length>j?1:0,transform:lines.length>j?"translateY(0)":"translateY(5px)",
-                transition:"opacity .28s,transform .28s",color:"#1a1a18"}}>{line||"\u00a0"}</p>
-            ))}
-            <button onClick={onToggle} style={{marginTop:32,fontSize:9,letterSpacing:".22em",textTransform:"uppercase",
-              cursor:"pointer",opacity:.3,background:"none",border:"none",color:"#1a1a18",transition:"opacity .2s"}}
-              onMouseEnter={e=>e.currentTarget.style.opacity=.8} onMouseLeave={e=>e.currentTarget.style.opacity=.3}>Close</button>
-          </div>
-        ) : (
-          <div style={{paddingLeft:52}}>
-            <p style={{fontSize:16,fontStyle:"italic",opacity:.28,lineHeight:1.95,marginBottom:20,color:"#1a1a18"}}>{poem.lines[0]}</p>
-            <button onClick={onToggle} style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",
-              cursor:"pointer",opacity:.3,background:"none",border:"none",color:"#1a1a18",transition:"opacity .2s"}}
-              onMouseEnter={e=>e.currentTarget.style.opacity=.8} onMouseLeave={e=>e.currentTarget.style.opacity=.3}>Read the poem →</button>
-          </div>
-        )}
-      </div>
-    </FadeIn>
-  );
-}
-
-// ─── LINE HERO — single body-shape, one sentence inside ──────────
-// Reference: closed organic line, one italic phrase, one dot, one square, bottom tags
-function LineHero() {
+// ─── HERO ────────────────────────────────────────────────────────────
+function Hero() {
   const [visible, setVisible] = useState(false);
   const innerRef = useRef(null);
+  const CX = 250, CY = 250;
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 200);
-
-    // inner ring drifts very slowly
     let angle = 0, raf;
     const drift = () => {
-      angle += 0.025;
+      angle += 0.018;
       if (innerRef.current) {
-        innerRef.current.setAttribute("transform", `rotate(${angle}, 250, 250)`);
+        innerRef.current.setAttribute("transform", `rotate(${angle}, ${CX}, ${CY})`);
       }
       raf = requestAnimationFrame(drift);
     };
-    const t2 = setTimeout(drift, 1000);
-
+    const t2 = setTimeout(drift, 900);
     return () => { clearTimeout(t); clearTimeout(t2); cancelAnimationFrame(raf); };
   }, []);
 
-  // Two circles for textPath
-  // Outer: r=160, cx=250, cy=250
-  // Inner: r=105, cx=250, cy=250
-  // SVG viewBox 500x500
-
   return (
     <section style={{
-      position:"relative",
-      height:"100vh",
-      overflow:"hidden",
+      position:"relative", height:"100vh", overflow:"hidden",
       background:"#ECEAE4",
-      display:"flex",
-      alignItems:"center",
-      justifyContent:"center",
+      display:"flex", flexDirection:"column",
+      alignItems:"center", justifyContent:"center",
     }}>
-
-      {/* grain — two passes for depth */}
-      <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",zIndex:1,pointerEvents:"none",opacity:.9}} aria-hidden="true">
-        <filter id="grain1">
-          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" stitchTiles="stitch"/>
-          <feColorMatrix type="saturate" values="0"/>
-        </filter>
-        <rect width="100%" height="100%" filter="url(#grain1)" opacity="0.07"/>
-      </svg>
-      <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",zIndex:1,pointerEvents:"none",opacity:.9}} aria-hidden="true">
-        <filter id="grain2">
-          <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="3" stitchTiles="stitch"/>
-          <feColorMatrix type="saturate" values="0"/>
-        </filter>
-        <rect width="100%" height="100%" filter="url(#grain2)" opacity="0.04"/>
-      </svg>
-
-      {/* stamp */}
       <div style={{
-        position:"relative", zIndex:2,
-        width:"min(340px,70vw)", height:"min(340px,70vw)",
         opacity: visible ? 1 : 0,
-        transition:"opacity 1.6s ease",
+        transition:"opacity 1.8s ease",
+        width:"min(300px,60vw)", height:"min(300px,60vw)",
       }}>
         <svg viewBox="0 0 500 500" style={{width:"100%",height:"100%",overflow:"visible"}} aria-hidden="true">
           <defs>
-            {/* outer circle path — text runs along this */}
-            <path
-              id="outerCircle"
-              d="M 250,80 A 170,170 0 1,1 249.99,80"
-            />
-            {/* inner circle path — reversed so text reads inward */}
-            <path
-              id="innerCircle"
-              d="M 250,162 A 88,88 0 1,0 249.99,162"
-            />
+            <path id="rp" d="M 250,92 A 158,158 0 1,1 249.99,92"/>
           </defs>
-
-          {/* outer ring — faint imperfect circle */}
-          <circle cx="250" cy="250" r="168"
-            fill="none" stroke="#1a1a18" strokeWidth="0.8"
-            strokeDasharray="3 6" opacity="0.13"
-          />
-
-          {/* inner ring circle */}
-          <circle cx="250" cy="250" r="112"
-            fill="none" stroke="#1a1a18" strokeWidth="0.6"
-            strokeDasharray="2 8" opacity="0.08"
-          />
-
-          {/* outer text */}
-          <text
-            fontFamily="'Times New Roman',Times,serif"
-            fontWeight="700"
-            fontSize="17"
-            fill="#1a1a18"
-            opacity="0.82"
-            letterSpacing="4"
-          >
-            <textPath href="#outerCircle" startOffset="0%">
+          <circle cx={CX} cy={CY} r="160"
+            fill="none" stroke="#1a1a18" strokeWidth="0.7"
+            strokeDasharray="5 7" opacity="0.13"/>
+          <text fontFamily="'Times New Roman',Times,serif" fontWeight="700"
+            fontSize="16.5" fill="#1a1a18" opacity="0.84" letterSpacing="5.5">
+            <textPath href="#rp" startOffset="0%">
               FOUR TIMES IN THE SAME MINUTE I SAID SORRY · FOR WANTING YOU ·
             </textPath>
           </text>
-
-          {/* inner text — drifts */}
           <g ref={innerRef}>
-            <text
-              fontFamily="'Times New Roman',Times,serif"
-              fontWeight="700"
-              fontSize="14"
-              fill="#1a1a18"
-              opacity="0.65"
-              letterSpacing="3"
-            >
-              <textPath href="#innerCircle" startOffset="0%">
-                AND NOT KNOW THE DIFFERENCE · FOR YEARS · ANYTHING ·
+            <text fontFamily="'Times New Roman',Times,serif" fontWeight="700"
+              fontSize="13" fill="#1a1a18" opacity="0.48" letterSpacing="3">
+              <textPath href="#rp" startOffset="50%">
+                AND NOT KNOW THE DIFFERENCE · FOR YEARS ·
               </textPath>
             </text>
           </g>
-
-          {/* solid centre dot */}
-          <circle cx="250" cy="250" r="5.5" fill="#1a1a18" opacity="0.9"/>
-
-          {/* faint crosshair */}
-          <line x1="240" y1="250" x2="260" y2="250" stroke="#1a1a18" strokeWidth="0.6" opacity="0.18"/>
-          <line x1="250" y1="240" x2="250" y2="260" stroke="#1a1a18" strokeWidth="0.6" opacity="0.18"/>
+          <circle cx={CX} cy={CY} r="5" fill="#1a1a18" opacity="0.88"/>
+          <line x1={CX-9} y1={CY} x2={CX+9} y2={CY} stroke="#1a1a18" strokeWidth="0.5" opacity="0.18"/>
+          <line x1={CX} y1={CY-9} x2={CX} y2={CY+9} stroke="#1a1a18" strokeWidth="0.5" opacity="0.18"/>
         </svg>
       </div>
-
-      {/* bottom bar */}
       <div style={{
-        position:"absolute", bottom:28, left:0, right:0,
-        padding:"0 40px",
+        position:"absolute", bottom:28, left:0, right:0, padding:"0 40px",
         display:"flex", justifyContent:"space-between", alignItems:"center",
-        zIndex:2,
-        opacity: visible ? 1 : 0,
-        transition:"opacity 2s ease .8s",
+        opacity: visible ? 1 : 0, transition:"opacity 2.2s ease 0.6s",
       }}>
-        <span style={{fontSize:"clamp(8px,.85vw,10px)",letterSpacing:".32em",textTransform:"uppercase",color:"rgba(26,26,24,.42)"}}>Bea Sophia</span>
+        <span style={{fontSize:"clamp(8px,.85vw,10px)",letterSpacing:".32em",textTransform:"uppercase",color:"rgba(26,26,24,.38)",fontFamily:"'Times New Roman',Times,serif"}}>Bea Sophia</span>
         <a href="#poems" style={{
           fontSize:"clamp(8px,.85vw,10px)",letterSpacing:".2em",textTransform:"uppercase",
-          color:"rgba(26,26,24,.28)",display:"flex",alignItems:"center",gap:12,
-          transition:"color .2s",
+          color:"rgba(26,26,24,.28)",display:"flex",alignItems:"center",gap:10,
+          transition:"color .2s",fontFamily:"'Times New Roman',Times,serif",
         }}
-          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.65)"}
+          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.7)"}
           onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.28)"}>
-          <span style={{display:"inline-block",width:36,height:1,background:"currentColor"}}/>
+          <span style={{display:"inline-block",width:32,height:1,background:"currentColor"}}/>
           read it.
         </a>
-        <span style={{fontSize:"clamp(8px,.85vw,10px)",letterSpacing:".32em",textTransform:"uppercase",color:"rgba(26,26,24,.42)"}}>The Page Gallery</span>
+        <span style={{fontSize:"clamp(8px,.85vw,10px)",letterSpacing:".32em",textTransform:"uppercase",color:"rgba(26,26,24,.38)",fontFamily:"'Times New Roman',Times,serif"}}>The Page Gallery</span>
       </div>
-
     </section>
   );
 }
 
-// ─── 3D ROOM CANVAS ───────────────────────────────────────────────
-function RoomCanvas({ room }) {
-  const canvasRef = useRef(null);
-  const mouseRef  = useRef({ x:0.5, y:0.5 });
-
+// ─── POEM ────────────────────────────────────────────────────────────
+function Poem({ poem }) {
+  const ref = useRef(null);
+  const [on, setOn] = useState(false);
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    let W, H;
-    const resize = () => { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; };
-    resize(); window.addEventListener("resize", resize);
-    const onMove = e => { const r=canvas.getBoundingClientRect(); mouseRef.current={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}; };
-    canvas.addEventListener("mousemove", onMove);
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setOn(true); obs.disconnect(); } },
+      { threshold: 0.06 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
 
-    let t=0, raf;
-    let cx=.5, cy=.5;
-    const ease=(a,b,k=.06)=>a+(b-a)*k;
-
-    const drawRoom1 = () => {
-      cx=ease(cx,mouseRef.current.x); cy=ease(cy,mouseRef.current.y);
-      ctx.fillStyle="#F0EAD8"; ctx.fillRect(0,0,W,H);
-      const vx=W*(.38+(cx-.5)*.06), vy=H*(.44+(cy-.5)*.04);
-      // floor
-      ctx.beginPath(); ctx.moveTo(0,H); ctx.lineTo(W,H);
-      ctx.lineTo(W*(.98),H*(.55+(cy-.5)*.08)); ctx.lineTo(vx,vy);
-      ctx.lineTo(W*(.02),H*(.55+(cy-.5)*.08)); ctx.lineTo(0,H);
-      ctx.fillStyle="#EDE5D5"; ctx.fill();
-      // left wall
-      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,H);
-      ctx.lineTo(W*.02,H*(.55+(cy-.5)*.08)); ctx.lineTo(vx,vy); ctx.lineTo(W*.30,0);
-      ctx.fillStyle="#EAE3D2"; ctx.fill();
-      // right wall
-      ctx.beginPath(); ctx.moveTo(W,0); ctx.lineTo(W,H);
-      ctx.lineTo(W*.98,H*(.55+(cy-.5)*.08)); ctx.lineTo(vx,vy); ctx.lineTo(W*.70,0);
-      ctx.fillStyle="#E5DCC8"; ctx.fill();
-      // manuscript pages
-      const pages=[{x:.34,y:.70,w:.22,h:.26,rot:-8,a:.93},{x:.41,y:.66,w:.20,h:.25,rot:3,a:.88},{x:.37,y:.73,w:.18,h:.23,rot:-14,a:.80},{x:.46,y:.68,w:.21,h:.26,rot:7,a:.85}];
-      pages.forEach(({x,y,w,h,rot,a},i)=>{
-        const px=W*(x+(cx-.5)*.04*(i+1)*.3), py=H*(y+(cy-.5)*.03*(i+1)*.3);
-        ctx.save(); ctx.translate(px,py); ctx.rotate(rot*Math.PI/180+Math.sin(t*.2+i)*.007);
-        ctx.shadowColor="rgba(0,0,0,.15)"; ctx.shadowBlur=10; ctx.shadowOffsetY=3;
-        ctx.fillStyle=`rgba(255,252,244,${a})`; ctx.fillRect(-W*w/2,-H*h/2,W*w,H*h);
-        ctx.shadowColor="transparent";
-        ctx.strokeStyle="rgba(26,26,24,.07)"; ctx.lineWidth=.6;
-        const lc=Math.floor(H*h/11);
-        for(let l=0;l<lc-1;l++){const lx=-W*w/2+8,ly=-H*h/2+12+l*11,lw=W*w-16-(l%3)*8;ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+lw,ly);ctx.stroke();}
-        ctx.restore();
-      });
-      for(let i=0;i<40;i++){ctx.fillStyle="rgba(26,26,24,.012)";ctx.fillRect(Math.random()*W,Math.random()*H,1,1);}
-    };
-
-    const drawRoom2 = () => {
-      cx=ease(cx,mouseRef.current.x); cy=ease(cy,mouseRef.current.y);
-      ctx.fillStyle="#0A0907"; ctx.fillRect(0,0,W,H);
-      const vx=W*(.5+(cx-.5)*.04), vy=H*(.5+(cy-.5)*.04);
-      const dw=W*.22, dh=H*.48, dx=vx-dw/2, dy=vy-dh/2;
-      const g=ctx.createRadialGradient(vx,vy,0,vx,vy,W*.38);
-      g.addColorStop(0,"rgba(194,75,26,.09)"); g.addColorStop(1,"rgba(0,0,0,0)");
-      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-      const ow=dw*1.6,oh=dh*1.3,odx=vx-ow/2,ody=vy-oh/2;
-      ctx.strokeStyle="rgba(194,75,26,.12)"; ctx.lineWidth=.7;
-      ctx.beginPath(); ctx.moveTo(odx,ody); ctx.lineTo(dx,dy); ctx.moveTo(odx+ow,ody); ctx.lineTo(dx+dw,dy);
-      ctx.moveTo(odx,ody+oh); ctx.lineTo(dx,dy+dh); ctx.moveTo(odx+ow,ody+oh); ctx.lineTo(dx+dw,dy+dh); ctx.stroke();
-      ctx.strokeStyle=`rgba(194,75,26,${.28+Math.sin(t*.4)*.04})`; ctx.lineWidth=1.1;
-      ctx.strokeRect(dx,dy,dw,dh);
-      ctx.fillStyle="rgba(16,14,12,.96)"; ctx.fillRect(dx,dy,dw,dh);
-      const kx=vx, ky=vy+dh*.24;
-      const kg=ctx.createRadialGradient(kx,ky,0,kx,ky,28);
-      kg.addColorStop(0,`rgba(194,75,26,${.45+Math.sin(t*.6)*.1})`); kg.addColorStop(1,"rgba(194,75,26,0)");
-      ctx.fillStyle=kg; ctx.beginPath(); ctx.arc(kx,ky,28,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle=`rgba(194,75,26,${.65+Math.sin(t*.6)*.12})`;
-      ctx.beginPath(); ctx.arc(kx,ky,3.5,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(kx-2.5,ky+3.5); ctx.lineTo(kx+2.5,ky+3.5); ctx.lineTo(kx+2,ky+11); ctx.lineTo(kx-2,ky+11); ctx.closePath(); ctx.fill();
-      const words=["sorry","wanting","anything","for years","eleven twenty-eight"];
-      words.forEach((w,i)=>{
-        const wx=dx+dw*.15+i*(dw*.14); const wy=dy+dh-((t*7+i*28)%dh);
-        const a=Math.min(1,(wy-dy)/50)*Math.min(1,(dy+dh-wy)/50)*.22;
-        ctx.fillStyle=`rgba(238,232,220,${a})`; ctx.font=`italic ${10+i%2}px 'Times New Roman',serif`;
-        ctx.fillText(w,wx+(cx-.5)*3,wy+(cy-.5)*2);
-      });
-      for(let i=0;i<6;i++){ctx.strokeStyle="rgba(194,75,26,.035)";ctx.lineWidth=.4;const lx=W*(i/5);ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(vx,vy);ctx.lineTo(lx,H);ctx.stroke();}
-      for(let i=0;i<70;i++){ctx.fillStyle="rgba(255,255,255,.01)";ctx.fillRect(Math.random()*W,Math.random()*H,1,1);}
-    };
-
-    const loop=()=>{ if(room===1)drawRoom1();else drawRoom2(); t+=.016; raf=requestAnimationFrame(loop); };
-    loop();
-    return ()=>{ cancelAnimationFrame(raf); window.removeEventListener("resize",resize); };
-  },[room]);
-
-  return <canvas ref={canvasRef} style={{position:"absolute",inset:0,width:"100%",height:"100%"}}/>;
-}
-
-// ─── OBJECT ROOM ──────────────────────────────────────────────────
-function ObjectRoom({ room, title, subtitle, label, textColor="#1a1a18" }) {
-  const [revealed,setRevealed]=useState(false);
-  const ref=useRef(null);
-  useEffect(()=>{
-    const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){setTimeout(()=>setRevealed(true),500);obs.disconnect();}},{threshold:.25});
-    if(ref.current)obs.observe(ref.current); return()=>obs.disconnect();
-  },[]);
   return (
-    <div ref={ref} style={{position:"relative",height:"100vh",overflow:"hidden",display:"flex",alignItems:"flex-end"}}>
-      <RoomCanvas room={room}/>
-      <div style={{position:"relative",zIndex:10,padding:"0 48px 64px",width:"100%",opacity:revealed?1:0,transform:revealed?"translateY(0)":"translateY(18px)",transition:"opacity 1s ease .2s,transform 1s ease .2s"}}>
-        <p style={{fontSize:9,letterSpacing:".28em",textTransform:"uppercase",color:textColor,opacity:.3,marginBottom:10}}>{label}</p>
-        <h2 style={{fontSize:"clamp(26px,4.5vw,60px)",fontStyle:"italic",fontWeight:400,color:textColor,lineHeight:1.0,letterSpacing:"-.02em",marginBottom:10}}>{title}</h2>
-        <p style={{fontSize:14,color:textColor,opacity:.38,lineHeight:1.8,maxWidth:400}}>{subtitle}</p>
+    <article
+      ref={ref}
+      id={`poem-${poem.id}`}
+      style={{
+        minHeight:"100vh",
+        display:"flex", alignItems:"center", justifyContent:"center",
+        padding:"80px clamp(28px,10vw,160px)",
+        opacity: on ? 1 : 0,
+        transform: on ? "translateY(0)" : "translateY(20px)",
+        transition:"opacity 1.1s ease, transform 1.1s ease",
+        borderTop:"1px solid rgba(26,26,24,.065)",
+      }}>
+      <div style={{maxWidth:520, width:"100%"}}>
+        <header style={{marginBottom:44}}>
+          <span style={{
+            display:"block", fontSize:9, letterSpacing:".3em",
+            textTransform:"uppercase", color:"rgba(26,26,24,.28)",
+            marginBottom:12, fontFamily:"'Times New Roman',Times,serif",
+          }}>{poem.num}</span>
+          <h2 style={{
+            fontFamily:"'Times New Roman',Times,serif",
+            fontStyle:"italic", fontWeight:400,
+            fontSize:"clamp(16px,2.2vw,21px)",
+            color:"#1a1a18", letterSpacing:"-.01em", lineHeight:1.15,
+            margin:0,
+          }}>{poem.title}</h2>
+        </header>
+        <div style={{
+          fontFamily:"'Times New Roman',Times,serif",
+          fontSize:"clamp(14px,1.65vw,17px)",
+          color:"#1a1a18", lineHeight:1.85, letterSpacing:"-.005em",
+        }}>
+          {poem.lines.map((line, i) =>
+            line === "" ? (
+              <div key={i} style={{height:"1em"}}/>
+            ) : (
+              <p key={i} style={{margin:0}}>{line}</p>
+            )
+          )}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 
-// ─── MAIN ─────────────────────────────────────────────────────────
-export default function Home() {
-  const [openPoem,setOpenPoem]=useState(null);
-  const [scrollY,setScrollY]=useState(0);
+// ─── INDEX ───────────────────────────────────────────────────────────
+function PoemsIndex({ onSelect }) {
+  const [hov, setHov] = useState(null);
+  return (
+    <section style={{
+      minHeight:"100vh", padding:"80px clamp(28px,10vw,160px)",
+      background:"#ECEAE4",
+    }}>
+      <p style={{
+        fontSize:9, letterSpacing:".3em", textTransform:"uppercase",
+        color:"rgba(26,26,24,.28)", marginBottom:52,
+        fontFamily:"'Times New Roman',Times,serif",
+      }}>THE ONLY LIFE — 20 POEMS</p>
+      {POEMS.map(p => (
+        <div key={p.id}
+          onClick={() => onSelect(p.id)}
+          onMouseEnter={() => setHov(p.id)}
+          onMouseLeave={() => setHov(null)}
+          style={{
+            display:"flex", gap:28, alignItems:"baseline",
+            padding:"13px 0",
+            borderBottom:"1px solid rgba(26,26,24,.065)",
+            cursor:"pointer",
+            opacity: hov && hov !== p.id ? 0.3 : 1,
+            transition:"opacity .2s",
+          }}>
+          <span style={{
+            fontSize:9, letterSpacing:".2em",
+            color:"rgba(26,26,24,.28)", minWidth:24,
+            fontFamily:"'Times New Roman',Times,serif",
+          }}>{p.num}</span>
+          <span style={{
+            fontFamily:"'Times New Roman',Times,serif",
+            fontStyle:"italic",
+            fontSize:"clamp(14px,1.9vw,19px)",
+            color:"#1a1a18", letterSpacing:"-.01em",
+          }}>{p.title}</span>
+        </div>
+      ))}
+    </section>
+  );
+}
 
-  useEffect(()=>{
-    const fn=()=>setScrollY(window.scrollY);
-    window.addEventListener("scroll",fn,{passive:true});
-    return()=>window.removeEventListener("scroll",fn);
-  },[]);
+// ─── FOOTER ──────────────────────────────────────────────────────────
+function Footer() {
+  return (
+    <footer style={{
+      padding:"60px clamp(28px,10vw,160px)",
+      borderTop:"1px solid rgba(26,26,24,.065)",
+      display:"flex", justifyContent:"space-between", alignItems:"center",
+      flexWrap:"wrap", gap:20, background:"#ECEAE4",
+    }}>
+      <div>
+        <p style={{fontSize:9,letterSpacing:".3em",textTransform:"uppercase",color:"rgba(26,26,24,.28)",marginBottom:6,fontFamily:"'Times New Roman',Times,serif"}}>Bea Sophia</p>
+        <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
+          style={{fontSize:9,letterSpacing:".2em",textTransform:"uppercase",color:"rgba(26,26,24,.32)",transition:"color .2s",fontFamily:"'Times New Roman',Times,serif"}}
+          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.72)"}
+          onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.32)"}>
+          @bsophialovesgnochi
+        </a>
+      </div>
+      <p style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",color:"rgba(26,26,24,.22)",fontFamily:"'Times New Roman',Times,serif"}}>
+        The Page Gallery © 2025
+      </p>
+    </footer>
+  );
+}
+
+// ─── APP ─────────────────────────────────────────────────────────────
+export default function Home() {
+  const [view, setView] = useState("home");
+
+  const scrollToPoem = (id) => {
+    setView("home");
+    setTimeout(() => {
+      const el = document.getElementById(`poem-${id}`);
+      if (el) el.scrollIntoView({ behavior:"smooth" });
+    }, 80);
+  };
 
   return (
-    <div style={{fontFamily:"'Times New Roman',Times,Georgia,serif",overflowX:"hidden",background:"#E8E5E0",color:"#1a1a18",cursor:"none"}}>
-      <Cursor/>
-
-      <style>{`
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        html{scroll-behavior:smooth}
-        a,button,input{font-family:inherit;cursor:none}
-        a{color:inherit;text-decoration:none}
-        img{display:block}
-        ::selection{background:#1a1a18;color:#F5F0E8}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        @keyframes drift{0%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(1deg)}100%{transform:translateY(0) rotate(-2deg)}}
-      `}</style>
-
-      {/* NAV — fixed, minimal */}
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:200,padding:"16px 32px",display:"flex",justifyContent:"space-between",alignItems:"center",
-        background:scrollY>80?"rgba(245,240,232,.95)":"transparent",
-        borderBottom:scrollY>80?"1px solid rgba(26,26,24,.08)":"none",
-        backdropFilter:scrollY>80?"blur(10px)":"none",
-        transition:"background .5s,border .5s"}}>
-        <span style={{fontSize:11,letterSpacing:".2em",textTransform:"uppercase",color:"rgba(26,26,24,.5)"}}>Bea Sophia</span>
-        <div style={{display:"flex",gap:28}}>
-          {[["Poems","#poems"],["Works","#works"],["About","#about"]].map(([l,h])=>(
-            <a key={l} href={h} style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",opacity:.3,transition:"opacity .2s"}}
-              onMouseEnter={e=>e.currentTarget.style.opacity=.9} onMouseLeave={e=>e.currentTarget.style.opacity=.3}>{l}</a>
-          ))}
-        </div>
+    <div style={{background:"#ECEAE4", minHeight:"100vh", fontFamily:"'Times New Roman',Times,serif"}}>
+      <Grain/>
+      <nav style={{
+        position:"fixed", top:0, left:0, right:0, zIndex:50,
+        padding:"18px 40px",
+        display:"flex", justifyContent:"space-between", alignItems:"center",
+        background:"rgba(236,234,228,0.9)",
+        backdropFilter:"blur(10px)",
+        borderBottom:"1px solid rgba(26,26,24,.055)",
+      }}>
+        <button onClick={()=>setView("home")} style={{
+          background:"none",border:"none",cursor:"pointer",padding:0,
+          fontSize:9,letterSpacing:".32em",textTransform:"uppercase",
+          color:"rgba(26,26,24,.5)",fontFamily:"'Times New Roman',Times,serif",
+        }}>Bea Sophia</button>
+        <button onClick={()=>setView(view==="index"?"home":"index")} style={{
+          background:"none",border:"none",cursor:"pointer",padding:0,
+          fontSize:9,letterSpacing:".28em",textTransform:"uppercase",
+          color:"rgba(26,26,24,.38)",fontFamily:"'Times New Roman',Times,serif",
+          transition:"color .2s",
+        }}
+          onMouseEnter={e=>e.currentTarget.style.color="rgba(26,26,24,.8)"}
+          onMouseLeave={e=>e.currentTarget.style.color="rgba(26,26,24,.38)"}>
+          {view==="index" ? "← back" : "all poems"}
+        </button>
       </nav>
 
-      {/* HERO — continuous line drawing */}
-      <LineHero/>
-
-      {/* POEMS */}
-      <div id="poems" style={{background:"#E8E5E0"}}>
-        {POEMS.map(poem=>(
-          <PoemBlock key={poem.id} poem={poem} open={openPoem===poem.id} onToggle={()=>setOpenPoem(openPoem===poem.id?null:poem.id)}/>
-        ))}
-      </div>
-
-      {/* WORKS */}
-      <div id="works">
-        <FadeIn style={{padding:"56px 32px 16px",borderTop:"1px solid rgba(26,26,24,.07)",background:"#E8E5E0"}}>
-          <p style={{fontSize:9,letterSpacing:".3em",textTransform:"uppercase",opacity:.22,display:"flex",alignItems:"center",gap:10}}>
-            <span style={{display:"inline-block",width:4,height:4,borderRadius:"50%",background:"#1a1a18"}}/>
-            The Works
-          </p>
-        </FadeIn>
-
-        {/* Room 1 — manuscript on a floor */}
-        <ObjectRoom
-          room={1}
-          title="The Only Life"
-          subtitle="Twenty poems. New York. The body after the ward."
-          label="A collection"
-          textColor="#1a1a18"
-        />
-
-        {/* gradient seam */}
-        <div style={{height:2,background:"linear-gradient(90deg,#F5F0E8,rgba(26,26,24,.06),#0A0907)"}}/>
-
-        {/* Room 2 — door in the dark */}
-        <ObjectRoom
-          room={2}
-          title="The Writer's Block Pack"
-          subtitle="100 prompts. A room with no name. Fill in a blank."
-          label="A workbook"
-          textColor="#EEE8DC"
-        />
-            </div>
-          }
-        />
-      </div>
-
-      {/* ABOUT */}
-      <section id="about" style={{borderTop:"1px solid rgba(26,26,24,.07)",padding:"80px 32px",background:"#F5F0E8",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",top:30,right:"5%",opacity:.04,pointerEvents:"none"}}>
-          <Scribble path={SCRIBBLES[3]} size={260}/>
+      {view === "index" ? (
+        <div style={{paddingTop:60}}>
+          <PoemsIndex onSelect={scrollToPoem}/>
         </div>
-        <FadeIn style={{maxWidth:580,position:"relative",zIndex:1}}>
-          <p style={{fontSize:9,letterSpacing:".28em",textTransform:"uppercase",opacity:.28,marginBottom:22,display:"flex",alignItems:"center",gap:8}}>
-            <span style={{display:"inline-block",width:4,height:4,borderRadius:"50%",background:"#1a1a18"}}/>
-            About
-          </p>
-          <p style={{fontSize:"clamp(19px,2.8vw,28px)",fontStyle:"italic",lineHeight:1.55,marginBottom:18}}>
-            When I got sick I realised: when people die, all their thoughts die with them.
-          </p>
-          <p style={{fontSize:15,lineHeight:2,opacity:.38,marginBottom:14}}>
-            So I started writing them down — the fragments, the overheard things, the conversations that happened in the wrong order. That became The Page Gallery Journal.
-          </p>
-          <p style={{fontSize:15,lineHeight:2,opacity:.38,marginBottom:44}}>
-            These poems are the second attempt at the same problem.
-          </p>
-          <a href="https://instagram.com/bsophialovesgnochi" target="_blank" rel="noopener noreferrer"
-            style={{fontSize:9,letterSpacing:".22em",textTransform:"uppercase",opacity:.28,borderBottom:"1px solid rgba(26,26,24,.18)",paddingBottom:2,transition:"opacity .2s"}}
-            onMouseEnter={e=>e.currentTarget.style.opacity=.7} onMouseLeave={e=>e.currentTarget.style.opacity=.28}>Instagram ↗</a>
-        </FadeIn>
-      </section>
-      {/* FOOTER */}
-      <footer style={{borderTop:"1px solid rgba(245,240,232,.06)",background:"#1a1a18",color:"rgba(245,240,232,.16)",padding:"22px 32px",display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
-        <span style={{fontSize:10,letterSpacing:".12em"}}>© Bea Sophia {new Date().getFullYear()}</span>
-        <span style={{fontSize:10,letterSpacing:".12em"}}>The Page Gallery Journal</span>
-      </footer>
+      ) : (
+        <>
+          <Hero/>
+          <div id="poems">
+            {POEMS.map(p => <Poem key={p.id} poem={p}/>)}
+          </div>
+          <Footer/>
+        </>
+      )}
     </div>
   );
 }
